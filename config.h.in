@@ -1,0 +1,10 @@
+#ifndef URE_CONFIG_H
+#define URE_CONFIG_H
+
+#define LIB_VERSION_MAJOR           @ure_VERSION_MAJOR@
+#define LIB_VERSION_MINOR           @ure_VERSION_MINOR@
+#define LIB_VERSION_PATCH           @ure_VERSION_PATCH@
+
+#define LIB_VERSION   v@ure_VERSION_MAJOR@_@ure_VERSION_MINOR@_@ure_VERSION_PATCH@
+
+#endif //URE_CONFIG_H

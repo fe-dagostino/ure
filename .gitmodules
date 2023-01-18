@@ -1,0 +1,12 @@
+[submodule "submodules/lock-free"]
+	path = submodules/lock-free
+	url = https://github.com/fe-dagostino/lock-free.git
+[submodule "submodules/glm"]
+	path = submodules/glm
+	url = https://github.com/g-truc/glm.git
+[submodule "submodules/stb"]
+	path = submodules/stb
+	url = https://github.com/nothings/stb.git
+[submodule "submodules/libsigc++"]
+	path = submodules/libsigc++
+	url = https://github.com/libsigcplusplus/libsigcplusplus.git

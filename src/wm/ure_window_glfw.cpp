@@ -1,0 +1,678 @@
+/**************************************************************************************************
+ * 
+ * Copyright 2022 https://github.com/fe-dagostino
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+ * software and associated documentation files (the "Software"), to deal in the Software 
+ * without restriction, including without limitation the rights to use, copy, modify, 
+ * merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+ * permit persons to whom the Software is furnished to do so, subject to the following 
+ * conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all copies 
+ * or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+ * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+ * PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+ * FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+ * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+ * DEALINGS IN THE SOFTWARE.
+ *
+ *************************************************************************************************/
+
+#include "ure_window.h"
+#include "ure_monitor.h"
+#include "ure_application.h"
+#include "ure_window_messages.h"
+#include "ure_utils.h"
+
+#include <core/utils.h>
+
+namespace ure {
+
+
+bool  Window::create( std::unique_ptr<window_options> options, enum_t flags )
+{
+  if ((m_hWindow != nullptr) || (options == nullptr))
+    return false;
+
+  m_ptrWinOptions = std::move(options);
+  
+  if ( flags & static_cast<enum_t>(ProcessingFlags::epfEnqueue) )
+  {
+    bool bResult = true;
+    
+    Message* pMessage  = new CreateWindowMsg( this, std::move(options) );
+    
+    if ( flags & static_cast<enum_t>(ProcessingFlags::epfWait) )
+      bResult = send_message( pMessage );
+    else
+      bResult = post_message( pMessage );
+    
+    return bResult;
+  }
+
+  m_ptrRenderer = std::unique_ptr<Renderer>( new Renderer() );
+  if ( m_ptrRenderer == nullptr )
+    return false;
+
+  // Full Screen monitor
+  GLFWmonitor* pFsMonitor = nullptr;
+  
+  if ( ! m_ptrWinOptions->monitor().empty() )
+  {
+    pFsMonitor              = glfwGetPrimaryMonitor(); // Set Default
+    const Monitor* pMonitor = Application::get_instance()->get_monitor_by_name( m_ptrWinOptions->monitor() );
+    if ( pMonitor != nullptr )
+    {
+      pFsMonitor = (GLFWmonitor*)pMonitor->m_handler;
+    }
+   
+    // Set Refresh rate accordingly with video mode max refresh rate
+    glfwWindowHint( GLFW_REFRESH_RATE, 0 );
+  }
+  else
+  {
+    // For windowed mode initial state will be not visible.
+    glfwWindowHint( GLFW_VISIBLE      , GL_FALSE           );
+  }
+  
+  // Raise event for custom settings
+  // in such event occurs the selection of OPENGL API
+  // with default setting that can be overridden if needed
+  for ( WindowEvents* e : get_connections() )
+  {
+    e->on_creating( this );
+  }
+
+  m_hWindow = glfwCreateWindow( 
+                                m_ptrWinOptions->width(), m_ptrWinOptions->height(),
+                                m_ptrWinOptions->title().c_str(),
+                                pFsMonitor, 
+                                nullptr
+                              );
+
+  if (!m_hWindow)
+  {
+    m_ptrRenderer.release();
+    
+    glfwTerminate();
+    return false;
+  }
+
+  glfwSetWindowUserPointer( m_hWindow, this );
+
+  set_callbacks(true);
+
+  glfwMakeContextCurrent( m_hWindow );
+
+#if defined(_GLES_ENABLED)
+  int version = gladLoadGLES2(glfwGetProcAddress);
+#else
+  int version = gladLoadGL(glfwGetProcAddress);
+#endif  
+  if ( version != 0 )
+  {
+    ure::utils::log( core::utils::format( "GLAD GL %d.%d\n", GLAD_VERSION_MAJOR(version), GLAD_VERSION_MINOR(version)) );
+  }
+  else 
+  {
+    ure::utils::log( "Failed to initialize OpenGL context" );
+    throw std::exception();
+  }
+
+  // Only in windowed mode it is necessary to move window
+  // and to make it visible after move.
+  if ( pFsMonitor == nullptr )
+  {
+    glfwSetWindowPos( m_hWindow, m_ptrWinOptions->x(), m_ptrWinOptions->y() );
+    
+    glfwShowWindow( m_hWindow );
+  }
+  
+  for ( WindowEvents* e : get_connections() )
+  {
+    e->on_created( this );
+  }
+
+  return true;
+}
+
+void_t Window::make_context_current() noexcept
+{
+  assert( m_hWindow != nullptr );
+  glfwMakeContextCurrent( m_hWindow );
+}
+
+bool  Window::show( enum_t flags ) noexcept
+{
+  if ( m_hWindow == nullptr )
+    return false;
+
+  if ( flags == static_cast<enum_t>(ProcessingFlags::epfCalling) )
+  {
+    glfwShowWindow( m_hWindow );
+    return true;
+  }
+
+  bool bResult = false;
+  if ( flags & static_cast<enum_t>(ProcessingFlags::epfEnqueue) )
+  {
+    Message* pMessage  = new ShowWindowMsg( this );
+    
+    if ( flags & static_cast<enum_t>(ProcessingFlags::epfWait) )
+      bResult = send_message( pMessage );
+    else
+      bResult = post_message( pMessage );
+  }
+  
+  return bResult;
+}
+
+bool  Window::hide( enum_t flags ) noexcept
+{
+  if ( m_hWindow == nullptr )
+    return false;
+
+  if ( flags == static_cast<enum_t>(ProcessingFlags::epfCalling) )
+  {
+    glfwHideWindow( m_hWindow );
+    return true;
+  }
+
+  bool bResult = false;
+  if ( flags & static_cast<enum_t>(ProcessingFlags::epfEnqueue) )
+  {
+    Message* pMessage  = new HideWindowMsg( this );
+    if ( flags & static_cast<enum_t>(ProcessingFlags::epfWait) )
+      bResult = send_message( pMessage );
+    else
+      bResult = post_message( pMessage );
+  }
+  
+  return bResult;
+}
+
+bool  Window::is_windowed() const noexcept
+{
+  assert( m_hWindow != nullptr );
+  return ( glfwGetWindowMonitor( m_hWindow ) == nullptr );
+}
+
+bool  Window::set_title( const std::string& title, enum_t flags ) noexcept
+{
+  if ( m_hWindow == nullptr )
+    return false;
+
+  if ( flags == static_cast<enum_t>(ProcessingFlags::epfCalling) )
+  {
+    glfwSetWindowTitle( m_hWindow, title.c_str() );
+    return true;
+  }
+
+  bool bResult = false;
+  if ( flags & static_cast<enum_t>(ProcessingFlags::epfEnqueue) )
+  {
+    Message* pMessage  = new SetWindowTitleMsg( this, title );
+    
+    if ( flags & static_cast<enum_t>(ProcessingFlags::epfWait) )
+      bResult = send_message( pMessage );
+    else
+      bResult = post_message( pMessage );
+  }
+  
+  return bResult;
+}
+
+bool  Window::set_position( const position_t<int_t>& position, enum_t flags ) noexcept
+{
+  if ( m_hWindow == nullptr )
+    return false;
+
+  if ( flags == static_cast<enum_t>(ProcessingFlags::epfCalling) )
+  {
+    glfwSetWindowPos( m_hWindow, position.x, position.y );
+    return true;
+  }
+  
+  bool bResult = false;
+  if ( flags & static_cast<enum_t>(ProcessingFlags::epfEnqueue) )
+  {
+    Message* pMessage  = new SetWindowPositionMsg( this, position );
+    
+    if ( flags & static_cast<enum_t>(ProcessingFlags::epfWait) )
+      bResult = send_message( pMessage );
+    else
+      bResult = post_message( pMessage );
+  }
+  
+  return bResult;  
+}
+
+bool  Window::set_size( const Size& size, enum_t flags ) noexcept
+{
+  if ( m_hWindow == nullptr )
+    return false;
+
+  if ( flags == static_cast<enum_t>(ProcessingFlags::epfCalling) )
+  {
+    glfwSetWindowSize( m_hWindow, size.width, size.height );
+    return true;
+  }
+
+  bool bResult = false;
+  if ( flags & static_cast<enum_t>(ProcessingFlags::epfEnqueue) )
+  {
+    Message* pMessage  = new SetWindowSizeMsg( this, size );
+    
+    if ( flags & static_cast<enum_t>(ProcessingFlags::epfWait) )
+      bResult = send_message( pMessage );
+    else
+      bResult = post_message( pMessage );
+  }
+  
+  return bResult;  
+}
+
+#ifndef __EMSCRIPTEN__
+void_t  Window::get_framebuffer_size( Size& size ) noexcept
+{
+  assert( m_hWindow != nullptr );
+
+  glfwGetFramebufferSize( m_hWindow, &size.width, &size.height );
+}
+#endif
+
+bool  Window::show_normal( enum_t flags ) noexcept
+{
+  if ( m_hWindow == nullptr )
+    return false;
+
+  if ( flags == static_cast<enum_t>(ProcessingFlags::epfCalling) )
+  {
+    glfwRestoreWindow( m_hWindow );
+    return true;
+  }
+
+  bool bResult = false;
+  if ( flags & static_cast<enum_t>(ProcessingFlags::epfEnqueue) )
+  {
+    Message* pMessage  = new ShowWindowNormalMsg( this );
+    
+    if ( flags & static_cast<enum_t>(ProcessingFlags::epfWait) )
+      bResult = send_message( pMessage );
+    else
+      bResult = post_message( pMessage );
+  }
+  
+  return bResult;
+}
+
+bool  Window::show_minimized( enum_t flags ) noexcept
+{
+  if ( m_hWindow == nullptr )
+    return false;
+
+  if ( flags == static_cast<enum_t>(ProcessingFlags::epfCalling) )
+  {
+    glfwIconifyWindow( m_hWindow );
+    return true;
+  }
+  
+  bool bResult = false;
+  if ( flags & static_cast<enum_t>(ProcessingFlags::epfEnqueue) )
+  {
+    Message* pMessage  = new ShowWindowMinimizedMsg( this );
+    
+    if ( flags & static_cast<enum_t>(ProcessingFlags::epfWait) )
+      bResult = send_message( pMessage );
+    else
+      bResult = post_message( pMessage );
+  }
+  
+  return bResult;
+}
+
+void_t  Window::set_swap_interval( int_t iRefresh ) noexcept
+{
+  assert( m_hWindow != nullptr );
+  
+  glfwSwapInterval(iRefresh);
+}
+
+void_t  Window::swap_buffers() noexcept
+{
+  assert( m_hWindow != nullptr );
+ 
+  glfwSwapBuffers(m_hWindow);
+}
+
+void_t  Window::close() noexcept
+{
+  assert( m_hWindow != nullptr );
+
+  glfwSetWindowShouldClose( m_hWindow, GL_TRUE );
+}
+
+bool  Window::destroy( uint32_t flags ) noexcept
+{
+  if ( m_hWindow == nullptr )
+    return false;
+  
+  if ( flags == static_cast<enum_t>(ProcessingFlags::epfCalling) )
+  {
+    m_ptrRenderer = std::move(nullptr);
+  
+    set_callbacks( false );
+    
+    glfwDestroyWindow(m_hWindow);
+    m_hWindow = nullptr;
+    
+    return true;
+  }
+
+  bool bResult = false;
+  if ( flags & static_cast<enum_t>(ProcessingFlags::epfEnqueue) )
+  {
+    Message* pMessage  = new DestroyWindowMsg( this );
+    
+    if ( flags & static_cast<enum_t>(ProcessingFlags::epfWait) )
+      bResult = send_message( pMessage );
+    else
+      bResult = post_message( pMessage );
+  }
+  
+  return bResult;
+}
+
+bool  Window::get_input_mode( int_t mode, int_t& value ) noexcept
+{
+  if ( m_hWindow == nullptr )
+    return false;
+
+  value = glfwGetInputMode( m_hWindow, mode );
+
+  return true;
+}
+
+bool  Window::set_input_mode( int_t mode, int_t value ) noexcept
+{
+  if ( m_hWindow == nullptr )
+    return false;
+
+  glfwSetInputMode( m_hWindow, mode, value );
+  
+  return true;
+}
+
+bool  Window::get_cursor_position( position_t<double>& position ) noexcept
+{
+  if ( m_hWindow == nullptr )
+    return false;
+
+  glfwGetCursorPos( m_hWindow, &position.x, &position.y );
+
+  return true;
+}
+
+bool  Window::set_cursor_position( const position_t<double>& position ) noexcept
+{
+  if ( m_hWindow == nullptr )
+    return false;
+
+  glfwSetCursorPos( m_hWindow, position.x, position.y );
+  
+  return true;
+}
+  
+void_t  Window::set_window_hint(int_t iTarget, int_t iHint) noexcept
+{
+  glfwWindowHint( iTarget, iHint );
+}
+ 
+void_t Window::set_callbacks( bool bRegister )
+{
+  if ( bRegister )
+  {
+    glfwSetWindowPosCallback      ( m_hWindow, pos_callback          );
+    glfwSetWindowSizeCallback     ( m_hWindow, size_callback         );
+    glfwSetWindowCloseCallback    ( m_hWindow, close_callback        );
+    glfwSetWindowRefreshCallback  ( m_hWindow, refresh_callback      );
+    glfwSetWindowFocusCallback    ( m_hWindow, focus_callback        );
+    glfwSetWindowIconifyCallback  ( m_hWindow, iconify_callback      );
+    glfwSetFramebufferSizeCallback( m_hWindow, fbsize_callback       );
+    glfwSetMouseButtonCallback    ( m_hWindow, mouse_button_callback );
+    glfwSetCursorPosCallback      ( m_hWindow, mouse_pos_callback    );
+    glfwSetCursorEnterCallback    ( m_hWindow, mouse_enter_callback  );
+    glfwSetScrollCallback         ( m_hWindow, mouse_scroll_callback );
+    glfwSetKeyCallback            ( m_hWindow, key_callback          );
+    glfwSetCharCallback           ( m_hWindow, char_callback         );
+  } 
+  else
+  {
+    glfwSetWindowPosCallback      ( m_hWindow, nullptr );
+    glfwSetWindowSizeCallback     ( m_hWindow, nullptr );
+    glfwSetWindowCloseCallback    ( m_hWindow, nullptr );
+    glfwSetWindowRefreshCallback  ( m_hWindow, nullptr );
+    glfwSetWindowFocusCallback    ( m_hWindow, nullptr );
+    glfwSetWindowIconifyCallback  ( m_hWindow, nullptr );
+    glfwSetFramebufferSizeCallback( m_hWindow, nullptr );
+    glfwSetMouseButtonCallback    ( m_hWindow, nullptr );
+    glfwSetCursorPosCallback      ( m_hWindow, nullptr );
+    glfwSetCursorEnterCallback    ( m_hWindow, nullptr );
+    glfwSetScrollCallback         ( m_hWindow, nullptr );
+    glfwSetKeyCallback            ( m_hWindow, nullptr );
+    glfwSetCharCallback           ( m_hWindow, nullptr );
+  }
+}
+
+bool  Window::check( WindowFlags flags ) noexcept
+{
+  if ( flags == WindowFlags::eWindowShouldClose )    
+    return glfwWindowShouldClose( m_hWindow );
+  
+  return false;
+}
+
+///
+void_t Window::pos_callback( WindowHandler window, int_t xpos, int_t ypos )
+{
+  Window* pWindow = static_cast<Window*>(glfwGetWindowUserPointer( window ));
+  
+  if ( pWindow == nullptr )
+    return;
+
+  for ( WindowEvents* e : pWindow->get_connections() )
+  {
+    e->on_position_changed( pWindow, xpos, ypos );
+  }
+}
+
+void_t Window::size_callback( WindowHandler window, int_t width, int_t height )
+{
+  Window* pWindow = static_cast<Window*>(glfwGetWindowUserPointer( window ));
+
+  if ( pWindow == nullptr )
+    return;
+
+  for ( WindowEvents* e : pWindow->get_connections() )
+  {
+    e->on_size_changed( pWindow, width, height );
+  } 
+}
+ 
+void_t Window::close_callback( WindowHandler window )
+{
+  Window* pWindow = static_cast<Window*>(glfwGetWindowUserPointer( window ));
+
+  if ( pWindow == nullptr )
+    return;  
+
+  for ( WindowEvents* e : pWindow->get_connections() )
+  {
+    e->on_close( pWindow );
+  }
+}
+
+void_t Window::refresh_callback( WindowHandler window )
+{
+  Window* pWindow = static_cast<Window*>(glfwGetWindowUserPointer( window ));
+
+  if ( pWindow == nullptr )
+    return;
+
+  for ( WindowEvents* e : pWindow->get_connections() )
+  {
+    e->on_refresh( pWindow );
+  }    
+}
+ 
+void_t Window::focus_callback( WindowHandler window, int_t focus )
+{
+  Window* pWindow = static_cast<Window*>(glfwGetWindowUserPointer( window ));
+  
+  if ( pWindow == nullptr )
+    return;
+
+  for ( WindowEvents* e : pWindow->get_connections() )
+  {
+    if ( focus == GL_TRUE )
+      e->on_got_focus( pWindow );
+    else
+      e->on_lost_focus( pWindow );
+  }    
+}
+
+void_t Window::iconify_callback( WindowHandler window, int_t iconified )
+{
+  Window* pWindow = static_cast<Window*>(glfwGetWindowUserPointer( window ));
+  
+  if ( pWindow == nullptr )
+    return;
+
+  for ( WindowEvents* e : pWindow->get_connections() )
+  {
+    if ( iconified == GL_TRUE )
+      e->on_iconified( pWindow );
+    else
+      e->on_restored( pWindow );
+  }
+}
+
+void_t Window::fbsize_callback( WindowHandler window, int_t width, int_t height )
+{
+  Window* pWindow = static_cast<Window*>(glfwGetWindowUserPointer( window ));
+
+  if ( pWindow == nullptr )
+    return;  
+
+  for ( WindowEvents* e : pWindow->get_connections() )
+  {
+    e->on_fb_size_changed( pWindow, width, height );
+  }
+}
+
+void_t Window::mouse_button_callback( WindowHandler window, int_t button, int_t action, int_t mods )
+{
+  Window* pWindow = static_cast<Window*>(glfwGetWindowUserPointer( window ));
+
+  if ( pWindow == nullptr )
+    return;  
+
+  for ( WindowEvents* e : pWindow->get_connections() )
+  {
+    switch ( action )
+    {
+      case GLFW_PRESS:
+        e->on_mouse_button_pressed( pWindow, button, mods );
+      break;
+      case GLFW_RELEASE:
+        e->on_mouse_button_released( pWindow, button, mods );
+      break;
+    }
+  }
+}
+
+void_t Window::mouse_pos_callback ( WindowHandler window, double_t xpos, double_t ypos )
+{
+  Window* pWindow = static_cast<Window*>(glfwGetWindowUserPointer( window ));
+  
+  if ( pWindow == nullptr )
+    return;
+
+  for ( WindowEvents* e : pWindow->get_connections() )
+  {
+    e->on_mouse_move( pWindow, xpos, ypos );
+  }
+}
+
+void_t Window::mouse_enter_callback ( WindowHandler window, int_t entered )
+{
+  Window* pWindow = static_cast<Window*>(glfwGetWindowUserPointer( window ));
+
+  if ( pWindow == nullptr )
+    return;
+
+  for ( WindowEvents* e : pWindow->get_connections() )
+  {
+    if ( entered == GL_TRUE )
+      e->on_mouse_enter( pWindow );
+    else
+      e->on_mouse_leave( pWindow );
+  }
+}
+
+void_t Window::mouse_scroll_callback ( WindowHandler window, double_t xoffset, double_t yoffset )
+{
+  Window* pWindow = static_cast<Window*>(glfwGetWindowUserPointer( window ));
+  
+  if ( pWindow == nullptr )
+    return;
+
+  for ( WindowEvents* e : pWindow->get_connections() )
+  {
+    e->on_mouse_scroll( pWindow, xoffset, yoffset );
+  }
+}
+
+
+void_t Window::key_callback( WindowHandler window, int_t key, int_t scancode, int_t action, int_t mods)
+{
+  Window* pWindow = static_cast<Window*>(glfwGetWindowUserPointer( window ));
+
+  if ( pWindow == nullptr )
+    return;
+
+  for ( WindowEvents* e : pWindow->get_connections() )
+  {
+    switch( action )
+    {
+      case GLFW_RELEASE:
+        e->on_key_released( pWindow, key, scancode, mods );
+      break;
+      case GLFW_PRESS:
+        e->on_key_pressed( pWindow, key, scancode, mods );
+      break;
+      case GLFW_REPEAT:
+        e->on_key_repeated( pWindow, key, scancode, mods );
+      break;
+    }
+  }
+}
+
+void_t Window::char_callback( WindowHandler window, uint_t codepoint )
+{
+  Window* pWindow = static_cast<Window*>(glfwGetWindowUserPointer( window ));
+  
+  if ( pWindow == nullptr )
+    return;
+
+  for ( WindowEvents* e : pWindow->get_connections() )
+  {
+    e->on_unicode_char( pWindow, codepoint );
+  }
+}
+
+
+}
