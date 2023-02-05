@@ -25,6 +25,7 @@
 #define URE_APPLICATION_H
 
 #include "ure_common_defs.h"
+#include "ure_application_events.h"
 #include <core/unique_ptr.h>
 
 
@@ -37,22 +38,10 @@
 
 namespace ure {
 
-class ApplicationEvents 
-{
-public:
-  /***/
-  virtual ~ApplicationEvents(){}
-
-  /***/
-  virtual void on_run() = 0;
-  /***/
-  virtual void on_initialize_error(/* @todo */) = 0;
-  /***/
-  virtual void on_error( int32_t error, const std::string& description ) = 0;
-  /***/
-  virtual void on_finalize_error(/* @todo */) = 0;
-};
-
+/**
+ * @brief 
+ * 
+ */
 class Application final : public core::singleton_t<Application>
 {
 private:
@@ -76,57 +65,54 @@ protected:
              ) noexcept;
 public:
   /***/
-  void        run();
-
-  /***/
-  //static VOID init( ApplicationEvents* pEvents, const std::string& sShadersPath, const std::string& sMediaPath );
-  /***/
-  void        final();
+  void_t               run();
   
   /***/
-  ApplicationEvents*   set_events( ApplicationEvents* pEvents );
+  inline ApplicationEvents* set_events( core::unique_ptr<ApplicationEvents> events ) noexcept
+  { 
+    ApplicationEvents* pRetVal = events.release();
+    m_events = std::move(events);  
+    return pRetVal;
+  }
   /***/
-  ApplicationEvents*   get_events()
+  inline ApplicationEvents* get_events() noexcept
   { return m_events.get(); }
 
   /***/
-  inline bool quit() const noexcept
+  inline bool               quit() const noexcept
   { return m_quit; }
   /***/
-  inline void quit( bool quit ) noexcept
+  inline void               quit( bool quit ) noexcept
   { m_quit = quit; }
 
   /***/
-  void                 poll_events();
+  void_t                    poll_events();
   /***/
-  void                 wait_events();
+  void_t                    wait_events();
   /***/ 
-  std::string          get_version() const noexcept;
+  std::string               get_version() const noexcept;
   
   /**
    * Return time in seconds since application initialization.
    */
-  double               getTime() const;
+  double_t                  get_time() const noexcept;
   /***/
-  void                 setTime( double dTime );
+  void_t                    set_time( double_t dTime ) noexcept;
     
   /***/
-  const Monitor*       get_monitor_by_name( const std::string& name ) noexcept;
+  const Monitor*            get_monitor_by_name( const std::string& name ) noexcept;
 
 public:
   /***/
-  void     on_initialize();
+  void_t     on_initialize();
   /***/
-  void     on_finalize();
+  void_t     on_finalize();
 
 private:
   core::unique_ptr<ApplicationEvents>  m_events;
   mutable Monitor::monitor_map_t       m_mapMonitors;  
   bool                                 m_quit;
 };
-
-
-
 
 }
 
