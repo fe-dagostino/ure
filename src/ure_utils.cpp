@@ -30,5 +30,9 @@ void utils::log( const std::string& str ) noexcept
   std::cout << str << std::endl;
 }
 
+void utils::err( const std::string& str ) noexcept
+{
+  std::cerr << str << std::endl;
+}
 
 }
