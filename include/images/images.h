@@ -5,7 +5,8 @@
 #ifdef _USE_STB
 extern "C"
 {
-uint8_t* stb_load( const char* filename, unsigned int* size, int* width, int* height );
+uint8_t* stb_load            ( const char* filename, unsigned int* size, int* width, int* height );
+uint8_t* stb_load_from_memory( const uint8_t* mem  , unsigned int* size, int* width, int* height );
 }
 #endif
 
@@ -34,6 +35,8 @@ uint8_t* il_load( const char* filename, unsigned int* size, int* width, int* hei
 bool     il_final();
 }
 #endif 
+
+
 
 #endif //IMAGES_UTILS_H
 
