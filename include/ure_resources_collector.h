@@ -37,6 +37,9 @@ namespace ure {
 
 #define DEFAULT_RESOURCES_PATH  "./media"
 
+/**
+ * 
+ */
 class ResourcesCollector final: public core::singleton_t<ResourcesCollector>
 {
   friend class singleton_t<ResourcesCollector>;
@@ -88,7 +91,7 @@ public:
    * @return true       in case a resource with \param name is not registered already.
    * @return false      in case a resource with \param name is already in the container.
    */
-  bool            attach( const std::string& name, Object* pResource ) noexcept;
+  bool         attach( const std::string& name, Object* pResource ) noexcept;
   /**
    * @brief Detach a resource from the collector.
    *        This means that collector return ownership to the caller.
@@ -97,7 +100,7 @@ public:
    * @return Object*    pointer to specified resource if found inside the collector.
    *                    If specified resource name does not exist return value will be nullptr.
    */
-  Object*         detach( const std::string& name ) noexcept;
+  Object*      detach( const std::string& name ) noexcept;
   
 public:
   /***/
