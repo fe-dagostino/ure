@@ -19,4 +19,16 @@ uint8_t* stb_load( const char* filename, unsigned int* size, int* width, int* he
   return data;  
 }
 
+uint8_t* stb_load_from_memory( const uint8_t* mem, unsigned int* size, int* width, int* height )
+{
+  if ( mem == NULL )
+    return NULL;
+  
+  int comp = 0;
 
+  uint8_t* data = stbi_load_from_memory( mem, *size, width, height, &comp, 4);
+
+  *size    = 4*(*width)*(*height);
+
+  return data;  
+}
