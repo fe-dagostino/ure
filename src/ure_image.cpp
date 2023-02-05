@@ -31,7 +31,8 @@
 
 namespace ure {
 
-typedef unsigned char* (*load_image)( const char* filename, unsigned int* size, int* width, int* height );
+typedef uint8_t* (*load_image  )( const char*    filename, unsigned int* size, int* width, int* height );
+typedef uint8_t* (*create_image)( const uint8_t* memory  , unsigned int* size, int* width, int* height );
 
 Image::~Image()
 {
@@ -82,12 +83,67 @@ bool  Image::load( Image::loader_t il, const std::string& filename ) noexcept
   m_pData = load( filename.c_str(), &m_uiDataSize, &m_size.width, &m_size.height );
   if (m_pData==nullptr)
   {
-    ure::utils::log( core::utils::format( "Image::load() - Failed to load Texture [%s]", filename.c_str() ) );
+    ure::utils::log( core::utils::format( "Image::load() - Failed to load Image [%s]", filename.c_str() ) );
     return false;
   }
     
-  ure::utils::log( core::utils::format( "Image::load() - Loaded Texture [%s] MEM BYTES [%d] W:[%d] x H:[%d] Pixel D:[32] Bits", filename.c_str(), m_uiDataSize, m_size.width, m_size.height ) );
+  ure::utils::log( core::utils::format( "Image::load() - Loaded Image [%s] MEM BYTES [%d] W:[%d] x H:[%d] Pixel D:[32] Bits", filename.c_str(), m_uiDataSize, m_size.width, m_size.height ) );
   
+  return true;
+}
+
+bool      Image::create( loader_t il, const byte_t* data, uint32_t datasize ) noexcept 
+{
+  create_image load   = NULL; 
+
+  if ( il == Image::loader_t::eStb )
+  {
+#ifdef _USE_STB
+    load = stb_load_from_memory;
+#else  //_USE_STB
+    ure::utils::log( "Image::create() - Use: cmake -DURE_USE_STB=ON in order to enable STB Image loader" );
+    return false;
+#endif //_USE_STB   
+  }
+  
+  if ( il == Image::loader_t::eFreeImage )
+  {
+#ifdef _USE_FREEIMAGE
+    load = fi_load;
+#else  //_USE_FREEIMAGE
+    // @todo provide FREEIMAGE implementation 
+    //ure::utils::log( "Image::create() - Use: cmake -DURE_USE_FREEIMAGE=ON in order to enable FreeImage loader" );
+    ure::utils::log( "Image::create() - FREEIMAGE implementation not present" );
+    return false;
+#endif //_USE_FREEIMAGE   
+  }
+  
+  if ( il == Image::loader_t::eDevIL )
+  {
+#ifdef _USE_DEVIL
+    load = il_load;
+#else  //_USE_DEVIL
+    // @todo provide devil implementation 
+    //ure::utils::log( "Image::create() - cmake -DURE_USE_DEVIL=ON in order to enable DevIL loader" );
+    ure::utils::log( "Image::create() - DEVIL implementation not present" );
+    return false;
+#endif //_USE_DEVIL    
+  }
+
+  if ( load == NULL )
+    return false;
+  
+  m_uiDataSize = datasize;
+
+  m_pData = load( data, &m_uiDataSize, &m_size.width, &m_size.height );
+  if (m_pData==nullptr)
+  {
+    ure::utils::log( "Image::create() - Failed to create Image from memory buffer" );
+    return false;
+  }
+    
+  ure::utils::log( core::utils::format( "Image::create() - Created Image from memory buffer MEM BYTES [%d] W:[%d] x H:[%d] Pixel D:[32] Bits", m_uiDataSize, m_size.width, m_size.height ) );
+   
   return true;
 }
 

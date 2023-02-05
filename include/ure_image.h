@@ -64,11 +64,12 @@ public:
 
   /***/
   virtual ~Image();
-  
   /**
    * Load and image using specified loader.
    */
   bool                     load( loader_t il, const std::string& filename ) noexcept;
+  /***/
+  bool                     create( loader_t il, const byte_t* data, uint32_t datasize ) noexcept; 
   
   /***/
   constexpr format_t       get_format() const noexcept
@@ -77,7 +78,7 @@ public:
   constexpr const Size&    get_size() const noexcept
   { return m_size; }
   /***/
-  constexpr const uint8_t* get_data( uint32_t* datasize ) const noexcept
+  constexpr const byte_t*  get_data( uint32_t* datasize ) const noexcept
   { 
     if ( datasize != nullptr )
     { *datasize = m_uiDataSize; }
@@ -89,13 +90,13 @@ public:
    * @brief Return data to the caller and empty current object.
    *        Caller will be in charge to release the data. 
    */
-  uint8_t*                 detach( uint32_t* datasize ) noexcept;
+  byte_t*                  detach( uint32_t* datasize ) noexcept;
 
 public:
   Size     m_size; 
   format_t m_format;
   uint32_t m_uiDataSize;
-  uint8_t* m_pData;
+  byte_t*  m_pData;
 
 };
 
