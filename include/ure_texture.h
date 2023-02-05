@@ -56,6 +56,11 @@ public:
       m_length( 0 ), m_pixels( nullptr )
   {}
 
+  Texture( sizei_t width, sizei_t height, format_t format, type_t type )
+    : m_size( 0, 0 ), m_format( format_t::eUndefined ), m_type( type_t::eUndefined ), 
+      m_length( 0 ), m_pixels( nullptr )
+  { init( width, height, format, type, nullptr ); }
+
   /***/
   Texture( Image&& image )
   {
@@ -69,7 +74,14 @@ public:
   }
   
   /***/
-  ~Texture();
+  ~Texture()
+  {
+    if ( m_pixels != nullptr )
+    {
+      free( m_pixels );
+      m_pixels = nullptr;
+    }
+  }
   
   /***/
   constexpr format_t      get_format() const noexcept
@@ -124,6 +136,47 @@ public:
                                   uint_t aVertices, uint_t aTexCoord,
 				                          int_t  tws, int_t twt 
                                 );
+private:
+  /***/
+  bool  init( sizei_t width, sizei_t height, format_t format, type_t type, uint8_t* pixels ) noexcept
+  {
+    if ( type != type_t::eUnsignedByte )
+      return false;
+  
+    if ( m_pixels != nullptr )
+    {
+      free( m_pixels );
+      m_pixels = nullptr;
+    }
+
+    m_size.width  = width;
+    m_size.height = height;
+    m_format      = format;
+    m_type        = type;
+
+    // Accepted values
+    int bpp = 4;
+    switch ( format )
+    {
+      case format_t::eRGB : bpp = 3; break;
+      default:              bpp = 4; break;
+    }
+    
+    m_length      = width*height*bpp;
+    
+    if ( pixels == nullptr ){
+      m_pixels      = (uint8_t*)calloc( m_length, sizeof(uint8_t) );
+    }
+    else {
+      m_pixels      = pixels;
+      pixels        = nullptr;
+    }
+
+    if (m_pixels == nullptr)
+      return false;
+  
+    return true;    
+  }
 
 private:
   Size      m_size;
