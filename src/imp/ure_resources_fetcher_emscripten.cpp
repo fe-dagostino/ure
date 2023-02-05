@@ -54,7 +54,7 @@ static void_t emscripten_download_succeeded(emscripten_fetch_t *fetch)
 
     if ( ResourcesFetcher::get_instance()->events() != nullptr )
     {
-      ResourcesFetcher::get_instance()->events()->on_download_succeeded( resource->name(), fetch->data, fetch->numBytes );
+      ResourcesFetcher::get_instance()->events()->on_download_succeeded( resource->name(), (const byte_t*)fetch->data, fetch->numBytes );
     }
   }
    
