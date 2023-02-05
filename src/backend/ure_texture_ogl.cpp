@@ -26,16 +26,6 @@
 
 namespace ure {
 
-
-Texture::~Texture()
-{
-  if ( m_pixels != nullptr )
-  {
-    free( m_pixels );
-    m_pixels = nullptr;
-  }
-}
-
 void  Texture::set_packing( int32_t param )
 {
   glPixelStorei(GL_PACK_ALIGNMENT, param );
