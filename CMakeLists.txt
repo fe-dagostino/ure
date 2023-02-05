@@ -84,7 +84,12 @@ if (CMAKE_CXX_COMPILER MATCHES "em\\+\\+$" )
   set(ENABLE_WASM         ON)
   add_definitions(
     -D_WASM_ENABLED
-  )  
+  )
+  
+  get_directory_property(hasParent PARENT_DIRECTORY)
+  if(hasParent)
+    set( ENABLE_WASM "${ENABLE_WASM}" PARENT_SCOPE )
+  endif()  
 endif()
 
 if ( ENABLE_GLFW )
