@@ -33,6 +33,8 @@ struct utils final
 public:
   /***/
   static void log( const std::string& str ) noexcept;
+  /***/
+  static void err( const std::string& str ) noexcept;
 };
 
 }
