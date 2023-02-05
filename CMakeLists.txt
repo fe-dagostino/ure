@@ -210,14 +210,21 @@ endif()
 
 if (ENABLE_WASM)
   set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_FREETYPE=1 " )
-  message("CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}") 
+  message("libure: CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}") 
 
-  set( URE_LINK_FLAGS "${URE_LINK_FLAGS} -s USE_FREETYPE=1" PARENT_SCOPE )
-  set( URE_LINK_FLAGS "${URE_LINK_FLAGS} -s FETCH=1"        PARENT_SCOPE )
+  set( URE_LINK_FLAGS "${URE_LINK_FLAGS} -s USE_FREETYPE=1"    )
+  set( URE_LINK_FLAGS "${URE_LINK_FLAGS} -s FETCH=1"           )
   if ( ENABLE_GLFW )
-    set( URE_LINK_FLAGS "${URE_LINK_FLAGS} -s USE_GLFW=3"   PARENT_SCOPE )
+    set( URE_LINK_FLAGS "${URE_LINK_FLAGS} -s USE_GLFW=3"      )
   endif()  
-  message("URE_LINK_FLAGS : ${URE_LINK_FLAGS}")
+  
+  get_directory_property(hasParent PARENT_DIRECTORY)
+  if(hasParent)
+    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" PARENT_SCOPE )
+    set( URE_LINK_FLAGS  "${URE_LINK_FLAGS}"  PARENT_SCOPE )
+  endif()
+
+  message("libure: URE_LINK_FLAGS : ${URE_LINK_FLAGS}")
 endif()
 
 if (URE_USE_STB)
