@@ -36,7 +36,7 @@ message(CRITICAL "ccc" )
 else(JS_ONLY)
 	message(STATUS "Setting compilation target to WASM")
   set(CMAKE_EXECUTABLE_SUFFIX ".js")
-	set_target_properties( ure_ogl PROPERTIES LINK_FLAGS "-s WASM=1 -s USE_WEBGL2=1 -s USE_GLFW=3 -s FULL_ES3=1 
+	set_target_properties( ure_ogl PROPERTIES LINK_FLAGS "${URE_LINK_FLAGS} -s WASM=1 -s USE_WEBGL2=1 -s FULL_ES3=1 
                                                         -s EXPORTED_RUNTIME_METHODS=['UTF8ToString'] 
                                                         --preload-file ../resources@resources -s EXPORTED_FUNCTIONS='[_main]'")
   #set_target_properties( ure_ogl PROPERTIES LINK_FLAGS "-s WASM=1 -s USE_WEBGL2=1 -s USE_GLFW=3 -s FULL_ES3=1 -s EXPORTED_FUNCTIONS='[_main]'")
