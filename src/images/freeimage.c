@@ -16,7 +16,7 @@ uint8_t* fi_load( const char* filename, unsigned int* size, int* width, int* hei
   //if still unknown, try to guess the file format from the file extension
   if(fif == FIF_UNKNOWN) 
     fif = FreeImage_GetFIFFromFilename( filename );
-  //if still unkown, return failure^M
+  //if still unkown, return failure
   if(fif == FIF_UNKNOWN)
     return NULL;
 
@@ -54,7 +54,7 @@ uint8_t* fi_load( const char* filename, unsigned int* size, int* width, int* hei
 
   FreeImage_Unload(dib);
   
-  return data;  
+  return data;
 }
 
 
