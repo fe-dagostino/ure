@@ -34,8 +34,8 @@ class Text
 {
 public:
   /***/
-  Text( std::unique_ptr<Texture> texture )
-    : m_texture( std::move(texture) ), m_color( 0.0f, 0.0f, 0.0f, 1.0f )
+  Text( Texture* pTexture )
+    : m_texture( pTexture ), m_color( 0.0f, 0.0f, 0.0f, 1.0f )
   {}
   /***/
   virtual ~Text()
