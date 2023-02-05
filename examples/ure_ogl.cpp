@@ -2,6 +2,7 @@
 
 #include "ure_application.h"
 #include "ure_resources_collector.h"
+#include "ure_resources_fetcher.h"
 #include "ure_window.h"
 #include "ure_window_options.h"
 #include "ure_scene_graph.h"
@@ -13,7 +14,7 @@
 #include "core/utils.h"
 #include "core/stop_watch.h"
 
-class OglGui : public ure::ApplicationEvents, public ure::WindowEvents
+class OglGui : public ure::ApplicationEvents, public ure::WindowEvents, public ure::ResourcesFetcherEvents
 {
 public:
   OglGui( int argc, char** argv )
@@ -166,7 +167,33 @@ protected:
 
 // ure::ApplicationEvents implementation  
 protected:
-  virtual void on_run() override 
+  /***/
+  virtual ure::void_t on_initialize() override
+  {
+    ure::ResourcesFetcher::initialize( core::unique_ptr<ure::ResourcesFetcherEvents>(this,false) );
+  }
+  /***/
+  virtual ure::void_t on_initialized() override
+  {
+    ure::ResourcesFetcher::get_instance()->fetch( "0/0/0.png", "https://tile.openstreetmap.org/0/0/0.png" );
+
+    ure::ResourcesFetcher::get_instance()->fetch( "1/0/0.png", "https://tile.openstreetmap.org/1/0/0.png" );
+    ure::ResourcesFetcher::get_instance()->fetch( "1/1/0.png", "https://tile.openstreetmap.org/1/1/0.png" );
+    ure::ResourcesFetcher::get_instance()->fetch( "1/0/1.png", "https://tile.openstreetmap.org/1/0/1.png" );
+    ure::ResourcesFetcher::get_instance()->fetch( "1/1/1.png", "https://tile.openstreetmap.org/1/1/0.png" );
+  }
+  /***/
+  virtual ure::void_t on_finalize() override
+  {
+    ure::ResourcesFetcher::get_instance()->finalize();
+  }
+  /***/
+  virtual ure::void_t on_finalized() override
+  {
+
+  }
+
+  virtual ure::void_t on_run() override 
   {
     if ( m_pWindow->check( ure::Window::WindowFlags::eWindowShouldClose ) )
     {
@@ -211,11 +238,27 @@ protected:
   }
 
   /***/
-  virtual void on_initialize_error(/* @todo */) override {}
+  virtual ure::void_t on_initialize_error(/* @todo */) override {}
   /***/
-  virtual void on_error( [[maybe_unused]] int32_t error, [[maybe_unused]] const std::string& description ) override {}
+  virtual ure::void_t on_error( [[maybe_unused]] int32_t error, [[maybe_unused]] const std::string& description ) override {}
   /***/
-  virtual void on_finalize_error(/* @todo */) override {};
+  virtual ure::void_t on_finalize_error(/* @todo */) override {};
+
+// ure::ResourcesFetcherEvents implementation  
+  virtual ure::void_t on_download_succeeded( [[maybe_unused]] const std::string& name, [[maybe_unused]] const ure::byte_t* data, [[maybe_unused]] ure::uint_t length ) override
+  {
+    ure::Image image;
+    if ( image.create( ure::Image::loader_t::eStb, data, length ) )
+    {
+      std::cout << "Well done " << name << std::endl;
+    }
+
+  }
+
+  virtual ure::void_t on_download_failed   ( [[maybe_unused]] const std::string& name ) override
+  {
+
+  }
 
 private:
   bool                        m_bFullScreen;
@@ -234,6 +277,10 @@ private:
 
   core::stop_watch<std::chrono::milliseconds,true>  m_sw;
 };
+
+
+#define OSM_ENDPOINT_SD "https://%s.tile.openstreetmap.org/%s/%s/%s.png"
+#define OSM_ENDPOINT "https://tile.openstreetmap.org/%s/%s/%s.png"
 
 extern "C" int main(int argc, char** argv)
 {
