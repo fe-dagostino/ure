@@ -101,6 +101,21 @@ option(URE_USE_DEVIL      "Build DevIL loader"            OFF)
 option(URE_BUILD_EXAMPLES "Enable/Disable examples build"  ON)
 option(URE_BUILD_TESTS    "Enable/Disable tests build"    OFF)
 
+if (NOT ENABLE_WASM)
+  find_package(Freetype      REQUIRED)
+  message(STATUS "FreeType:"                                      )
+  message(STATUS "    version: ${FREETYPE_VERSION_STRING}"        )
+  message(STATUS "    include: ${FREETYPE_INCLUDE_DIRS}"          )
+  message(STATUS "             ${FREETYPE_INCLUDE_DIR_ft2build}"  )
+  message(STATUS "             ${FREETYPE_INCLUDE_DIR_freetype2}" )
+  message(STATUS "    libs   : ${FREETYPE_LIBRARIES}"             )
+
+  find_package(CURL          REQUIRED)
+  message(STATUS "libcurl:"                                       )
+  message(STATUS "    version: ${CURL_VERSION_STRING}"            )
+  message(STATUS "    include: ${CURL_INCLUDE_DIRS} "             )
+  message(STATUS "    libs   : ${CURL_LIBRARIES}"                 )
+endif()
 
 find_package(Git)
 if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
@@ -126,12 +141,17 @@ add_subdirectory(submodules/glm      )
 #add_subdirectory(submodules/libconfig)
 #add_subdirectory(submodules/)
 
+if (NOT ENABLE_WASM)
+  include_directories( ${FREETYPE_INCLUDE_DIRS}                                 )
+  include_directories( ${CURL_INCLUDE_DIRS}                                     )
+endif()
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/include                        )
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/3rd-party/glad/include         )
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/submodules/lock-free/include   )
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/submodules/glm                 )
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/submodules/stb                 )
+
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/submodules/libsigc++           )
 include_directories( ${CMAKE_CURRENT_BINARY_DIR}/submodules/libsigc++           ) # necessary for sigc++config.h
 #include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/submodules/imgui/           )
@@ -185,19 +205,27 @@ else()
   set( EXT_LIBRARIES
       m
       pthread
-      sigc-3.0
-      #GL
-    )
+     )
 endif()
 
-if (NOT ENABLE_WASM)
-  set(EMCC_COMPILE_FLAGS  "")
-  set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS} ${EMCC_COMPILE_FLAGS}")
+if (ENABLE_WASM)
+  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_FREETYPE=1 " )
+  message("CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}") 
+
+  set( URE_LINK_FLAGS "${URE_LINK_FLAGS} -s USE_FREETYPE=1" )
+  set( URE_LINK_FLAGS "${URE_LINK_FLAGS} -s FETCH=1" )
+  if ( ENABLE_GLFW )
+    set( URE_LINK_FLAGS "${URE_LINK_FLAGS} -s USE_GLFW=3" )
+  endif()  
+  message("URE_LINK_FLAGS : ${URE_LINK_FLAGS}")
 endif()
 
 if (URE_USE_STB)
   add_definitions( -D_USE_STB )
 endif (URE_USE_STB)
+
+# Common libraries
+set( EXT_LIBRARIES ${EXT_LIBRARIES} sigc-3.0 )
 
 if (URE_USE_FREEIMAGE)
   add_definitions( -D_USE_FREEIMAGE )
@@ -214,9 +242,15 @@ if (ENABLE_GLFW)
 endif()
 
 if (NOT ENABLE_WASM)
-  set( EXT_LIBRARIES ${EXT_LIBRARIES} curl )
+  set( EXT_LIBRARIES ${EXT_LIBRARIES} curl                  )
+  set( EXT_LIBRARIES ${EXT_LIBRARIES} ${FREETYPE_LIBRARIES} )
 endif()
 
+if (ENABLE_WASM)
+  set( TARGET_IMP "emscripten" )
+else()
+  set( TARGET_IMP "generic"    )
+endif()
 
 if( CMAKE_BUILD_TYPE STREQUAL "Debug" )
 
@@ -230,13 +264,21 @@ file( GLOB
       ${CMAKE_CURRENT_SOURCE_DIR}/include/*.h
     )
 file( GLOB 
-    LIB_WIDGETS_INCLUDE
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/widgets/*.h
+      LIB_FONT_INCLUDE
+      ${CMAKE_CURRENT_SOURCE_DIR}/include/font/*.h
+    )    
+file( GLOB 
+      LIB_WIDGETS_INCLUDE
+      ${CMAKE_CURRENT_SOURCE_DIR}/include/widgets/*.h
     )
 
 file( GLOB 
       LIB_SRC
       ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
+    )
+file( GLOB 
+      LIB_FONT_SRC
+      ${CMAKE_CURRENT_SOURCE_DIR}/src/font/*.cpp
     )
 file( GLOB 
       LIB_WIDGETS_SRC
@@ -254,6 +296,11 @@ endif (URE_USE_FREEIMAGE)
 if (URE_USE_DEVIL)
   set( LIB_SRC ${LIB_SRC} ${CMAKE_CURRENT_SOURCE_DIR}/src/images/devil.c )
 endif (URE_USE_DEVIL)
+
+file( GLOB
+      LIB_TARGET_IMP_SRC
+      ./src/imp/*_${TARGET_IMP}.cpp
+    )
 
 file( GLOB
       LIB_WM_SRC
@@ -310,8 +357,8 @@ endif()
 #   )
 
 #add_library( ${CMAKE_PROJECT_NAME}                   ${LIB_SRC} ${PRG_DATE_SRC} ${PRG_GUI_SRC} ${PRG_BACKEND_SRC} )
-add_library   ( ${libname}${LIB_VERSION_SO}   SHARED ${LIB_SRC} ${LIB_WIDGETS_SRC} ${LIB_WM_SRC} ${LIB_BE_SRC} ${LIB_GLAD_SRC} )
-add_library   ( ${libname}${LIB_VERSION_A}    STATIC ${LIB_SRC} ${LIB_WIDGETS_SRC} ${LIB_WM_SRC} ${LIB_BE_SRC} ${LIB_GLAD_SRC} )
+add_library   ( ${libname}${LIB_VERSION_SO}   SHARED ${LIB_SRC} ${LIB_TARGET_IMP_SRC} ${LIB_FONT_SRC} ${LIB_WIDGETS_SRC} ${LIB_WM_SRC} ${LIB_BE_SRC} ${LIB_GLAD_SRC} )
+add_library   ( ${libname}${LIB_VERSION_A}    STATIC ${LIB_SRC} ${LIB_TARGET_IMP_SRC} ${LIB_FONT_SRC} ${LIB_WIDGETS_SRC} ${LIB_WM_SRC} ${LIB_BE_SRC} ${LIB_GLAD_SRC} )
 
 target_link_libraries( ${libname}${LIB_VERSION_SO}  ${EXT_LIBRARIES} )
 target_link_libraries( ${libname}${LIB_VERSION_A}   ${EXT_LIBRARIES} )
