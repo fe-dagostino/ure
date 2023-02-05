@@ -26,9 +26,7 @@
 #include "ure_resources_collector.h"
 
 #include "core/utils.h"
-
-
-//#include "images/images.h"
+#include "images/images.h"
 
 namespace ure {
 
@@ -59,31 +57,6 @@ Application::Application(
 
   ResourcesCollector::initialize();
   ResourcesCollector::get_instance()->set_resources_path( sMediaPath );
-
-/*
-#ifdef _USE_AVCPP
-  if (!av_init())
-  {
-    if ( GetInstance().getEvents() != nullptr )
-    {
-      GetInstance().getEvents()->OnInitializeError();
-    }
-  }
-#endif //_USE_AVCPP
-
-#ifdef _USE_DEVIL
-  if (!il_init())
-  {
-    if ( GetInstance().getEvents() != nullptr )
-    {
-      GetInstance().getEvents()->OnInitializeError();
-    }
-  }
-#endif  //_USE_DEVIL
-  
-  //Reset time
-  GetInstance().setTime(0.0f);
-*/
 }
 
 Application::~Application() noexcept
@@ -91,80 +64,12 @@ Application::~Application() noexcept
 
 }
 
-/*
-void Application::init( GLApplicationEvents* pEvents, const FString& sShadersPath, const FString& sMediaPath  )
-{
-  Initialize();
-
-  if (!glfwInit())
-  {
-    if ( GetInstance().getEvents() != nullptr )
-    {
-      GetInstance().getEvents()->OnInitializeError();
-    }
-  }
-  
-#ifdef _USE_AVCPP
-  if (!av_init())
-  {
-    if ( GetInstance().getEvents() != nullptr )
-    {
-      GetInstance().getEvents()->OnInitializeError();
-    }
-  }
-#endif //_USE_AVCPP
-
-#ifdef _USE_DEVIL
-  if (!il_init())
-  {
-    if ( GetInstance().getEvents() != nullptr )
-    {
-      GetInstance().getEvents()->OnInitializeError();
-    }
-  }
-#endif  //_USE_DEVIL
-  
-  //Reset time
-  GetInstance().setTime(0.0f);
-}*/
-
-/*
-VOID GLApplication::final()
-{
-  
-#ifdef _USE_AVCPP
-  if (!av_final())
-  {
-    if ( GetInstance().getEvents() != nullptr )
-    {
-      GetInstance().getEvents()->OnFinalizeError();
-    }
-  }
-#endif //_USE_AVCPP
-  
-#ifdef _USE_DEVIL
-  if (!il_final())
-  {
-    if ( GetInstance().getEvents() != nullptr )
-    {
-      GetInstance().getEvents()->OnFinalizeError();
-    }
-  }
-#endif  //_USE_DEVIL
-  
-  GLProgramsCollector::GetInstance().Finalize();
-  GLResourcesCollector::GetInstance().Finalize();
-
-  Finalize();
-}*/
-
-
-void  Application::poll_events()
+void_t  Application::poll_events()
 {
   glfwPollEvents();
 }
 
-void  Application::wait_events()
+void_t  Application::wait_events()
 {
   glfwWaitEvents();
 }
@@ -175,17 +80,17 @@ std::string  Application::get_version() const noexcept
   glfwGetVersion( &major, &minor, &rev );
   return core::utils::format( "%d.%d.%d", major, minor, rev );
 }
-/*
-double Application::getTime() const
+
+double_t Application::get_time() const noexcept
 {
   return glfwGetTime();
 }
   
-void  Application::setTime( double dTime )
+void_t   Application::set_time( double_t dTime ) noexcept
 {
   glfwSetTime( dTime );
 }
-*/
+
 const Monitor* Application::get_monitor_by_name( const std::string& name ) noexcept
 {
   if ( name.empty() )
@@ -201,8 +106,13 @@ const Monitor* Application::get_monitor_by_name( const std::string& name ) noexc
   return m_mapMonitors[name.c_str()].get();
 }  
 
-void  Application::on_initialize()
+void_t  Application::on_initialize()
 {
+  if ( m_events != nullptr )
+  {
+    m_events->on_initialize();
+  }
+
   if (!glfwInit())
   {
     if ( m_events != nullptr )
@@ -211,13 +121,12 @@ void  Application::on_initialize()
     }
   }
 
-/*
 #ifdef _USE_AVCPP
   if (!av_init())
   {
-    if ( GetInstance().getEvents() != nullptr )
+    if ( m_events != nullptr )
     {
-      GetInstance().getEvents()->OnInitializeError();
+      m_events->on_initialize_error();
     }
   }
 #endif //_USE_AVCPP
@@ -225,26 +134,58 @@ void  Application::on_initialize()
 #ifdef _USE_DEVIL
   if (!il_init())
   {
-    if ( GetInstance().getEvents() != nullptr )
+    if ( m_events != nullptr )
     {
-      GetInstance().getEvents()->OnInitializeError();
+      m_events->on_initialize_error();
     }
   }
 #endif  //_USE_DEVIL
 
-  
   //Reset time
-  GetInstance().setTime(0.0f);
-*/  
+  set_time(0.0f);
 
+  if ( m_events != nullptr )
+  {
+    m_events->on_initialized();
+  }
 }
 
-void  Application::on_finalize()
+void_t  Application::on_finalize()
 {
+  if ( m_events != nullptr )
+  {
+    m_events->on_finalize();
+  }
+
+#ifdef _USE_AVCPP
+  if (!av_final())
+  {
+    if ( m_events != nullptr )
+    {
+      m_events->on_finalize_error();
+    }
+  }
+#endif //_USE_AVCPP
+
+#ifdef _USE_DEVIL
+  if (!il_final())
+  {
+    if ( m_events != nullptr )
+    {
+      m_events->on_finalize_error();
+    }
+  }
+#endif  //_USE_DEVIL
+
   glfwTerminate();
 
   ProgramsCollector::get_instance()->finalize();
   ResourcesCollector::get_instance()->finalize();
+
+  if ( m_events != nullptr )
+  {
+    m_events->on_finalized();
+  }  
 }
 
 }
