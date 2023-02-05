@@ -28,7 +28,8 @@
 
 #ifdef __EMSCRIPTEN__
 # include <emscripten.h>
-#endif
+# include <emscripten/fetch.h>
+#endif  
 
 #if defined(_GLFW_ENABLED)
 # define GLFW_INCLUDE_NONE 
@@ -66,6 +67,7 @@
 #define URE_UNSIGNED_BYTE     GL_UNSIGNED_BYTE
 
 namespace ure {
+  using byte_t     = uint8_t;
   using char_t     = GLchar;
   using enum_t     = GLenum;
   using int_t      = GLint;
