@@ -183,7 +183,6 @@ link_directories( ${CMAKE_CURRENT_BINARY_DIR}/submodules/libsigc++           )
 # Note: linking together projects compiled with different C++ standards may work, but
 # it is not recommended because of possible issues with ABI
 set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_C_STANDARD   17)
 
 # strongly encouraged to enable this globally to avoid conflicts between
 # -Wpedantic being enabled and -std=c++20 and -std=gnu++20 for example
@@ -210,6 +209,8 @@ if( CMAKE_BUILD_TYPE STREQUAL "Debug" )
                   -ggdb3
                   -D_DEBUG
   )
+else()
+  add_compile_options( -O3 )
 endif()
 
 if(MSVC)
@@ -244,19 +245,19 @@ if (ENABLE_WASM)
 endif()
 
 if (URE_USE_STB)
-  add_definitions( -D_USE_STB )
+  add_compile_definitions( _USE_STB )
 endif (URE_USE_STB)
 
 # Common libraries
 set( EXT_LIBRARIES ${EXT_LIBRARIES} sigc-3.0 )
 
 if (URE_USE_FREEIMAGE)
-  add_definitions( -D_USE_FREEIMAGE )
+  add_compile_definitions( _USE_FREEIMAGE )
   set( EXT_LIBRARIES ${EXT_LIBRARIES} freeimage )
 endif (URE_USE_FREEIMAGE)
 
 if (URE_USE_DEVIL)
-  add_definitions( -D_USE_DEVIL )
+  add_compile_definitions( _USE_DEVIL )
   set( EXT_LIBRARIES ${EXT_LIBRARIES} IL )
 endif (URE_USE_DEVIL)
 
