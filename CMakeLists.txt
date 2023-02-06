@@ -9,6 +9,9 @@ project( ${libname}
          LANGUAGES CXX C
 )
 
+# Check if current project has a parent where to export common variables
+get_directory_property(hasParent PARENT_DIRECTORY)
+
 configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/config.h.in ${CMAKE_CURRENT_SOURCE_DIR}/include/config.h)
 
 set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type" ) 
@@ -33,6 +36,10 @@ if ( URE_WINDOWS_MANAGER STREQUAL "glfw" )
     -D_GLFW_ENABLED
   )  
   set(ENABLE_GLFW         ON)
+
+  if(hasParent)
+    set( PARENT_DEFINITIONS "${PARENT_DEFINITIONS} -D_GLFW_ENABLED" )
+  endif()
 endif()
 
 #### URE_BACKEND_RENDER ####
@@ -51,6 +58,10 @@ if ( URE_BACKEND_RENDER STREQUAL "gles" )
 
   set(ENABLE_GLES         ON)
   add_definitions( -D_NV_CARD_ )
+
+  if(hasParent)
+    set( PARENT_DEFINITIONS "${PARENT_DEFINITIONS} -D_GLES_ENABLED" )
+  endif()
 endif()
 
 # OPENGL2
@@ -59,6 +70,10 @@ if ( URE_BACKEND_RENDER STREQUAL "opengl2" )
     -D_OGL2_ENABLED
   )  
   set(ENABLE_OGL2         ON)
+
+  if(hasParent)
+    set( PARENT_DEFINITIONS "${PARENT_DEFINITIONS} -D_OGL2_ENABLED" )
+  endif()  
 endif()
 
 # OPENGL3
@@ -67,6 +82,10 @@ if ( URE_BACKEND_RENDER STREQUAL "opengl3" )
     -D_OGL3_ENABLED
   )  
   set(ENABLE_OGL3         ON)
+
+  if(hasParent)
+    set( PARENT_DEFINITIONS "${PARENT_DEFINITIONS} -D_OGL3_ENABLED" )
+  endif()  
 endif()
 
 # VULKAN
@@ -75,6 +94,10 @@ if ( URE_BACKEND_RENDER STREQUAL "vulkan" )
     -D_VULKAN_ENABLED
   )  
   set(ENABLE_VULKAN       ON)
+
+  if(hasParent)
+    set( PARENT_DEFINITIONS "${PARENT_DEFINITIONS} -D_VULKAN_ENABLED" )
+  endif()  
 endif()
 
 ####
@@ -86,9 +109,9 @@ if (CMAKE_CXX_COMPILER MATCHES "em\\+\\+$" )
     -D_WASM_ENABLED
   )
   
-  get_directory_property(hasParent PARENT_DIRECTORY)
   if(hasParent)
-    set( ENABLE_WASM "${ENABLE_WASM}" PARENT_SCOPE )
+    set( ENABLE_WASM        "${ENABLE_WASM}" PARENT_SCOPE )
+    set( PARENT_DEFINITIONS "${PARENT_DEFINITIONS} -D_WASM_ENABLED" )
   endif()  
 endif()
 
@@ -223,7 +246,6 @@ if (ENABLE_WASM)
     set( URE_LINK_FLAGS "${URE_LINK_FLAGS} -s USE_GLFW=3"      )
   endif()  
   
-  get_directory_property(hasParent PARENT_DIRECTORY)
   if(hasParent)
     set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" PARENT_SCOPE )
     set( URE_LINK_FLAGS  "${URE_LINK_FLAGS}"  PARENT_SCOPE )
@@ -368,7 +390,10 @@ endif()
 #      ./submodules/date/src/tz.cpp
 #   )
 
-#add_library( ${CMAKE_PROJECT_NAME}                   ${LIB_SRC} ${PRG_DATE_SRC} ${PRG_GUI_SRC} ${PRG_BACKEND_SRC} )
+if(hasParent)
+  set( PARENT_DEFINITIONS "${PARENT_DEFINITIONS}"  PARENT_SCOPE )
+endif()  
+
 add_library   ( ${libname}${LIB_VERSION_SO}   SHARED ${LIB_SRC} ${LIB_TARGET_IMP_SRC} ${LIB_FONT_SRC} ${LIB_WIDGETS_SRC} ${LIB_WM_SRC} ${LIB_BE_SRC} ${LIB_GLAD_SRC} )
 add_library   ( ${libname}${LIB_VERSION_A}    STATIC ${LIB_SRC} ${LIB_TARGET_IMP_SRC} ${LIB_FONT_SRC} ${LIB_WIDGETS_SRC} ${LIB_WM_SRC} ${LIB_BE_SRC} ${LIB_GLAD_SRC} )
 
