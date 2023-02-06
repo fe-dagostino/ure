@@ -50,12 +50,6 @@ if ( URE_BACKEND_RENDER STREQUAL "gles" )
     -D_GLES_ENABLED
   )
 
-#  if ( ENABLE_GLFW )
-#    add_definitions(
-#      -DGLFW_INCLUDE_ES2  
-#    )
-#  endif()
-
   set(ENABLE_GLES         ON)
   add_definitions( -D_NV_CARD_ )
 
@@ -160,14 +154,9 @@ if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
     endif()
 endif()
 
-#add_subdirectory(submodules/tclap)
 add_subdirectory(submodules/libsigc++)
 add_subdirectory(submodules/lock-free)
 add_subdirectory(submodules/glm      )
-#add_subdirectory(submodules/stb      ) 
-#add_subdirectory(submodules/libcsv)
-#add_subdirectory(submodules/libconfig)
-#add_subdirectory(submodules/)
 
 if (NOT ENABLE_WASM)
   include_directories( ${FREETYPE_INCLUDE_DIRS}                                 )
@@ -391,7 +380,8 @@ endif()
 #   )
 
 if(hasParent)
-  set( PARENT_DEFINITIONS "${PARENT_DEFINITIONS}"  PARENT_SCOPE )
+  set( PARENT_DEFINITIONS "${PARENT_DEFINITIONS}"        PARENT_SCOPE )
+  set( PARENT_LIBS        "${libname}${LIB_VERSION_SO}"  PARENT_SCOPE )
 endif()  
 
 add_library   ( ${libname}${LIB_VERSION_SO}   SHARED ${LIB_SRC} ${LIB_TARGET_IMP_SRC} ${LIB_FONT_SRC} ${LIB_WIDGETS_SRC} ${LIB_WM_SRC} ${LIB_BE_SRC} ${LIB_GLAD_SRC} )
