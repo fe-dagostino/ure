@@ -58,6 +58,9 @@
 #  include <glad/gl.h>
 # endif
 
+#define URE_CLAMP_TO_BORDER   GL_CLAMP_TO_BORDER
+#define URE_CLAMP_TO_EDGE     GL_CLAMP_TO_EDGE 
+
 #define URE_VERTEX_SHADER     GL_VERTEX_SHADER
 #define URE_FRAGMENT_SHADER   GL_FRAGMENT_SHADER
 
