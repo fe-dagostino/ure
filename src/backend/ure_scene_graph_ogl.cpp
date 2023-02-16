@@ -48,6 +48,10 @@ void  SceneGraph::set_background( GLclampf red, GLclampf green, GLclampf blue, G
   m_green = green;
   m_blue  = blue;
   m_alpha = alpha;
+
+  ///////////////////
+  // Reset background color
+  glClearColor( m_red, m_green, m_blue, m_alpha );
 }
 
 void  SceneGraph::get_background( GLclampf& red, GLclampf& green, GLclampf& blue, GLclampf& alpha )
@@ -84,10 +88,6 @@ bool  SceneGraph::render( const glm::mat4& mProjection )
 
 bool  SceneGraph::render( const glm::mat4& mProjection, Camera* pCamera )
 { 
-  ///////////////////
-  // Reset background color
-  glClearColor( m_red, m_green, m_blue, m_alpha );
-  
   for ( auto n : m_vRender )
   {
     n->render( mProjection, pCamera );
