@@ -244,7 +244,8 @@ protected:
   /***/
   virtual ure::void_t on_finalize_error(/* @todo */) override {};
 
-// ure::ResourcesFetcherEvents implementation  
+// ure::ResourcesFetcherEvents implementation
+protected:  
   virtual ure::void_t on_download_succeeded( [[maybe_unused]] const std::string& name, [[maybe_unused]] const ure::byte_t* data, [[maybe_unused]] ure::uint_t length ) override
   {
     ure::Image image;
