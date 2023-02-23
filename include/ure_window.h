@@ -32,6 +32,7 @@
 #include "ure_size.h"
 #include "ure_position.h"
 #include <memory>
+#include <list>
 
 #include <mailbox.h>
 
@@ -45,6 +46,8 @@ namespace ure {
 class Window : public Object
 {
 public:
+  using events_type = std::list<WindowEvents*>;
+
   enum class WindowFlags : enum_t
   {
     eWindowShouldClose = 0x00000001
@@ -69,78 +72,80 @@ public:
    * This function should be called before create in order to handle 
    * also creation related events.
    */
-  bool                                  connect( WindowEvents* pEvents ) noexcept;
+  bool               connect( WindowEvents* pEvents ) noexcept;
   /***/
-  const std::vector<WindowEvents*>&     get_connections() const noexcept;
+  bool               disconnect( WindowEvents* pEvents ) noexcept;
+  /***/
+  const events_type& get_connections() const noexcept;
   
   /***/
-  bool             create( std::unique_ptr<window_options> options, enum_t flags = static_cast<enum_t>(ProcessingFlags::epfCalling) );
+  bool               create( std::unique_ptr<window_options> options, enum_t flags = static_cast<enum_t>(ProcessingFlags::epfCalling) );
   /***/
-  void_t           make_context_current() noexcept;
+  void_t             make_context_current() noexcept;
   /***/
-  const Renderer*  get_renderer() const noexcept
+  const Renderer*    get_renderer() const noexcept
   { return m_ptrRenderer.get(); }
 
   /***/
-  bool             show( enum_t flags = static_cast<enum_t>(ProcessingFlags::epfCalling) ) noexcept;
+  bool               show( enum_t flags = static_cast<enum_t>(ProcessingFlags::epfCalling) ) noexcept;
   /***/
-  bool             hide( enum_t flags = static_cast<enum_t>(ProcessingFlags::epfCalling) ) noexcept;
+  bool               hide( enum_t flags = static_cast<enum_t>(ProcessingFlags::epfCalling) ) noexcept;
   /**
    * Return true if windows is in windowed mode or false if window is in full screen mode. 
    */
-  bool             is_windowed() const noexcept;
+  bool               is_windowed() const noexcept;
   /***/
-  bool             set_title( const std::string& sTitle, enum_t flags = static_cast<enum_t>(ProcessingFlags::epfCalling) ) noexcept;
+  bool               set_title( const std::string& sTitle, enum_t flags = static_cast<enum_t>(ProcessingFlags::epfCalling) ) noexcept;
   /***/
-  bool             set_position( const position_t<int_t>& position, enum_t flags = static_cast<enum_t>(ProcessingFlags::epfCalling) ) noexcept;
+  bool               set_position( const position_t<int_t>& position, enum_t flags = static_cast<enum_t>(ProcessingFlags::epfCalling) ) noexcept;
   /***/
-  bool             set_size( const Size& size, enum_t flags = static_cast<enum_t>(ProcessingFlags::epfCalling) ) noexcept;
+  bool               set_size( const Size& size, enum_t flags = static_cast<enum_t>(ProcessingFlags::epfCalling) ) noexcept;
   /***/
-  void_t           get_framebuffer_size( Size& size ) noexcept;
+  void_t             get_framebuffer_size( Size& size ) noexcept;
   /***/
-  bool             show_normal( enum_t flags = static_cast<enum_t>(ProcessingFlags::epfCalling) ) noexcept;
+  bool               show_normal( enum_t flags = static_cast<enum_t>(ProcessingFlags::epfCalling) ) noexcept;
   /***/
-  bool             show_minimized( enum_t flags = static_cast<enum_t>(ProcessingFlags::epfCalling) ) noexcept;
+  bool               show_minimized( enum_t flags = static_cast<enum_t>(ProcessingFlags::epfCalling) ) noexcept;
   /**
    *  It is possible to select the minimum number of screen updates the driver should wait 
    *  before swapping buffers:
    */
-  void_t           set_swap_interval( int iRefresh ) noexcept;
+  void_t             set_swap_interval( int iRefresh ) noexcept;
   /***/
-  void_t           swap_buffers() noexcept;
+  void_t             swap_buffers() noexcept;
   /***/
-  void_t           close() noexcept;
+  void_t             close() noexcept;
   /***/
-  bool             destroy( enum_t flags = static_cast<enum_t>(ProcessingFlags::epfCalling) ) noexcept;
+  bool               destroy( enum_t flags = static_cast<enum_t>(ProcessingFlags::epfCalling) ) noexcept;
   /***/
-  bool             get_input_mode( int mode, int& value ) noexcept;
+  bool               get_input_mode( int mode, int& value ) noexcept;
   /***/
-  bool             set_input_mode( int mode, int value  ) noexcept;
+  bool               set_input_mode( int mode, int value  ) noexcept;
   
   /***/
-  bool             get_cursor_position( position_t<double>& position ) noexcept;
+  bool               get_cursor_position( position_t<double>& position ) noexcept;
   /***/
-  bool             set_cursor_position( const position_t<double>& position ) noexcept;
+  bool               set_cursor_position( const position_t<double>& position ) noexcept;
   
   /** 
    */
-  bool             check( WindowFlags flags ) noexcept;
+  bool               check( WindowFlags flags ) noexcept;
   
   /**
    * Return true if a message has been processed, false if message queue was empty.
    */
-  bool             process_message() noexcept;
+  bool               process_message() noexcept;
   
   /**
    */  
-  bool             send_message( Message* pMessage ) noexcept;
+  bool               send_message( Message* pMessage ) noexcept;
   /**
    */
-  bool             post_message( Message* pMessage ) noexcept;
+  bool               post_message( Message* pMessage ) noexcept;
   
 protected:
   /***/
-  void_t           set_window_hint( int_t iTarget, int_t iHint ) noexcept;
+  void_t             set_window_hint( int_t iTarget, int_t iHint ) noexcept;
   
 private:
   /***/
@@ -175,7 +180,7 @@ private:
   void_t  set_callbacks( bool bRegister );
   
 protected:
-  std::vector<WindowEvents*>       m_vEvents;
+  events_type                      m_events;
   
 private:
   using mailbox_type = lock_free::mailbox<Message*, core::ds_impl_t::mutex, 0, 

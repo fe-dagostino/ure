@@ -51,21 +51,29 @@ Window::~Window()
 
 bool  Window::connect( WindowEvents* pEvents ) noexcept
 {
-  for ( auto e : m_vEvents )
-  {
-    if ( e == pEvents )
-      return false;
-  }
+  events_type::iterator _iter = std::find(m_events.begin(), m_events.end(), pEvents);
+  if ( _iter != m_events.end() )
+    return false;
   
-  m_vEvents.push_back( pEvents );
-  m_vEvents.shrink_to_fit();
+  m_events.push_back( pEvents );
   
   return true;
 }
 
-const std::vector<WindowEvents*>&   Window::get_connections() const noexcept
+bool  Window::disconnect( WindowEvents* pEvents ) noexcept
 {
-  return m_vEvents;
+  events_type::iterator _iter = std::find(m_events.begin(), m_events.end(), pEvents);
+  if ( _iter == m_events.end() )
+    return false;
+
+  m_events.erase(_iter);
+
+  return true;
+}
+
+const std::list<WindowEvents*>&   Window::get_connections() const noexcept
+{
+  return m_events;
 }
 
 #ifdef __EMSCRIPTEN__
