@@ -45,9 +45,11 @@
 #endif
 
 /////////////////////////////
-#define GLM_FORCE_RADIANS
-#define GLM_PRECISION_MEDIUMP_FLOAT
-#include <glm/glm.hpp>
+#define GLM_FORCE_INLINE
+// Include all GLM core / GLSL features
+#include <glm/glm.hpp> // vec2, vec3, mat4, radians
+// Include all GLM extensions
+#include <glm/ext.hpp> // perspective, translate, rotate
 
 
 #if defined(_GLES_ENABLED) || defined(_OGL2_ENABLED) || defined(_OGL3_ENABLED)
