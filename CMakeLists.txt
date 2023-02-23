@@ -250,6 +250,7 @@ endif (URE_USE_STB)
 
 # Common libraries
 set( EXT_LIBRARIES ${EXT_LIBRARIES} sigc-3.0 )
+set( EXT_LIBRARIES ${EXT_LIBRARIES} glm::glm )
 
 if (URE_USE_FREEIMAGE)
   add_compile_definitions( _USE_FREEIMAGE )
