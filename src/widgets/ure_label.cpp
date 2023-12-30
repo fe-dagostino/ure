@@ -61,7 +61,7 @@ bool  Label::set_label( Font* pFont, const std::wstring& sLabel, const glm::vec4
   return true;
 }
 
-bool    Label::onDraw( [[maybe_unused]] const Recti& rect ) noexcept
+bool    Label::on_draw( [[maybe_unused]] const Recti& rect ) noexcept
 {
   if ( m_pText != nullptr )
   {
@@ -71,17 +71,17 @@ bool    Label::onDraw( [[maybe_unused]] const Recti& rect ) noexcept
   return true;
 }
 
-void_t  Label::onPositionChanged( [[maybe_unused]] const Position& pos ) noexcept
+void_t  Label::on_position_changed( [[maybe_unused]] const Position& pos ) noexcept
 {
   _updateVertices( getAlignment() );
 }
 
-void_t  Label::onSizeChanged( [[maybe_unused]] const Size& size ) noexcept
+void_t  Label::on_size_changed( [[maybe_unused]] const Size& size ) noexcept
 {
   _updateVertices( getAlignment() );
 }
   
-bool    Label::onUpdateBackgroundVertices() noexcept
+bool    Label::on_update_background_vertices() noexcept
 {
   _updateVertices( getAlignment() );
   return false;  

@@ -178,46 +178,46 @@ protected:
    * Usual implementation propagate event only to focused child, that can be done
    * exending the class with a specialized event.
    */
-  virtual void_t   onKeyReleased( Window* pGlWindow, Layer* pGlLayer, int_t iKey, int_t iScanCode, word_t wMods ) noexcept;
+  virtual void_t   on_key_released( Window* pGlWindow, Layer* pGlLayer, int_t iKey, int_t iScanCode, word_t wMods ) noexcept;
   /**
    * Default implementation will check if current widget has th focus and then will 
    * propagate the event to all child widgets.
    * Usual implementation propagate event only to focused child, that can be done
    * exending the class with a specialized event.
    */
-  virtual void_t   onKeyPressed ( Window* pGlWindow, Layer* pGlLayer, int_t iKey, int_t iScanCode, word_t wMods ) noexcept;
+  virtual void_t   on_key_pressed ( Window* pGlWindow, Layer* pGlLayer, int_t iKey, int_t iScanCode, word_t wMods ) noexcept;
   /**
    * Default implementation will check if current widget has th focus and then will 
    * propagate the event to all child widgets.
    * Usual implementation propagate event only to focused child, that can be done
    * exending the class with a specialized event.
    */
-  virtual void_t   onKeyRepeated( Window* pGlWindow, Layer* pGlLayer, int_t iKey, int_t iScanCode, word_t wMods ) noexcept;
+  virtual void_t   on_key_repeated( Window* pGlWindow, Layer* pGlLayer, int_t iKey, int_t iScanCode, word_t wMods ) noexcept;
   
 protected:
-  virtual void_t   onBeginDrawing( [[maybe_unused]] const Recti& rect ) noexcept
+  virtual void_t   on_begin_drawing( [[maybe_unused]] const Recti& rect ) noexcept
   {}
   /**
    * Called before drawing background. To hinibit default drawing return 'false'.
    */
-  virtual bool     onDrawBackground( [[maybe_unused]] const Recti& rect ) noexcept
+  virtual bool     on_draw_background( [[maybe_unused]] const Recti& rect ) noexcept
   { return true; }
   /***/
-  virtual bool     onDraw( [[maybe_unused]] const Recti& rect ) noexcept
+  virtual bool     on_draw( [[maybe_unused]] const Recti& rect ) noexcept
   { return true; }
   /***/
-  virtual void_t   onEndDrawing( [[maybe_unused]] const Recti& rect ) noexcept
+  virtual void_t   on_end_drawing( [[maybe_unused]] const Recti& rect ) noexcept
   {}
   /***/
-  virtual void_t   onPositionChanged( [[maybe_unused]] const Position& pos ) noexcept
+  virtual void_t   on_position_changed( [[maybe_unused]] const Position& pos ) noexcept
   {}
   /***/
-  virtual void_t   onSizeChanged( [[maybe_unused]] const Size& size ) noexcept
+  virtual void_t   on_size_changed( [[maybe_unused]] const Size& size ) noexcept
   {}
 
 protected:
   /***/
-  virtual bool     onUpdateBackgroundVertices() noexcept
+  virtual bool     on_update_background_vertices() noexcept
   { return true; }
   
 protected:

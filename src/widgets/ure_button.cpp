@@ -42,7 +42,7 @@ void_t  Button::set_focus( Texture* texture )
   m_imFocus.reset(texture);
 }
 
-bool    Button::onDrawBackground( [[maybe_unused]] const Recti& rect ) noexcept
+bool    Button::on_draw_background( [[maybe_unused]] const Recti& rect ) noexcept
 {
   if ( has_focus() == true )
   {
@@ -55,19 +55,19 @@ bool    Button::onDrawBackground( [[maybe_unused]] const Recti& rect ) noexcept
   return true;
 }
 
-bool    Button::onDraw( const Recti& rect ) noexcept
+bool    Button::on_draw( const Recti& rect ) noexcept
 {
-  return Label::onDraw( rect );
+  return Label::on_draw( rect );
 }
   
-void_t  Button::onPositionChanged( const Position& pos ) noexcept
+void_t  Button::on_position_changed( const Position& pos ) noexcept
 {
-  Label::onPositionChanged( pos );
+  Label::on_position_changed( pos );
 }
 
-void_t  Button::onSizeChanged( const Size& size ) noexcept
+void_t  Button::on_size_changed( const Size& size ) noexcept
 {
-  Label::onSizeChanged( size );
+  Label::on_size_changed( size );
 }
   
 }

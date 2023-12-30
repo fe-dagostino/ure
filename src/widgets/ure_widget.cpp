@@ -87,7 +87,7 @@ void_t  Widget::set_position( int_t x, int_t y, bool notify ) noexcept
   
   if ( notify == true )
   {
-    onPositionChanged( m_pos );
+    on_position_changed( m_pos );
   }
 }
   
@@ -103,7 +103,7 @@ void_t  Widget::set_size( sizei_t width, sizei_t height, bool notify ) noexcept
   
   if ( notify == true )
   {
-    onSizeChanged( m_size );
+    on_size_changed( m_size );
   }
 }  
   
@@ -159,9 +159,9 @@ bool  Widget::draw( const glm::mat4& mvp, const Recti& rect )
     
   Canvas::set_mvp( mvp );
   
-  onBeginDrawing( rect );
+  on_begin_drawing( rect );
   
-  if ( onDrawBackground( rect ) == true )
+  if ( on_draw_background( rect ) == true )
   {
     if ( m_eBackground != NoBackground )
     {
@@ -182,14 +182,14 @@ bool  Widget::draw( const glm::mat4& mvp, const Recti& rect )
     w->draw( mvp, rect );
   }
   
-  bool bRetVal = onDraw( rect );
+  bool bRetVal = on_draw( rect );
   
-  onEndDrawing( rect );
+  on_end_drawing( rect );
   
   return bRetVal;
 }
 
-void_t  Widget::onKeyReleased( Window* pWindow, Layer* pLayer, int_t iKey, int_t iScanCode, word_t wMods ) noexcept
+void_t  Widget::on_key_released( Window* pWindow, Layer* pLayer, int_t iKey, int_t iScanCode, word_t wMods ) noexcept
 { 
   if (( has_focus() == false ) || ( is_enabled() == false ))
     return;
@@ -197,7 +197,7 @@ void_t  Widget::onKeyReleased( Window* pWindow, Layer* pLayer, int_t iKey, int_t
   signalKeyReleased.emit( pWindow, pLayer, iKey, iScanCode, wMods );   
 } 
   
-void_t  Widget::onKeyPressed ( Window* pWindow, Layer* pLayer, int_t iKey, int_t iScanCode, word_t wMods ) noexcept
+void_t  Widget::on_key_pressed ( Window* pWindow, Layer* pLayer, int_t iKey, int_t iScanCode, word_t wMods ) noexcept
 {
   if (( has_focus() == false ) || ( is_enabled() == false ))
     return;
@@ -207,7 +207,7 @@ void_t  Widget::onKeyPressed ( Window* pWindow, Layer* pLayer, int_t iKey, int_t
   signalKeyPressed.emit ( pWindow, pLayer, iKey, iScanCode, wMods ); 
 } 
 
-void_t  Widget::onKeyRepeated( Window* pWindow, Layer* pLayer, int_t iKey, int_t iScanCode, word_t wMods ) noexcept
+void_t  Widget::on_key_repeated( Window* pWindow, Layer* pLayer, int_t iKey, int_t iScanCode, word_t wMods ) noexcept
 { 
   if (( has_focus() == false ) || ( is_enabled() == false ))
     return;
@@ -276,7 +276,7 @@ void_t  Widget::handleDefaultKeys( int_t iKey, [[maybe_unused]] int_t iScanCode 
 
 void_t  Widget::_updateBkVertices( ) noexcept
 {
-  if ( onUpdateBackgroundVertices() == false )
+  if ( on_update_background_vertices() == false )
     return;
     
   // Remove all vertices
@@ -312,9 +312,9 @@ void_t  Widget::set_parent( Widget* pParent )
   
   if ( m_pParent != nullptr )
   {
-    slotKeyReleased = m_pParent->signalKeyReleased.connect( sigc::mem_fun(*this, &Widget::onKeyReleased) );
-    slotKeyPressed  = m_pParent->signalKeyPressed.connect ( sigc::mem_fun(*this, &Widget::onKeyPressed ) );
-    slotKeyRepeated = m_pParent->signalKeyRepeated.connect( sigc::mem_fun(*this, &Widget::onKeyRepeated) );
+    slotKeyReleased = m_pParent->signalKeyReleased.connect( sigc::mem_fun(*this, &Widget::on_key_released) );
+    slotKeyPressed  = m_pParent->signalKeyPressed.connect ( sigc::mem_fun(*this, &Widget::on_key_pressed ) );
+    slotKeyRepeated = m_pParent->signalKeyRepeated.connect( sigc::mem_fun(*this, &Widget::on_key_repeated) );
   }
   
   _updateBkVertices();

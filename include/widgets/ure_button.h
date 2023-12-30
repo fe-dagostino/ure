@@ -62,13 +62,13 @@ public:
   
 protected:
   /***/
-  virtual bool    onDrawBackground( [[maybe_unused]] const Recti& rect ) noexcept override;
+  virtual bool    on_draw_background( [[maybe_unused]] const Recti& rect ) noexcept override;
   /***/
-  virtual bool    onDraw( [[maybe_unused]] const Recti& rect ) noexcept override;
+  virtual bool    on_draw( [[maybe_unused]] const Recti& rect ) noexcept override;
   /***/
-  virtual void_t  onPositionChanged( [[maybe_unused]] const Position& pos ) noexcept override;
+  virtual void_t  on_position_changed( [[maybe_unused]] const Position& pos ) noexcept override;
   /***/
-  virtual void_t  onSizeChanged( [[maybe_unused]] const Size& size ) noexcept override;
+  virtual void_t  on_size_changed( [[maybe_unused]] const Size& size ) noexcept override;
 
 private:
   std::shared_ptr<Texture>  m_imFocus;
