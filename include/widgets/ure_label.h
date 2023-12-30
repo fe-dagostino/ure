@@ -70,7 +70,7 @@ protected:
   /***/
   virtual bool     onDraw( [[maybe_unused]] const Recti& rect ) noexcept override;
   /***/
-  virtual void_t   onPositionChanged( [[maybe_unused]] const Position2D& pos ) noexcept override;
+  virtual void_t   onPositionChanged( [[maybe_unused]] const Position& pos ) noexcept override;
   /***/
   virtual void_t   onSizeChanged( [[maybe_unused]] const Size& size ) noexcept override;
   /***/

@@ -71,7 +71,7 @@ bool    Label::onDraw( [[maybe_unused]] const Recti& rect ) noexcept
   return true;
 }
 
-void_t  Label::onPositionChanged( [[maybe_unused]] const Position2D& pos ) noexcept
+void_t  Label::onPositionChanged( [[maybe_unused]] const Position& pos ) noexcept
 {
   _updateVertices( getAlignment() );
 }
@@ -98,7 +98,7 @@ void_t  Label::_updateVertices( WidgetTextAligment align )
   m_vVertices.clear();
   
   // Default Vertices coordinates 
-  Position2D pos = get_position();
+  Position   pos = get_position();
   Size       size(0,0);
   
   if (get_parent()!=nullptr)

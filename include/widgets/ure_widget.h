@@ -122,7 +122,7 @@ public:
   /***/
   void_t                    set_position( int_t x, int_t y, bool notify ) noexcept;
   /***/
-  inline const Position2D&  get_position() const noexcept
+  inline const Position&    get_position() const noexcept
   { return m_pos; }
   
   /***/
@@ -209,7 +209,7 @@ protected:
   virtual void_t   onEndDrawing( [[maybe_unused]] const Recti& rect ) noexcept
   {}
   /***/
-  virtual void_t   onPositionChanged( [[maybe_unused]] const Position2D& pos ) noexcept
+  virtual void_t   onPositionChanged( [[maybe_unused]] const Position& pos ) noexcept
   {}
   /***/
   virtual void_t   onSizeChanged( [[maybe_unused]] const Size& size ) noexcept
@@ -254,7 +254,7 @@ private:
   
 private:
   BackgroundOptions         m_ebo;
-  Position2D                m_pos;
+  Position                  m_pos;
   Size                      m_size;
   bool                      m_bVisible;
   bool                      m_bEnabled;

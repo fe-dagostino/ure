@@ -44,13 +44,21 @@ public:
   /***/
   constexpr ~position_t() noexcept 
   {}
+
+  const position_t& operator+=( const position_t& pos )
+  { 
+    x += pos.x; 
+    y += pos.y;
+    return *this;
+  }
   
   data_type x;
   data_type y;
 };
 
-typedef glm::vec2 Position2D;
-typedef glm::vec3 Position3D;
+typedef position_t<sizei_t>  Position;
+typedef glm::vec2            Position2D;
+typedef glm::vec3            Position3D;
 
 }
 

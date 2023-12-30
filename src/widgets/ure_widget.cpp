@@ -31,7 +31,7 @@ namespace widgets {
 
 
 Widget::Widget( Widget* pParent )
- : m_ebo( eboUndefined ), 
+ : m_ebo( eboUndefined ), m_pos( 0, 0 ),
    m_size( 0, 0 ), m_bVisible( true ), m_bEnabled( true ),
    m_pParent( nullptr ), m_eBackground( NoBackground ), m_pTexBackground( nullptr )
 {
@@ -284,7 +284,7 @@ void_t  Widget::_updateBkVertices( ) noexcept
   m_bkVertices.reserve(4);
   
   // Default Vertices coordinates 
-  Position2D pos  = get_position();
+  Position   pos  = get_position();
   Size       size = get_size();
   
   if (get_parent()!=nullptr)

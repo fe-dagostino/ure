@@ -46,7 +46,7 @@ public:
 /// Implements WindowEvents
 protected:
   
- /**
+  /**
    * Called in just before windows creation.
    * It will be a nice place to see own window hints
    */

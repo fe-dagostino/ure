@@ -44,7 +44,7 @@ bool SceneLayerNode::render( const glm::mat4& mProjection, Camera* pCamera )
   glm::mat4  mvp =  mProjection * mView * m_matModel.get();
   if (get_animation() != nullptr)
     mvp *= get_animation()->get_matrix().get();
-  
+
   return layer->render( mvp );
 }
 

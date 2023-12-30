@@ -60,7 +60,7 @@ bool    Button::onDraw( const Recti& rect ) noexcept
   return Label::onDraw( rect );
 }
   
-void_t  Button::onPositionChanged( const Position2D& pos ) noexcept
+void_t  Button::onPositionChanged( const Position& pos ) noexcept
 {
   Label::onPositionChanged( pos );
 }
