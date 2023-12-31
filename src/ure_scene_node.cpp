@@ -39,14 +39,14 @@ bool  SceneNode::add_scene_node( SceneNodeBase* pSceneNode )
     return add_scene_node( pSceneNode );
   }
   
-  //scene_node_map_t& rSceneNodeMap = _iter->second;
+  scene_node_map_t& rSceneNodeMap = *_iter->second.get();
   
   // If a scene node with the same instance name is already present the function return false.
-  if ( _iter->second->find(pSceneNode->name()) != _iter->second->end() )
+  if ( rSceneNodeMap.find(pSceneNode->name()) != rSceneNodeMap.end() )
     return false;
 
   // Scene Node will be registered and then function return TRUE 
-  (*_iter->second)[pSceneNode->name()] = std::unique_ptr<SceneNodeBase>(pSceneNode);
+  rSceneNodeMap[pSceneNode->name()] = std::unique_ptr<SceneNodeBase>(pSceneNode);
 
   return on_add_scene_node(pSceneNode);
 }
