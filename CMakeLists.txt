@@ -95,10 +95,12 @@ if ( URE_BACKEND_RENDER STREQUAL "vulkan" )
 endif()
 
 ####
+set(URE_CXX_MIN_VERSION "12.3")
 
 # Emscripten
 if (CMAKE_CXX_COMPILER MATCHES "em\\+\\+$" )
-  set(ENABLE_WASM         ON)
+  set(URE_CXX_MIN_VERSION "3.0")
+  set(ENABLE_WASM            ON)
   add_definitions(
     -D_WASM_ENABLED
   )
@@ -107,6 +109,10 @@ if (CMAKE_CXX_COMPILER MATCHES "em\\+\\+$" )
     set( ENABLE_WASM        "${ENABLE_WASM}" PARENT_SCOPE )
     set( PARENT_DEFINITIONS "${PARENT_DEFINITIONS} -D_WASM_ENABLED" )
   endif()  
+endif()
+
+if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS URE_CXX_MIN_VERSION)
+  message(FATAL_ERROR "Minimum requirement for CXX version is ${URE_CXX_MIN_VERSION}")
 endif()
 
 if ( ENABLE_GLFW )
