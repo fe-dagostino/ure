@@ -239,7 +239,7 @@ if (ENABLE_WASM)
   set( URE_LINK_FLAGS "${URE_LINK_FLAGS} -s USE_FREETYPE=1"    )
   set( URE_LINK_FLAGS "${URE_LINK_FLAGS} -s FETCH=1"           )
   if ( ENABLE_GLFW )
-    set( URE_LINK_FLAGS "${URE_LINK_FLAGS} -s USE_GLFW=3"      )
+    set( URE_LINK_FLAGS "${URE_LINK_FLAGS} -s USE_GLFW=3 -s GL_ENABLE_GET_PROC_ADDRESS" )
   endif()  
   
   if(hasParent)
