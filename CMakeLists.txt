@@ -95,7 +95,7 @@ if ( URE_BACKEND_RENDER STREQUAL "vulkan" )
 endif()
 
 ####
-set(URE_CXX_MIN_VERSION "12.3")
+set(URE_CXX_MIN_VERSION "12.1")
 
 # Emscripten
 if (CMAKE_CXX_COMPILER MATCHES "em\\+\\+$" )
@@ -112,7 +112,7 @@ if (CMAKE_CXX_COMPILER MATCHES "em\\+\\+$" )
 endif()
 
 if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS URE_CXX_MIN_VERSION)
-  message(FATAL_ERROR "Minimum requirement for CXX version is ${URE_CXX_MIN_VERSION}")
+  message(FATAL_ERROR "Minimum requirement for CXX is version ${URE_CXX_MIN_VERSION}. Current version is ${CMAKE_CXX_COMPILER_VERSION}")
 endif()
 
 if ( ENABLE_GLFW )
