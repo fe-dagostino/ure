@@ -30,7 +30,7 @@ namespace ure {
   
 bool SceneLayerNode::render( const glm::mat4& mProjection, Camera* pCamera )
 {
-  widgets::Layer* layer = dynamic_cast<widgets::Layer*>(get_object());
+  widgets::Layer* layer = get_object<widgets::Layer>();
   if ( layer == nullptr )
     return false;
   

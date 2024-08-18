@@ -45,14 +45,14 @@ public:
   {};
   
   /***/
-  inline const Camera*   get_camera() const 
-  { return static_cast<const Camera*>( get_object() ); }
+  inline constexpr const Camera*   get_camera() const noexcept
+  { return get_object<Camera>(); }
   /***/
-  inline Camera*         get_camera()
-  { return dynamic_cast<Camera*>( get_object() ); }
+  inline constexpr Camera*         get_camera() noexcept
+  { return get_object<Camera>(); }
 
   /***/  
-  virtual bool render( [[__maybe_unused__]] const glm::mat4& mProjection, [[__maybe_unused__]] Camera* pCamera )
+  virtual bool render( [[__maybe_unused__]] const glm::mat4& mProjection, [[__maybe_unused__]] Camera* pCamera ) noexcept
   { return true; };
 
 protected:

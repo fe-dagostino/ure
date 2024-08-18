@@ -57,11 +57,16 @@ public:
   { return m_sName; }
   
   /***/
-  inline const Object*       get_object() const
-  { return m_ptrObject.get(); }
+  template<class derived_t>
+    requires std::is_nothrow_convertible_v<derived_t*,Object*>
+  inline  constexpr const derived_t*       get_object() const noexcept
+  { return dynamic_cast<derived_t*>(m_ptrObject.get()); }
+
   /***/
-  inline Object*             get_object() 
-  { return m_ptrObject.get(); }
+  template<class derived_t>
+    requires std::is_nothrow_convertible_v<derived_t*,Object*>
+  inline constexpr derived_t*       get_object() noexcept
+  { return dynamic_cast<derived_t*>(m_ptrObject.get()); }
 
   /***/
   Animation*                 get_animation()
