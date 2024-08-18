@@ -175,12 +175,11 @@ protected:
   /***/
   virtual ure::void_t on_initialized() override
   {
-    ure::ResourcesFetcher::get_instance()->fetch( "0/0/0.png", "https://tile.openstreetmap.org/0/0/0.png" );
-
-    ure::ResourcesFetcher::get_instance()->fetch( "1/0/0.png", "https://tile.openstreetmap.org/1/0/0.png" );
-    ure::ResourcesFetcher::get_instance()->fetch( "1/1/0.png", "https://tile.openstreetmap.org/1/1/0.png" );
-    ure::ResourcesFetcher::get_instance()->fetch( "1/0/1.png", "https://tile.openstreetmap.org/1/0/1.png" );
-    ure::ResourcesFetcher::get_instance()->fetch( "1/1/1.png", "https://tile.openstreetmap.org/1/1/0.png" );
+    ure::ResourcesFetcher::get_instance()->fetch( "0/0/0.png", typeid(ure::Texture), "https://tile.openstreetmap.org/0/0/0.png" );
+    ure::ResourcesFetcher::get_instance()->fetch( "1/0/0.png", typeid(ure::Texture), "https://tile.openstreetmap.org/1/0/0.png" );
+    ure::ResourcesFetcher::get_instance()->fetch( "1/1/0.png", typeid(ure::Texture), "https://tile.openstreetmap.org/1/1/0.png" );
+    ure::ResourcesFetcher::get_instance()->fetch( "1/0/1.png", typeid(ure::Texture), "https://tile.openstreetmap.org/1/0/1.png" );
+    ure::ResourcesFetcher::get_instance()->fetch( "1/1/1.png", typeid(ure::Texture), "https://tile.openstreetmap.org/1/1/0.png" );
   }
   /***/
   virtual ure::void_t on_finalize() override
@@ -246,7 +245,7 @@ protected:
 
 // ure::ResourcesFetcherEvents implementation
 protected:  
-  virtual ure::void_t on_download_succeeded( [[maybe_unused]] const std::string& name, [[maybe_unused]] const ure::byte_t* data, [[maybe_unused]] ure::uint_t length ) override
+  virtual ure::void_t on_download_succeeded( [[maybe_unused]] const std::string& name, [[maybe_unused]] const std::type_info& type, [[maybe_unused]] const ure::byte_t* data, [[maybe_unused]] ure::uint_t length ) override
   {
     ure::Image image;
     if ( image.create( ure::Image::loader_t::eStb, data, length ) )

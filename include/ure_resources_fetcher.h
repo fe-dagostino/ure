@@ -53,7 +53,7 @@ public:
   { return m_events; }
 
   /***/
-  bool                    fetch( const std::string& name, const std::string& url );
+  bool                    fetch( const std::string& name, const std::type_info& type, const std::string& url );
 
 protected:
   /***/

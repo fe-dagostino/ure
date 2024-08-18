@@ -42,19 +42,23 @@ namespace ure {
     /***/
     resource_t() = delete;
     /***/
-    constexpr resource_t( const std::string& name, const std::string& url )
-      : m_name(name), m_url(url)
+    constexpr resource_t( const std::string& name, const std::type_info& type, const std::string& url )
+      : m_name(name), m_type(type), m_url(url)
     {}
     /***/ 
-    constexpr const std::string&  name() const
+    constexpr const std::string&     name() const
     { return m_name; }
     /***/ 
-    constexpr const std::string&  url() const
+    constexpr const std::type_info&  type() const
+    { return m_type; }
+    /***/ 
+    constexpr const std::string&     url() const
     { return m_url;  }
 
   private:
-    const std::string m_name;
-    const std::string m_url;
+    const std::string     m_name;
+    const std::type_info& m_type;
+    const std::string     m_url;
   };
 
 
@@ -158,7 +162,7 @@ static void_t async_curl_download( resource_t* pResource )
       */
       printf("%lu bytes retrieved\n", (unsigned long)chunk.size);
 
-      fetcher.events()->on_download_succeeded( resource->name(), (const byte_t*)chunk.memory, chunk.size );
+      fetcher.events()->on_download_succeeded( resource->name(), resource->type(), (const byte_t*)chunk.memory, chunk.size );
     }
   }
 
@@ -173,19 +177,21 @@ static void_t th_requests_scheduler()
     resource_t* pResource = nullptr;
     if ( s_mbx->read( pResource , 100 ) == core::result_t::eSuccess )
     {
-      std::async( async_curl_download, pResource );
+      auto handle = std::async( async_curl_download, pResource );
     }
   }
 }
 
-bool ResourcesFetcher::fetch( const std::string& name, const std::string& url )
+bool ResourcesFetcher::fetch( const std::string& name, const std::type_info& type, const std::string& url )
 {
   if ( name.empty() || url.empty() )
     return false;
 
-  resource_t* pResource = new(std::nothrow)resource_t(name,url);
+  resource_t* pResource = new(std::nothrow)resource_t(name, type, url);
   if ( pResource == nullptr )
+  {
     return false;
+  }
 
   s_mbx->write( pResource );
 
