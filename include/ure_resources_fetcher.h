@@ -31,6 +31,7 @@
 #include <core/unique_ptr.h>
 
 #include <string>
+#include <set>
 
 namespace ure {
 
@@ -53,8 +54,20 @@ public:
   { return m_events; }
 
   /***/
-  bool                    fetch( const std::string& name, const std::type_info& type, const std::string& url );
+  bool                    fetch( const std::string& name, const std::type_info& type, const std::string& url ) noexcept;
+  /***/
+  bool                    cancel( const std::string& name ) noexcept
+  {
+    std::lock_guard _mtx(m_mtx_fetch);
+    
+    if ( m_fetching.contains(name) == false )
+      return false;
 
+    m_fetching.erase(name);
+
+    return true;
+  }
+  
 protected:
   /***/
   void_t  on_initialize() noexcept;
@@ -64,6 +77,8 @@ protected:
   
 private:
   core::unique_ptr<ResourcesFetcherEvents>  m_events;
+  std::mutex                                m_mtx_fetch;
+  std::set<std::string>                     m_fetching;
 };
 
 }

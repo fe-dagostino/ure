@@ -123,6 +123,12 @@ static void_t async_curl_download( resource_t* pResource )
   if ( easy_handle == nullptr )
   {
     fetcher.events()->on_download_failed( resource->name() );
+
+    if ( ResourcesFetcher::get_instance()->cancel( resource->name() ) == false )
+    {
+      //@todo
+    } 
+
     return;
   }
 
@@ -140,6 +146,11 @@ static void_t async_curl_download( resource_t* pResource )
       )
   {
     fetcher.events()->on_download_failed( resource->name() );
+
+    if ( ResourcesFetcher::get_instance()->cancel( resource->name() ) == false )
+    {
+      //@todo
+    } 
   }
   else
   {
@@ -151,6 +162,11 @@ static void_t async_curl_download( resource_t* pResource )
       fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
 
       fetcher.events()->on_download_failed( resource->name() );
+
+      if ( ResourcesFetcher::get_instance()->cancel( resource->name() ) == false )
+      {
+        //@todo
+      } 
     }
     else 
     {
@@ -163,6 +179,12 @@ static void_t async_curl_download( resource_t* pResource )
       printf("%lu bytes retrieved\n", (unsigned long)chunk.size);
 
       fetcher.events()->on_download_succeeded( resource->name(), resource->type(), (const byte_t*)chunk.memory, chunk.size );
+
+      if ( ResourcesFetcher::get_instance()->cancel( resource->name() ) == false )
+      {
+        //@todo
+      } 
+
     }
   }
 
@@ -182,16 +204,25 @@ static void_t th_requests_scheduler()
   }
 }
 
-bool ResourcesFetcher::fetch( const std::string& name, const std::type_info& type, const std::string& url )
+bool ResourcesFetcher::fetch( const std::string& name, const std::type_info& type, const std::string& url ) noexcept
 {
   if ( name.empty() || url.empty() )
     return false;
+
+  std::lock_guard _mtx(m_mtx_fetch);
+
+  /***/
+  if ( m_fetching.contains( name ) == true )
+    return true;
 
   resource_t* pResource = new(std::nothrow)resource_t(name, type, url);
   if ( pResource == nullptr )
   {
     return false;
   }
+
+  /***/
+  m_fetching.insert(name);
 
   s_mbx->write( pResource );
 

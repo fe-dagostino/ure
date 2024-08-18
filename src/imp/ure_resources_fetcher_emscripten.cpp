@@ -36,16 +36,17 @@ public:
     : m_name(name), m_type(type)
   {}
   /***/ 
-  constexpr const std::string&     name() const
+  constexpr const std::string&     name() const noexcept
   { return m_name; }
 
   /***/
-  constexpr const std::type_info&  type() const
+  constexpr const std::type_info&  type() const noexcept
   { return m_type; }
 
 private:
-  const std::string      m_name;
-  const std::type_info&  m_type;
+  const std::string       m_name;
+  const std::type_info&   m_type;
+
 };
 
 
@@ -61,6 +62,12 @@ static void_t emscripten_download_succeeded(emscripten_fetch_t *fetch)
     {
       ResourcesFetcher::get_instance()->events()->on_download_succeeded( resource->name(), resource->type(), (const byte_t*)fetch->data, fetch->numBytes );
     }
+
+    if ( ResourcesFetcher::get_instance()->cancel( resource->name() ) == false )
+    {
+      //@todo
+    } 
+
   }
    
   // The data is now available at fetch->data[0] through fetch->data[fetch->numBytes-1];
@@ -79,21 +86,35 @@ static void_t emscripten_download_failed(emscripten_fetch_t *fetch)
     {
       ResourcesFetcher::get_instance()->events()->on_download_failed( resource->name() );
     }
+
+    if ( ResourcesFetcher::get_instance()->cancel( resource->name() ) == false )
+    {
+      //@todo
+    } 
   }
 
   emscripten_fetch_close(fetch); // Also free data on failure.
 }
 
-bool ResourcesFetcher::fetch( const std::string& name, const std::type_info& type, const std::string& url )
+bool ResourcesFetcher::fetch( const std::string& name, const std::type_info& type, const std::string& url ) noexcept
 {
   if ( name.empty() || url.empty() )
     return false;
+
+  std::lock_guard _mtx(m_mtx_fetch);
+
+  /***/
+  if ( m_fetching.contains( name ) == true )
+    return true;
 
   resource_t* pResource = new(std::nothrow)resource_t( name, type );
   if ( pResource == nullptr )
   {
     return false;
   }
+
+  /***/
+  m_fetching.insert(name);
 
   emscripten_fetch_attr_t attr;
   emscripten_fetch_attr_init(&attr);
