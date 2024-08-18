@@ -98,11 +98,11 @@ public:
   std::pair<bool,std::unique_ptr<derived_t>>   attach( const std::string& name, std::unique_ptr<derived_t> resource ) noexcept
   {
     if ( m_mapResources.contains( name ) == true )
-      return std::make_pair<false,resource>;
+      return std::make_pair(false, std::move(resource));
   
     m_mapResources[name] = std::move(resource); 
   
-    return std::make_pair<true,nullptr>;
+    return std::make_pair(true, nullptr);
   }
 
   /**
