@@ -92,6 +92,19 @@ public:
    * @return false      in case a resource with \param name is already in the container.
    */
   bool         attach( const std::string& name, Object* pResource ) noexcept;
+
+  template<class derived_t>
+    requires std::is_nothrow_convertible_v<derived_t*,Object*>
+  std::pair<bool,std::unique_ptr<derived_t>>   attach( const std::string& name, std::unique_ptr<derived_t> resource ) noexcept
+  {
+    if ( m_mapResources.contains( name ) == true )
+      return std::make_pair<false,resource>;
+  
+    m_mapResources[name] = std::move(resource); 
+  
+    return std::make_pair<true,nullptr>;
+  }
+
   /**
    * @brief Detach a resource from the collector.
    *        This means that collector return ownership to the caller.
