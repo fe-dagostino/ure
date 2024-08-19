@@ -103,14 +103,14 @@ void_t  Layer::on_restored( [[maybe_unused]] Window* pWindow ) noexcept
   
 }
 
-void_t  Layer::on_mouse_button_pressed( [[maybe_unused]] Window* pWindow, [[maybe_unused]] int_t iButton, [[maybe_unused]] int_t iMods ) noexcept
+void_t  Layer::on_mouse_button_pressed( [[maybe_unused]] Window* pWindow, [[maybe_unused]] mouse_button_t button, [[maybe_unused]] int_t mods ) noexcept
 {
   if ( is_enabled() == false )
     return;
   
 }
 
-void_t  Layer::on_mouse_button_released( [[maybe_unused]] Window* pWindow, [[maybe_unused]] int_t iButton, [[maybe_unused]] int_t iMods ) noexcept
+void_t  Layer::on_mouse_button_released( [[maybe_unused]] Window* pWindow, [[maybe_unused]] mouse_button_t button, [[maybe_unused]] int_t mods ) noexcept
 {
   if ( is_enabled() == false )
     return;

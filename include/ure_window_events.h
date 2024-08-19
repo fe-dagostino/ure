@@ -30,10 +30,33 @@ namespace ure {
 
 class Window;
 
-
 class WindowEvents 
 {
 public:
+
+  enum class mouse_button_t : int_t {
+    BUTTON_1      = 0,
+    BUTTON_2      = 1,
+    BUTTON_3      = 2,
+    BUTTON_4      = 3,
+    BUTTON_5      = 4,
+    BUTTON_6      = 5,
+    BUTTON_7      = 6,
+    BUTTON_8      = 7,
+    BUTTON_LAST   = BUTTON_8,
+    BUTTON_LEFT   = BUTTON_1,
+    BUTTON_RIGHT  = BUTTON_2, 
+    BUTTON_MIDDLE = BUTTON_3,
+  };
+
+  enum class mouse_modifier_key_flag_t : int_t {
+    SHIFT         = 0x0001,   /*  One or more Shift keys were held down. */
+    CONTROL       = 0x0002,   /*  One or more Control keys were held down. */
+    ALT           = 0x0004,   /*  One or more Alt keys were held down. */
+    SUPER         = 0x0008,   /*  One or more Super keys were held down. */
+    CAPS_LOCK     = 0x0010,   /*  Caps Lock key is enabled. */
+    NUM_LOCK      = 0x0020    /*  Num Lock key is enabled. */
+  };
 
   /***/
   WindowEvents() noexcept
@@ -88,10 +111,10 @@ public:
   virtual void_t  on_restored( [[maybe_unused]] Window* pWindow ) noexcept
   {}
   /***/
-  virtual void_t  on_mouse_button_pressed( [[maybe_unused]] Window* pWindow, [[maybe_unused]] int_t iButton, [[maybe_unused]] int_t iMods ) noexcept
+  virtual void_t  on_mouse_button_pressed( [[maybe_unused]] Window* pWindow, [[maybe_unused]] mouse_button_t button, [[maybe_unused]] int_t mods ) noexcept
   {}
   /***/
-  virtual void_t  on_mouse_button_released( [[maybe_unused]] Window* pWindow, [[maybe_unused]] int_t iButton, [[maybe_unused]] int_t iMods ) noexcept
+  virtual void_t  on_mouse_button_released( [[maybe_unused]] Window* pWindow, [[maybe_unused]] mouse_button_t button, [[maybe_unused]] int_t mods ) noexcept
   {}
   /***/
   virtual void_t  on_mouse_move( [[maybe_unused]] Window* pWindow, [[maybe_unused]] double_t dPosX, [[maybe_unused]] double_t dPosY ) noexcept

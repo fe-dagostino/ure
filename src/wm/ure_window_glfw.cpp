@@ -585,10 +585,10 @@ void_t Window::mouse_button_callback( WindowHandler window, int_t button, int_t 
     switch ( action )
     {
       case GLFW_PRESS:
-        e->on_mouse_button_pressed( pWindow, button, mods );
+        e->on_mouse_button_pressed( pWindow, WindowEvents::mouse_button_t(button), mods );
       break;
       case GLFW_RELEASE:
-        e->on_mouse_button_released( pWindow, button, mods );
+        e->on_mouse_button_released( pWindow, WindowEvents::mouse_button_t(button), mods );
       break;
     }
   }

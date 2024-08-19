@@ -82,9 +82,9 @@ protected:
   /***/
   virtual void_t  on_restored( Window* pWindow ) noexcept override;
   /***/
-  virtual void_t  on_mouse_button_pressed( Window* pWindow, int_t iButton, int_t iMods ) noexcept override;
+  virtual void_t  on_mouse_button_pressed( Window* pWindow, mouse_button_t button, int_t mods ) noexcept override;
   /***/
-  virtual void_t  on_mouse_button_released( Window* pWindow, int_t iButton, int_t iMods ) noexcept override;
+  virtual void_t  on_mouse_button_released( Window* pWindow, mouse_button_t button, int_t mods ) noexcept override;
   /***/
   virtual void_t  on_mouse_move( Window* pWindow, double_t dPosX, double_t dPosY ) noexcept override;
   /***/
