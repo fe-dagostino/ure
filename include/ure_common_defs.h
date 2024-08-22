@@ -72,6 +72,7 @@
 #define URE_UNSIGNED_BYTE     GL_UNSIGNED_BYTE
 
 namespace ure {
+  using bool_t     = bool;
   using byte_t     = uint8_t;
   using char_t     = GLchar;
   using enum_t     = GLenum;
