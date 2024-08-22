@@ -28,7 +28,8 @@
 
 namespace ure {
 
-template<typename data_type>
+template<typename data_t>
+  requires std::is_integral_v<data_t> || std::is_floating_point_v<data_t>
 struct size_t final
 {
 public:
@@ -37,7 +38,7 @@ public:
     : width(0), height(0)
   {}
   /***/
-  constexpr size_t( const data_type& w, const data_type& h ) noexcept 
+  constexpr size_t( const data_t& w, const data_t& h ) noexcept 
     : width(w), height(h)
   {}
 
@@ -45,8 +46,8 @@ public:
   constexpr ~size_t() noexcept 
   {}
   
-  data_type width;
-  data_type height;
+  data_t width;
+  data_t height;
 };
 
 typedef size_t<sizei_t> Size;

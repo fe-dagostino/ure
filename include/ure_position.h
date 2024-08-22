@@ -28,7 +28,8 @@
 
 namespace ure {
 
-template<typename data_type>
+template<typename data_t>
+  requires std::is_integral_v<data_t> || std::is_floating_point_v<data_t>
 struct position_t final
 {
 public:
@@ -37,7 +38,7 @@ public:
     : x(0), y(0)
   {}
   /***/
-  constexpr position_t( const data_type& xpos, const data_type& ypos ) noexcept 
+  constexpr position_t( const data_t& xpos, const data_t& ypos ) noexcept 
     : x(xpos), y(ypos)
   {}
 
@@ -45,15 +46,16 @@ public:
   constexpr ~position_t() noexcept 
   {}
 
-  const position_t& operator+=( const position_t& pos )
+  /***/
+  constexpr const position_t& operator+=( const position_t& pos ) noexcept
   { 
     x += pos.x; 
     y += pos.y;
     return *this;
   }
   
-  data_type x;
-  data_type y;
+  data_t x;
+  data_t y;
 };
 
 typedef position_t<sizei_t>  Position;

@@ -28,7 +28,8 @@
 
 namespace ure {
 
-template<typename data_type>
+template<typename data_t>
+  requires std::is_integral_v<data_t> || std::is_floating_point_v<data_t>
 struct rect_t final
 {
 public:
@@ -37,7 +38,7 @@ public:
     : left(0), top(0), right(0), bottom(0)
   {}
   /***/
-  constexpr rect_t( data_type l, data_type t, data_type r, data_type b ) noexcept 
+  constexpr rect_t( data_t l, data_t t, data_t r, data_t b ) noexcept 
     : left(l), top(t), right(r), bottom(b)
   {}
   /***/
@@ -58,10 +59,10 @@ public:
   }
   
 public:
-  data_type left;
-  data_type top;
-  data_type right;
-  data_type bottom;
+  data_t left;
+  data_t top;
+  data_t right;
+  data_t bottom;
   
 };
 
