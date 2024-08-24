@@ -52,6 +52,7 @@ bool  Layer::render( const glm::mat4& mvp )
   if ( is_visible() == false )
     return false;
   
+  // @todo
   Recti cliRect( get_position().x, get_position().y, get_size().width, get_size().height );
   
   return draw( mvp, cliRect );

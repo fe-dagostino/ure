@@ -39,60 +39,59 @@ class Program final : public HandledObject
 {
 public:
   /***/
-  Program();
+  Program() noexcept;
   /***/
-  Program( const Program& program )
+  Program( const Program& program ) noexcept
    : HandledObject(program)
   {}
   /***/
-  Program( Program&& program )
+  Program( Program&& program ) noexcept
    : HandledObject( std::move(program) )
   {}
   /***/
-  ~Program();
+  ~Program() noexcept;
 
   /**
    * Loading shader from memory string and compile it.
    * return false if compile operation has failed.
    */
-  bool 		attach_shaders( std::shared_ptr<VertexShader> pVertexShader, std::shared_ptr<FragmentShader> pFragmentShader );
+  bool_t 		attach_shaders( std::shared_ptr<VertexShader> pVertexShader, std::shared_ptr<FragmentShader> pFragmentShader );
 
   /**
    */
-  void 		bindAttribLocation( uint_t index, const char_t *name );
+  void_t 		bindAttribLocation( uint_t index, const char_t *name ) noexcept;
   
-  /**
-   */
-  bool 		link();
+  /***/
+  bool_t 		link() noexcept;
   
   /**
    * Must be called on each render.
    * Mainly this function is called in the main gl loop.
    */
-  void 		use();
+  void_t  use() noexcept;
   
   /**
    * Return TRUE if link process has been done successfully.
    */
-  bool 		is_linked() const;
+  bool_t 	is_linked() const noexcept;
 
   /**
    * This function should be used only for debug; validation process 
    * will be slower. If validation will fails, detailed information will 
    * be available using the getLog() method.
    */
-  bool 		validate() const;
+  bool_t  validate() const noexcept;
   
   
-  int_t   getActiveAttributes() const;
+  int_t   getActiveAttributes() const noexcept;
 
-  int_t   getActiveAttributeMaxLength() const;
+  int_t   getActiveAttributeMaxLength() const noexcept;
 
-  int_t   getActiveUniforms() const;
+  int_t   getActiveUniforms() const noexcept;
 
-  int_t   getActiveUniformMaxLength() const;
+  int_t   getActiveUniformMaxLength() const noexcept;
 
-  int_t   getAttachedShaders() const;
+  int_t   getAttachedShaders() const noexcept;
   
   /**
    * Can be used to retrieve log informations generated at 
@@ -102,13 +101,13 @@ public:
    * This function can be used at debug time in order to better understad
    * if there are errors and how to fix it. 
    */
-  bool    get_logs( std::string& logs );
+  bool_t    get_logs( std::string& logs ) noexcept;
     
 protected:
   /**
    * Query object values.
    */
-  uint_t 	query( enum_t e ) const;  
+  uint_t 	query( enum_t e ) const noexcept;  
   
 private:
   std::vector<std::shared_ptr<VertexShader>>    m_vecVertex;

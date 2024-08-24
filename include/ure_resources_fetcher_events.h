@@ -40,8 +40,9 @@ public:
   /***/
   virtual ~ResourcesFetcherEvents() noexcept 
   {}
-
+  /***/
   virtual void_t    on_download_succeeded( [[maybe_unused]] const std::string& name, [[maybe_unused]] const std::type_info& type, [[maybe_unused]] const byte_t* data, [[maybe_unused]] uint_t length ) = 0;
+  /***/
   virtual void_t    on_download_failed   ( [[maybe_unused]] const std::string& name ) = 0;
 };
 

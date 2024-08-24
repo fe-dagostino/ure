@@ -42,10 +42,10 @@ public:
   virtual ~Canvas() noexcept;
   
   /***/
-  inline void             set_mvp( const glm::mat4& mvp ) noexcept
+  constexpr void_t           set_mvp( const glm::mat4& mvp ) noexcept
   { m_mvp = mvp;  }
   /***/
-  inline const glm::mat4& get_mvp() const noexcept
+  constexpr const glm::mat4& get_mvp() const noexcept
   { return m_mvp; }
   
   /***/

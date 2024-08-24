@@ -32,11 +32,11 @@ class Object
 {
 public: 
   /***/
-  Object() noexcept 
+  constexpr Object() noexcept 
   {}
 
   /***/
-  virtual ~Object() noexcept 
+  constexpr virtual ~Object() noexcept 
   {}
   
 };

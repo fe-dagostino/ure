@@ -48,7 +48,7 @@ Application::Application(
                           const std::string& sShadersPath, 
                           const std::string& sMediaPath 
                         ) noexcept
-  : m_events( std::move(events) ), m_quit(false)
+  : m_events( std::move(events) ), m_exit(false)
 {
   glfwSetErrorCallback(error_callback);
 

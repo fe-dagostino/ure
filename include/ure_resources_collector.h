@@ -32,6 +32,7 @@
 #include <vector>
 #include <string>
 #include <type_traits>
+#include <optional>
 
 namespace ure {
 
@@ -44,11 +45,16 @@ class ResourcesCollector final: public core::singleton_t<ResourcesCollector>
 {
   friend class singleton_t<ResourcesCollector>;
 public:
+  enum class resource_flag_t : word_t {
+    EXPENDABLE = 0x0000,         /* Resource can be released or replaced in order to limit memory usage */  
+    PRESERVE   = 0x0001,         /* Resource will not be removed if not explicity requested.            */
+  };
+
   /***/
-  inline void                set_resources_path( const std::string& path ) noexcept
+  constexpr void                set_resources_path( const std::string& path ) noexcept
   { m_sResourcesPath = path; }
   /***/
-  inline const std::string&  get_resources_path() const noexcept
+  constexpr const std::string&  get_resources_path() const noexcept
   { return m_sResourcesPath; }
   
   /**
@@ -62,13 +68,13 @@ public:
    */
   template<class derived_t>
     requires std::is_nothrow_convertible_v<derived_t*,Object*>
-  derived_t*       find( const std::string& name ) noexcept
+  constexpr std::optional<std::shared_ptr<derived_t>>   find( const std::string& name ) noexcept
   {
     map_resources_t::const_iterator  iter = m_mapResources.find( name );
     if ( iter == m_mapResources.end() )
-      return nullptr;
+      return std::nullopt;
 
-    return static_cast<derived_t*>(iter->second.get());
+    return std::static_pointer_cast<derived_t>( iter->second->_obj );
   }
 
   /**
@@ -78,29 +84,31 @@ public:
    * @return true  if exist
    * @return false if not exist
    */
-  inline bool  contains( const std::string& name ) const noexcept
+  inline bool_t  contains( const std::string& name ) const noexcept
   { return m_mapResources.contains(name); }
   
   /**
    * @brief Store specified resource inside the collector, but only if does not exist already a 
    *        resource with the same name.
    * 
-   * @param name        unique identifier for the resource 
-   * @param pResource   pointer to a Resource(Object). If the method return true ownership of 
-   *                    this pointer will be taken from the collector.
-   * @return true       in case a resource with \param name is not registered already.
-   * @return false      in case a resource with \param name is already in the container.
+   * @param name             unique identifier for the resource 
+   * @param resource         pointer to a Resource(Object). If the method return true ownership of 
+   *                         this pointer will be taken from the collector.
+   * @return true,nullptr    in case a resource with \param name is not already stored in the collector.
+   * @return false,resource  in case the collector already contains a resource with \param name.
    */
-  bool         attach( const std::string& name, Object* pResource ) noexcept;
-
-  template<class derived_t>
-    requires std::is_nothrow_convertible_v<derived_t*,Object*>
-  std::pair<bool,std::unique_ptr<derived_t>>   attach( const std::string& name, std::unique_ptr<derived_t> resource ) noexcept
+  template<class derived_t, typename pointer_t = std::shared_ptr<derived_t> >
+    requires std::is_nothrow_convertible_v<derived_t*,Object*> && 
+             ( std::same_as<pointer_t,std::shared_ptr<derived_t>> || std::same_as<pointer_t,std::unique_ptr<derived_t>> )
+  constexpr std::pair<bool,pointer_t>   attach(  const std::string& name, 
+                                                 pointer_t resource, 
+                                                 word_t flags = ure::word_t(ure::ResourcesCollector::resource_flag_t::EXPENDABLE) 
+                                              ) noexcept
   {
     if ( m_mapResources.contains( name ) == true )
       return std::make_pair(false, std::move(resource));
   
-    m_mapResources[name] = std::move(resource); 
+    m_mapResources[name] = std::make_unique<item_t>( flags, std::move(resource) ); 
   
     return std::make_pair(true, nullptr);
   }
@@ -113,8 +121,17 @@ public:
    * @return Object*    pointer to specified resource if found inside the collector.
    *                    If specified resource name does not exist return value will be nullptr.
    */
-  Object*      detach( const std::string& name ) noexcept;
-  
+  template<class derived_t>
+    requires std::is_nothrow_convertible_v<derived_t*,Object*>
+  constexpr std::shared_ptr<derived_t>      detach( const std::string& name ) noexcept
+  {
+    map_resources_t::iterator  iter = m_mapResources.find( name );
+    if ( iter == m_mapResources.end() )
+      return nullptr;
+    
+    return std::static_pointer_cast<derived_t>( m_mapResources.extract(iter).mapped()->_obj );
+  }
+
 public:
   /***/
   void_t on_initialize() noexcept
@@ -124,7 +141,16 @@ public:
   {}
   
 private:
-  typedef std::unordered_map<std::string, std::unique_ptr<Object>>  map_resources_t;
+  struct item_t {
+    item_t( word_t flags, std::shared_ptr<Object> obj )
+    : _flags(flags), _obj(std::move(obj))
+    {}
+    
+    word_t                   _flags;
+    std::shared_ptr<Object>  _obj;
+  };
+
+  typedef std::unordered_map<std::string, std::unique_ptr<item_t>>  map_resources_t;
 private:
   std::string      m_sResourcesPath;
   map_resources_t  m_mapResources;

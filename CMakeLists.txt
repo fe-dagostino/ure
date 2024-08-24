@@ -12,7 +12,7 @@ project( ${libname}
 # Check if current project has a parent where to export common variables
 get_directory_property(hasParent PARENT_DIRECTORY)
 
-configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/config.h.in ${CMAKE_CURRENT_SOURCE_DIR}/include/config.h)
+configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/ure_config.h.in ${CMAKE_CURRENT_SOURCE_DIR}/include/ure_config.h)
 
 set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type" ) 
 set_property(CACHE CMAKE_BUILD_TYPE   PROPERTY STRINGS Release Debug)

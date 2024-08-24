@@ -33,7 +33,7 @@ namespace widgets {
 Widget::Widget( Widget* pParent )
  : m_ebo( eboUndefined ), m_pos( 0, 0 ),
    m_size( 0, 0 ), m_bVisible( true ), m_bEnabled( true ),
-   m_pParent( nullptr ), m_eBackground( NoBackground ), m_pTexBackground( nullptr )
+   m_pParent( nullptr ), m_eBackground( NoBackground ), m_bkg_texture( nullptr )
 {
   m_Focus = m_vChildren.end();
   
@@ -107,9 +107,9 @@ void_t  Widget::set_size( sizei_t width, sizei_t height, bool notify ) noexcept
   }
 }  
   
-void_t  Widget::set_background( Texture* pTexture, BackgroundOptions bo )
+void_t  Widget::set_background( std::shared_ptr<ure::Texture> texture, BackgroundOptions bo )
 { 
-  m_pTexBackground = pTexture;     
+  m_bkg_texture = texture;     
   
   m_eBackground  = ImageBrush;
   
@@ -170,9 +170,9 @@ bool  Widget::draw( const glm::mat4& mvp, const Recti& rect )
         draw_rect( m_bkVertices, get_bk_color() );
       }
   
-      if ( m_eBackground == ImageBrush )
+      if ( ( m_eBackground == ImageBrush ) && (m_bkg_texture.get() != nullptr) )
       {
-        draw_rect( m_bkVertices, m_bkTexCoord, *m_pTexBackground, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE );
+        draw_rect( m_bkVertices, m_bkTexCoord, *m_bkg_texture.get(), GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE );
       }
     }
   }

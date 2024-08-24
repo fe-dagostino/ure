@@ -42,7 +42,7 @@ public:
   {}
   
   virtual bool on_execute() noexcept override
-  { return m_pWindow->show( static_cast<enum_t>(Window::ProcessingFlags::epfCalling) ); }
+  { return m_pWindow->show( static_cast<enum_t>(Window::processing_flag_t::epfCalling) ); }
 };
 
 /**
@@ -59,7 +59,7 @@ public:
   {}
   
   virtual bool on_execute() noexcept override
-  { return m_pWindow->hide( static_cast<enum_t>(Window::ProcessingFlags::epfCalling) ); }
+  { return m_pWindow->hide( static_cast<enum_t>(Window::processing_flag_t::epfCalling) ); }
 };
 
 /**
@@ -76,7 +76,7 @@ public:
   {}
   
   virtual bool on_execute() noexcept override
-  { return m_pWindow->create( std::move(m_ptrWinOptions), static_cast<enum_t>(Window::ProcessingFlags::epfCalling) ); }
+  { return m_pWindow->create( std::move(m_ptrWinOptions), static_cast<enum_t>(Window::processing_flag_t::epfCalling) ); }
   
 private:
   std::unique_ptr<window_options> m_ptrWinOptions;
@@ -96,7 +96,7 @@ public:
   {}
   
   virtual bool on_execute() noexcept override
-  { return m_pWindow->set_title( m_sTitle, static_cast<enum_t>(Window::ProcessingFlags::epfCalling) ); }
+  { return m_pWindow->set_title( m_sTitle, static_cast<enum_t>(Window::processing_flag_t::epfCalling) ); }
   
 private:
   const std::string  m_sTitle;
@@ -116,7 +116,7 @@ public:
   {}
   
   virtual bool on_execute() noexcept override
-  { return m_pWindow->set_position( m_position, static_cast<enum_t>(Window::ProcessingFlags::epfCalling) ); }
+  { return m_pWindow->set_position( m_position, static_cast<enum_t>(Window::processing_flag_t::epfCalling) ); }
   
 private:
   const position_t<int_t> m_position;
@@ -136,7 +136,7 @@ public:
   {}
   
   virtual bool on_execute() noexcept override
-  { return m_pWindow->set_size( m_size, static_cast<enum_t>(Window::ProcessingFlags::epfCalling) ); }
+  { return m_pWindow->set_size( m_size, static_cast<enum_t>(Window::processing_flag_t::epfCalling) ); }
   
 private:
   const Size m_size;
@@ -156,7 +156,7 @@ public:
   {}
   
   virtual bool on_execute() noexcept override
-  { return m_pWindow->show_normal( static_cast<enum_t>(Window::ProcessingFlags::epfCalling) ); }
+  { return m_pWindow->show_normal( static_cast<enum_t>(Window::processing_flag_t::epfCalling) ); }
 };
 
 /**
@@ -173,7 +173,7 @@ public:
   {}
   
   virtual bool on_execute() noexcept override
-  { return m_pWindow->show_minimized( static_cast<enum_t>(Window::ProcessingFlags::epfCalling) ); }
+  { return m_pWindow->show_minimized( static_cast<enum_t>(Window::processing_flag_t::epfCalling) ); }
 };
 
 /**
@@ -190,7 +190,7 @@ public:
   {}
   
   virtual bool on_execute() noexcept override
-  { return m_pWindow->destroy( static_cast<enum_t>(Window::ProcessingFlags::epfCalling) ); }
+  { return m_pWindow->destroy( static_cast<enum_t>(Window::processing_flag_t::epfCalling) ); }
 };
 
 }

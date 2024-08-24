@@ -24,20 +24,23 @@
 #include "ure_window_events.h"
 #include "ure_window.h"
 
+#include "ure_config.h"
+
+
 namespace ure {
 
 void_t  WindowEvents::on_creating( [[maybe_unused]] Window* pWindow ) noexcept
 {
 #if defined(_GLES_ENABLED)  
   glfwWindowHint( GLFW_CLIENT_API           , GLFW_OPENGL_ES_API );
-  glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, 2                  );
-  glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, 0                  );
+  glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, URE_CONTEXT_VERSION_MAJOR    );
+  glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, URE_CONTEXT_VERSION_MINOR    );
 #endif  
 
 #if defined(_OGL2_ENABLED)  
-  glfwWindowHint( GLFW_CLIENT_API           , GLFW_OPENGL_API    );
-  glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, 2                  );
-  glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, 0                  );
+  glfwWindowHint( GLFW_CLIENT_API           , GLFW_OPENGL_ES_API );
+  glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, URE_CONTEXT_VERSION_MAJOR    );
+  glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, URE_CONTEXT_VERSION_MINOR    );
 #endif  
 }
 

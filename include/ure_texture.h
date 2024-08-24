@@ -51,7 +51,7 @@ public:
   };
 
   /***/
-  Texture()
+  constexpr Texture()
     : m_size( 0, 0 ), m_format( format_t::eUndefined ), m_type( type_t::eUndefined ), 
       m_length( 0 ), m_pixels( nullptr )
   {}
@@ -104,7 +104,7 @@ public:
   { return m_length; }
 
   /***/
-  inline uint8_t*         get_pixels()
+  constexpr uint8_t*      get_pixels() const noexcept
   { return m_pixels; }
   
   /***/

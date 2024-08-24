@@ -48,12 +48,12 @@ class Window : public Object
 public:
   using events_type = std::list<WindowEvents*>;
 
-  enum class WindowFlags : enum_t
+  enum class window_flag_t : enum_t
   {
     eWindowShouldClose = 0x00000001
   };
   
-  enum class ProcessingFlags : enum_t
+  enum class processing_flag_t : enum_t
   {
     epfCalling = 0x0000,    // Call will be executed by calling thread.    
     epfEnqueue = 0x0001,    // Call will be enqueued in order to be processed by @processMessage method
@@ -79,7 +79,7 @@ public:
   const events_type& get_connections() const noexcept;
   
   /***/
-  bool               create( std::unique_ptr<window_options> options, enum_t flags = static_cast<enum_t>(ProcessingFlags::epfCalling) );
+  bool               create( std::unique_ptr<window_options> options, enum_t flags = static_cast<enum_t>(processing_flag_t::epfCalling) );
   /***/
   void_t             make_context_current() noexcept;
   /***/
@@ -87,25 +87,25 @@ public:
   { return m_ptrRenderer.get(); }
 
   /***/
-  bool               show( enum_t flags = static_cast<enum_t>(ProcessingFlags::epfCalling) ) noexcept;
+  bool               show( enum_t flags = static_cast<enum_t>(processing_flag_t::epfCalling) ) noexcept;
   /***/
-  bool               hide( enum_t flags = static_cast<enum_t>(ProcessingFlags::epfCalling) ) noexcept;
+  bool               hide( enum_t flags = static_cast<enum_t>(processing_flag_t::epfCalling) ) noexcept;
   /**
    * Return true if windows is in windowed mode or false if window is in full screen mode. 
    */
   bool               is_windowed() const noexcept;
   /***/
-  bool               set_title( const std::string& sTitle, enum_t flags = static_cast<enum_t>(ProcessingFlags::epfCalling) ) noexcept;
+  bool               set_title( const std::string& sTitle, enum_t flags = static_cast<enum_t>(processing_flag_t::epfCalling) ) noexcept;
   /***/
-  bool               set_position( const position_t<int_t>& position, enum_t flags = static_cast<enum_t>(ProcessingFlags::epfCalling) ) noexcept;
+  bool               set_position( const position_t<int_t>& position, enum_t flags = static_cast<enum_t>(processing_flag_t::epfCalling) ) noexcept;
   /***/
-  bool               set_size( const Size& size, enum_t flags = static_cast<enum_t>(ProcessingFlags::epfCalling) ) noexcept;
+  bool               set_size( const Size& size, enum_t flags = static_cast<enum_t>(processing_flag_t::epfCalling) ) noexcept;
   /***/
   void_t             get_framebuffer_size( Size& size ) noexcept;
   /***/
-  bool               show_normal( enum_t flags = static_cast<enum_t>(ProcessingFlags::epfCalling) ) noexcept;
+  bool               show_normal( enum_t flags = static_cast<enum_t>(processing_flag_t::epfCalling) ) noexcept;
   /***/
-  bool               show_minimized( enum_t flags = static_cast<enum_t>(ProcessingFlags::epfCalling) ) noexcept;
+  bool               show_minimized( enum_t flags = static_cast<enum_t>(processing_flag_t::epfCalling) ) noexcept;
   /**
    *  It is possible to select the minimum number of screen updates the driver should wait 
    *  before swapping buffers:
@@ -116,7 +116,7 @@ public:
   /***/
   void_t             close() noexcept;
   /***/
-  bool               destroy( enum_t flags = static_cast<enum_t>(ProcessingFlags::epfCalling) ) noexcept;
+  bool               destroy( enum_t flags = static_cast<enum_t>(processing_flag_t::epfCalling) ) noexcept;
   /***/
   bool               get_input_mode( int mode, int& value ) noexcept;
   /***/
@@ -129,7 +129,7 @@ public:
   
   /** 
    */
-  bool               check( WindowFlags flags ) noexcept;
+  bool               check( window_flag_t flags ) noexcept;
   
   /**
    * Return true if a message has been processed, false if message queue was empty.

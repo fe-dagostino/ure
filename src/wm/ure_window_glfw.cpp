@@ -39,13 +39,13 @@ bool  Window::create( std::unique_ptr<window_options> options, enum_t flags )
 
   m_ptrWinOptions = std::move(options);
   
-  if ( flags & static_cast<enum_t>(ProcessingFlags::epfEnqueue) )
+  if ( flags & static_cast<enum_t>(processing_flag_t::epfEnqueue) )
   {
     bool bResult = true;
     
     Message* pMessage  = new CreateWindowMsg( this, std::move(options) );
     
-    if ( flags & static_cast<enum_t>(ProcessingFlags::epfWait) )
+    if ( flags & static_cast<enum_t>(processing_flag_t::epfWait) )
       bResult = send_message( pMessage );
     else
       bResult = post_message( pMessage );
@@ -150,18 +150,18 @@ bool  Window::show( enum_t flags ) noexcept
   if ( m_hWindow == nullptr )
     return false;
 
-  if ( flags == static_cast<enum_t>(ProcessingFlags::epfCalling) )
+  if ( flags == static_cast<enum_t>(processing_flag_t::epfCalling) )
   {
     glfwShowWindow( m_hWindow );
     return true;
   }
 
   bool bResult = false;
-  if ( flags & static_cast<enum_t>(ProcessingFlags::epfEnqueue) )
+  if ( flags & static_cast<enum_t>(processing_flag_t::epfEnqueue) )
   {
     Message* pMessage  = new ShowWindowMsg( this );
     
-    if ( flags & static_cast<enum_t>(ProcessingFlags::epfWait) )
+    if ( flags & static_cast<enum_t>(processing_flag_t::epfWait) )
       bResult = send_message( pMessage );
     else
       bResult = post_message( pMessage );
@@ -175,17 +175,17 @@ bool  Window::hide( enum_t flags ) noexcept
   if ( m_hWindow == nullptr )
     return false;
 
-  if ( flags == static_cast<enum_t>(ProcessingFlags::epfCalling) )
+  if ( flags == static_cast<enum_t>(processing_flag_t::epfCalling) )
   {
     glfwHideWindow( m_hWindow );
     return true;
   }
 
   bool bResult = false;
-  if ( flags & static_cast<enum_t>(ProcessingFlags::epfEnqueue) )
+  if ( flags & static_cast<enum_t>(processing_flag_t::epfEnqueue) )
   {
     Message* pMessage  = new HideWindowMsg( this );
-    if ( flags & static_cast<enum_t>(ProcessingFlags::epfWait) )
+    if ( flags & static_cast<enum_t>(processing_flag_t::epfWait) )
       bResult = send_message( pMessage );
     else
       bResult = post_message( pMessage );
@@ -205,18 +205,18 @@ bool  Window::set_title( const std::string& title, enum_t flags ) noexcept
   if ( m_hWindow == nullptr )
     return false;
 
-  if ( flags == static_cast<enum_t>(ProcessingFlags::epfCalling) )
+  if ( flags == static_cast<enum_t>(processing_flag_t::epfCalling) )
   {
     glfwSetWindowTitle( m_hWindow, title.c_str() );
     return true;
   }
 
   bool bResult = false;
-  if ( flags & static_cast<enum_t>(ProcessingFlags::epfEnqueue) )
+  if ( flags & static_cast<enum_t>(processing_flag_t::epfEnqueue) )
   {
     Message* pMessage  = new SetWindowTitleMsg( this, title );
     
-    if ( flags & static_cast<enum_t>(ProcessingFlags::epfWait) )
+    if ( flags & static_cast<enum_t>(processing_flag_t::epfWait) )
       bResult = send_message( pMessage );
     else
       bResult = post_message( pMessage );
@@ -230,18 +230,18 @@ bool  Window::set_position( const position_t<int_t>& position, enum_t flags ) no
   if ( m_hWindow == nullptr )
     return false;
 
-  if ( flags == static_cast<enum_t>(ProcessingFlags::epfCalling) )
+  if ( flags == static_cast<enum_t>(processing_flag_t::epfCalling) )
   {
     glfwSetWindowPos( m_hWindow, position.x, position.y );
     return true;
   }
   
   bool bResult = false;
-  if ( flags & static_cast<enum_t>(ProcessingFlags::epfEnqueue) )
+  if ( flags & static_cast<enum_t>(processing_flag_t::epfEnqueue) )
   {
     Message* pMessage  = new SetWindowPositionMsg( this, position );
     
-    if ( flags & static_cast<enum_t>(ProcessingFlags::epfWait) )
+    if ( flags & static_cast<enum_t>(processing_flag_t::epfWait) )
       bResult = send_message( pMessage );
     else
       bResult = post_message( pMessage );
@@ -255,18 +255,18 @@ bool  Window::set_size( const Size& size, enum_t flags ) noexcept
   if ( m_hWindow == nullptr )
     return false;
 
-  if ( flags == static_cast<enum_t>(ProcessingFlags::epfCalling) )
+  if ( flags == static_cast<enum_t>(processing_flag_t::epfCalling) )
   {
     glfwSetWindowSize( m_hWindow, size.width, size.height );
     return true;
   }
 
   bool bResult = false;
-  if ( flags & static_cast<enum_t>(ProcessingFlags::epfEnqueue) )
+  if ( flags & static_cast<enum_t>(processing_flag_t::epfEnqueue) )
   {
     Message* pMessage  = new SetWindowSizeMsg( this, size );
     
-    if ( flags & static_cast<enum_t>(ProcessingFlags::epfWait) )
+    if ( flags & static_cast<enum_t>(processing_flag_t::epfWait) )
       bResult = send_message( pMessage );
     else
       bResult = post_message( pMessage );
@@ -289,18 +289,18 @@ bool  Window::show_normal( enum_t flags ) noexcept
   if ( m_hWindow == nullptr )
     return false;
 
-  if ( flags == static_cast<enum_t>(ProcessingFlags::epfCalling) )
+  if ( flags == static_cast<enum_t>(processing_flag_t::epfCalling) )
   {
     glfwRestoreWindow( m_hWindow );
     return true;
   }
 
   bool bResult = false;
-  if ( flags & static_cast<enum_t>(ProcessingFlags::epfEnqueue) )
+  if ( flags & static_cast<enum_t>(processing_flag_t::epfEnqueue) )
   {
     Message* pMessage  = new ShowWindowNormalMsg( this );
     
-    if ( flags & static_cast<enum_t>(ProcessingFlags::epfWait) )
+    if ( flags & static_cast<enum_t>(processing_flag_t::epfWait) )
       bResult = send_message( pMessage );
     else
       bResult = post_message( pMessage );
@@ -314,18 +314,18 @@ bool  Window::show_minimized( enum_t flags ) noexcept
   if ( m_hWindow == nullptr )
     return false;
 
-  if ( flags == static_cast<enum_t>(ProcessingFlags::epfCalling) )
+  if ( flags == static_cast<enum_t>(processing_flag_t::epfCalling) )
   {
     glfwIconifyWindow( m_hWindow );
     return true;
   }
   
   bool bResult = false;
-  if ( flags & static_cast<enum_t>(ProcessingFlags::epfEnqueue) )
+  if ( flags & static_cast<enum_t>(processing_flag_t::epfEnqueue) )
   {
     Message* pMessage  = new ShowWindowMinimizedMsg( this );
     
-    if ( flags & static_cast<enum_t>(ProcessingFlags::epfWait) )
+    if ( flags & static_cast<enum_t>(processing_flag_t::epfWait) )
       bResult = send_message( pMessage );
     else
       bResult = post_message( pMessage );
@@ -360,7 +360,7 @@ bool  Window::destroy( uint32_t flags ) noexcept
   if ( m_hWindow == nullptr )
     return false;
   
-  if ( flags == static_cast<enum_t>(ProcessingFlags::epfCalling) )
+  if ( flags == static_cast<enum_t>(processing_flag_t::epfCalling) )
   {
     m_ptrRenderer = std::move(nullptr);
   
@@ -373,11 +373,11 @@ bool  Window::destroy( uint32_t flags ) noexcept
   }
 
   bool bResult = false;
-  if ( flags & static_cast<enum_t>(ProcessingFlags::epfEnqueue) )
+  if ( flags & static_cast<enum_t>(processing_flag_t::epfEnqueue) )
   {
     Message* pMessage  = new DestroyWindowMsg( this );
     
-    if ( flags & static_cast<enum_t>(ProcessingFlags::epfWait) )
+    if ( flags & static_cast<enum_t>(processing_flag_t::epfWait) )
       bResult = send_message( pMessage );
     else
       bResult = post_message( pMessage );
@@ -467,9 +467,9 @@ void_t Window::set_callbacks( bool bRegister )
   }
 }
 
-bool  Window::check( WindowFlags flags ) noexcept
+bool  Window::check( window_flag_t flags ) noexcept
 {
-  if ( flags == WindowFlags::eWindowShouldClose )    
+  if ( flags == window_flag_t::eWindowShouldClose )    
     return glfwWindowShouldClose( m_hWindow );
   
   return false;

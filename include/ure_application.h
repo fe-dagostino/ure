@@ -79,11 +79,11 @@ public:
   { return m_events.get(); }
 
   /***/
-  inline bool               quit() const noexcept
-  { return m_quit; }
+  constexpr bool            exit() const noexcept
+  { return m_exit; }
   /***/
-  inline void               quit( bool quit ) noexcept
-  { m_quit = quit; }
+  constexpr void            exit( bool doexit ) noexcept
+  { m_exit = doexit; }
 
   /***/
   void_t                    poll_events();
@@ -111,7 +111,7 @@ public:
 private:
   core::unique_ptr<ApplicationEvents>  m_events;
   mutable Monitor::monitor_map_t       m_mapMonitors;  
-  bool                                 m_quit;
+  bool_t                               m_exit;
 };
 
 }

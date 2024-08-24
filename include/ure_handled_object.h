@@ -32,37 +32,37 @@ class HandledObject : public Object
 {
 public:
   /***/
-  HandledObject() noexcept
+  constexpr HandledObject() noexcept
     : Object(), m_uiId(0)
   {}
   /***/
-  HandledObject( const HandledObject& ho ) noexcept
+  constexpr HandledObject( const HandledObject& ho ) noexcept
     : Object(), m_uiId(ho.m_uiId)
   {}
   /***/
-  HandledObject( HandledObject&& ho ) noexcept
+  constexpr HandledObject( HandledObject&& ho ) noexcept
     : Object(), m_uiId(ho.m_uiId)
   {}
   /***/
-  virtual ~HandledObject() noexcept
+  constexpr virtual ~HandledObject() noexcept
   {}
 
   /**
    * Used to check identifier validity.
    */
-  constexpr inline bool    is_valid() const noexcept
+  constexpr bool    is_valid() const noexcept
   { return (m_uiId!=0); }
 
   /**
    * Return object identifier.
    */
-  constexpr inline uint_t  get_id() const noexcept
+  constexpr uint_t  get_id() const noexcept
   { return m_uiId; }
 protected:
   /**
    * Initialize \param @id value.
    */
-  constexpr inline void_t  set_id( uint_t id )
+  constexpr void_t  set_id( uint_t id )
   { m_uiId = id; }
 
 private:

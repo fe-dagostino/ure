@@ -27,17 +27,17 @@
 
 namespace ure {
 
-Program::Program( )
+Program::Program( ) noexcept
 {
   set_id( glCreateProgram( ) );
 }
 
-Program::~Program()
+Program::~Program() noexcept
 {
   glDeleteProgram( get_id() );
 }
 
-bool	Program::attach_shaders( std::shared_ptr<VertexShader> pVertexShader, std::shared_ptr<FragmentShader> pFragmentShader )
+bool_t Program::attach_shaders( std::shared_ptr<VertexShader> pVertexShader, std::shared_ptr<FragmentShader> pFragmentShader )
 {
   if (( pVertexShader == NULL ) || ( pFragmentShader == NULL ))
     return false;
@@ -58,12 +58,12 @@ bool	Program::attach_shaders( std::shared_ptr<VertexShader> pVertexShader, std::
   return true;
 }
   
-void 	Program::bindAttribLocation( GLuint index, const GLchar *name )
+void_t Program::bindAttribLocation( GLuint index, const GLchar *name ) noexcept
 {
   glBindAttribLocation( get_id(), index, name );
 }
 
-bool  Program::link()
+bool_t Program::link() noexcept
 {
   // Link the program
   glLinkProgram( get_id() );
@@ -74,50 +74,50 @@ bool  Program::link()
   return false;
 }
 
-void  Program::use()
+void_t Program::use() noexcept
 {
   glUseProgram( get_id() );
 }
 
-bool  Program::is_linked() const
+bool_t Program::is_linked() const noexcept
 {
   // Check the link status
   return (query(GL_LINK_STATUS)>0);
 }
 
-bool  Program::validate() const
+bool_t Program::validate() const noexcept
 {
   glValidateProgram( get_id() );
 
   return (query(GL_VALIDATE_STATUS)>0);
 }
 
-int_t Program::getActiveAttributes() const
+int_t Program::getActiveAttributes() const noexcept
 {
   return query(GL_ACTIVE_ATTRIBUTES);
 }
 
-int_t Program::getActiveAttributeMaxLength() const
+int_t Program::getActiveAttributeMaxLength() const noexcept
 {
   return query(GL_ACTIVE_ATTRIBUTE_MAX_LENGTH);
 }
 
-int_t Program::getActiveUniforms() const
+int_t Program::getActiveUniforms() const noexcept
 {
   return query(GL_ACTIVE_UNIFORMS);
 }
 
-int_t Program::getActiveUniformMaxLength() const
+int_t Program::getActiveUniformMaxLength() const noexcept
 {
   return query(GL_ACTIVE_UNIFORM_MAX_LENGTH);
 }
 
-int_t Program::getAttachedShaders() const
+int_t Program::getAttachedShaders() const noexcept
 {
   return query(GL_ATTACHED_SHADERS);
 }
 
-uint_t  Program::query( GLenum e ) const
+uint_t Program::query( GLenum e ) const noexcept
 {
   int_t iValue;
   
@@ -127,7 +127,7 @@ uint_t  Program::query( GLenum e ) const
   return iValue;
 }
 
-bool  Program::get_logs( std::string& logs )
+bool_t Program::get_logs( std::string& logs ) noexcept
 {
   int_t iInfoLength = query(GL_INFO_LOG_LENGTH);
   if (iInfoLength <= 0)

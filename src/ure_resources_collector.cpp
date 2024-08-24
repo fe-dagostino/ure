@@ -23,31 +23,6 @@
 
 #include "ure_resources_collector.h"
 
-
 namespace ure {
-
-bool      ResourcesCollector::attach( const std::string& name, Object* pResource ) noexcept
-{
-  map_resources_t::const_iterator  iter = m_mapResources.find( name );
-  if ( iter != m_mapResources.end() )
-    return false;
-  
-  m_mapResources[name] = std::unique_ptr<Object>( pResource ); 
-  
-  return true;  
-}
-
-Object*   ResourcesCollector::detach( const std::string& name ) noexcept
-{
-  map_resources_t::iterator  iter = m_mapResources.find( name );
-  if ( iter == m_mapResources.end() )
-    return nullptr;
-  
-  Object* pResource = iter->second.release();
-  
-  m_mapResources.erase(iter);
-  
-  return pResource;
-}
 
 }

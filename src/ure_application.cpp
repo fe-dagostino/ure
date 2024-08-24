@@ -40,7 +40,7 @@ void Application::run()
 #ifdef __EMSCRIPTEN__
   emscripten_set_main_loop_arg ( main_loop, m_events.get(), 0, 1);
 #else
-  while ( quit() == false )
+  while ( exit() == false )
   {
     m_events->on_run();
   }

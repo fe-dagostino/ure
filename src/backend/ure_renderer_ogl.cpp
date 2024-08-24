@@ -26,19 +26,10 @@
 
 namespace ure {
 
-Renderer::Renderer()
-{
-}
 
-Renderer::~Renderer()
+bool_t    Renderer::get_vendor  ( std::string& sVendor   ) const noexcept
 {
-}
-  
-bool    Renderer::get_vendor  ( std::string& sVendor   ) const noexcept
-{
-std::cout << __FILE__ << ": " << __LINE__ << std::endl;  
   const GLubyte*  pRet = glGetString(GL_VENDOR);
-std::cout << __FILE__ << ": " << __LINE__ << std::endl;  
   if ( pRet == nullptr )
     return false;
   
@@ -47,7 +38,7 @@ std::cout << __FILE__ << ": " << __LINE__ << std::endl;
   return true;
 }
 
-bool    Renderer::get_renderer( std::string& sRenderer ) const noexcept
+bool_t    Renderer::get_renderer( std::string& sRenderer ) const noexcept
 {
   const GLubyte*  pRet = glGetString(GL_RENDERER);
   if ( pRet == nullptr )
@@ -58,7 +49,7 @@ bool    Renderer::get_renderer( std::string& sRenderer ) const noexcept
   return true;  
 }
   
-bool    Renderer::get_version( std::string& sVersion ) const noexcept
+bool_t    Renderer::get_version( std::string& sVersion ) const noexcept
 {
   const GLubyte*  pRet = glGetString(GL_VERSION);
   if ( pRet == nullptr )
@@ -69,7 +60,7 @@ bool    Renderer::get_version( std::string& sVersion ) const noexcept
   return true;  
 }
 
-bool    Renderer::get_shader_version( std::string& sShaderVersion ) const noexcept
+bool_t    Renderer::get_shader_version( std::string& sShaderVersion ) const noexcept
 {
   const GLubyte*  pRet = glGetString(GL_SHADING_LANGUAGE_VERSION);
   if ( pRet == nullptr )

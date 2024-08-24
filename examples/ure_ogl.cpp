@@ -30,9 +30,9 @@ private:
 
     bkImage.load( ure::Image::loader_t::eStb, "./resources/media/wall.jpg" );
 
-    ure::Texture*  pTexture = new(std::nothrow) ure::Texture( std::move(bkImage) );
+    std::unique_ptr<ure::Texture> texture = std::make_unique<ure::Texture>( std::move(bkImage) );
 
-    ure::ResourcesCollector::get_instance()->attach("wall", pTexture);
+    ure::ResourcesCollector::get_instance()->attach<ure::Texture,std::unique_ptr<ure::Texture>>("wall", std::move(texture) );
   }
 
   void addCamera()
@@ -48,6 +48,7 @@ private:
                                             cameraTarget,   // where you want to look at, in world space
                                             upVector        // probably glm::vec3(0,1,0), but (0,-1,0) would make you looking upside-down, which can be great too
                                         );
+                                        
     pCamera->set_view_matrix( CameraMatrix );
   
     m_pViewPort->get_scene()->add_scene_node( new ure::SceneCameraNode( "MainCamera", pCamera ) );
@@ -64,13 +65,17 @@ private:
 
     pLayer->set_position( -1.0f*m_size.width/2, -1.0f*m_size.height/2, true );
 
-    ure::Texture* pTexture = ure::ResourcesCollector::get_instance()->find<ure::Texture>("wall");
-    
-    pLayer->set_background( pTexture, ure::widgets::Widget::BackgroundOptions::eboAsIs );
+    auto texture = ure::ResourcesCollector::get_instance()->find<ure::Texture>("wall");
+    if ( texture.has_value() )
+    {
+      pLayer->set_background( texture.value(), ure::widgets::Widget::BackgroundOptions::eboAsIs );
+    }
 
     ure::SceneLayerNode* pNode = new(std::nothrow) ure::SceneLayerNode( "Layer1", pLayer );
    
-    glm::mat4 mModel =  glm::ortho( -1.0f*(float)m_size.width/2, (float)m_size.width/2, (float)m_size.height/2, -1.0f*(float)m_size.height/2, 0.1f, 1000.0f );
+    glm::mat4 mModel =  glm::ortho( -1.0f*(float)m_size.width/2, (float)m_size.width/2, (float)m_size.height/2, -1.0f*(float)m_size.height/2, 0.1f, 500.0f );
+    //glm::mat4 mModel =  glm::ortho( 0.0f, (float)m_size.width, (float)m_size.height, 0.0f, 0.1f, 1.0f );
+
     pNode->set_model_matrix( mModel );
     pNode->get_model_matrix().translate( 0, 0,   0 );
 
@@ -103,7 +108,7 @@ private:
 								 m_size 
           );
     
-    m_pWindow->create( std::move(options), static_cast<ure::enum_t>(ure::Window::ProcessingFlags::epfCalling) );
+    m_pWindow->create( std::move(options), static_cast<ure::enum_t>(ure::Window::processing_flag_t::epfCalling) );
     m_pWindow->set_swap_interval(1);
 
     //////////////////////////////////////////////////////////////////////////
@@ -134,7 +139,7 @@ private:
     }
 
     glm::mat4 mProjection = glm::perspectiveFov(45.0f, (float)m_size.width, (float)m_size.height, 0.1f, 500.0f);
-  
+
     m_pViewPort   = new ure::ViewPort( pSceneGraph, mProjection );
 
 
@@ -175,12 +180,8 @@ protected:
   /***/
   virtual ure::void_t on_initialized() override
   {
-    ure::ResourcesFetcher::get_instance()->fetch( "0/0/0.png", typeid(ure::Texture), "https://tile.openstreetmap.org/0/0/0.png" );
-    ure::ResourcesFetcher::get_instance()->fetch( "1/0/0.png", typeid(ure::Texture), "https://tile.openstreetmap.org/1/0/0.png" );
-    ure::ResourcesFetcher::get_instance()->fetch( "1/1/0.png", typeid(ure::Texture), "https://tile.openstreetmap.org/1/1/0.png" );
-    ure::ResourcesFetcher::get_instance()->fetch( "1/0/1.png", typeid(ure::Texture), "https://tile.openstreetmap.org/1/0/1.png" );
-    ure::ResourcesFetcher::get_instance()->fetch( "1/1/1.png", typeid(ure::Texture), "https://tile.openstreetmap.org/1/1/0.png" );
   }
+
   /***/
   virtual ure::void_t on_finalize() override
   {
@@ -194,9 +195,10 @@ protected:
 
   virtual ure::void_t on_run() override 
   {
-    if ( m_pWindow->check( ure::Window::WindowFlags::eWindowShouldClose ) )
+    if ( m_pWindow->check( ure::Window::window_flag_t::eWindowShouldClose ) )
     {
-      ure::Application::get_instance()->quit(true);
+      ure::Application::get_instance()->exit(true);
+      return;
     }
 
     m_pWindow->get_framebuffer_size( m_fb_size );
@@ -265,11 +267,6 @@ private:
   ure::position_t<ure::int_t> m_position;
   ure::Size                   m_size;
   ure::Size                   m_fb_size;
-
-//  BOOL            m_bDefaultKeys;
-
-//  BOOL            m_bVerticalSync;
-//  BOOL            m_bShowStats;
 
   ure::Window*      m_pWindow;
   ure::ViewPort*    m_pViewPort;

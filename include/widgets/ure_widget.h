@@ -156,12 +156,12 @@ public:
    *      The reason is related to format type used to store image where images are store starting
    *      from the bottom line in the image.
    */
-  void_t                    set_background( Texture* pTexture, BackgroundOptions bo );
+  void_t                          set_background( std::shared_ptr<ure::Texture> texture, BackgroundOptions bo );
   
-  inline const glm::vec4&   get_bk_color() const
+  inline const glm::vec4&         get_bk_color() const
   { return m_crBackground;   }
-  inline const Texture*     get_bk_image() const
-  { return m_pTexBackground;   }
+  inline std::shared_ptr<Texture> get_bk_image() const
+  { return m_bkg_texture;   }
   
   /***/
   bool                      draw( const glm::mat4& mvp, const Recti& rect );
@@ -253,17 +253,17 @@ private:
   sigc::connection   slotKeyRepeated;
   
 private:
-  BackgroundOptions         m_ebo;
-  Position                  m_pos;
-  Size                      m_size;
-  bool                      m_bVisible;
-  bool                      m_bEnabled;
-  Widget*                   m_pParent;
-  widgets_t                 m_vChildren;
-  widgets_t::iterator       m_Focus;
-  BackgroundType            m_eBackground;
-  glm::vec4                 m_crBackground;
-  Texture*                  m_pTexBackground;
+  BackgroundOptions             m_ebo;
+  Position                      m_pos;
+  Size                          m_size;
+  bool                          m_bVisible;
+  bool                          m_bEnabled;
+  Widget*                       m_pParent;
+  widgets_t                     m_vChildren;
+  widgets_t::iterator           m_Focus;
+  BackgroundType                m_eBackground;
+  glm::vec4                     m_crBackground;
+  std::shared_ptr<ure::Texture> m_bkg_texture;
   
 protected:
   std::vector<glm::vec2>    m_bkVertices;

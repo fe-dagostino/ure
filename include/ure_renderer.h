@@ -34,37 +34,39 @@ class Renderer final
 {
 private:
   /***/
-  Renderer();
+  constexpr Renderer() noexcept
+  {}
 
 public:
   /***/
-  ~Renderer();
+  constexpr ~Renderer() noexcept
+  {}
 
   /**
    * Returns the company responsible for this Render implementation. This name does not 
    * change from release to release.
    * Return true if function succeeded, false otherwise
    */
-  bool          get_vendor  ( std::string& sVendor   ) const noexcept;
+  bool_t        get_vendor  ( std::string& sVendor   ) const noexcept;
   /**
    * Returns the name of the renderer. This name is typically specific to a particular 
    * configuration of a hardware platform. It does not change from release to release.
    * Return true if function succeeded, false otherwise
    */
-  bool          get_renderer( std::string& sRenderer ) const noexcept;
+  bool_t        get_renderer( std::string& sRenderer ) const noexcept;
 
   /**
    * Returns a version or release number of the form 
    * OpenGL<space>ES<space><version number><space><vendor-specific information>.
    * Return true if function succeeded, false otherwise
    */
-  bool          get_version( std::string& sVersion ) const noexcept;
+  bool_t        get_version( std::string& sVersion ) const noexcept;
   /**
    * Returns a version or release number for the shading language of the form 
    * OpenGL<space>ES<space>GLSL<space>ES<space><version number><space><vendor-specific information>.
    * Return true if function succeeded, false otherwise
    */
-  bool          get_shader_version( std::string& sShaderVersion ) const noexcept;
+  bool_t        get_shader_version( std::string& sShaderVersion ) const noexcept;
   
 private:
 
