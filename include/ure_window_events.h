@@ -117,7 +117,7 @@ public:
   virtual void_t  on_mouse_button_released( [[maybe_unused]] Window* pWindow, [[maybe_unused]] mouse_button_t button, [[maybe_unused]] int_t mods ) noexcept
   {}
   /***/
-  virtual void_t  on_mouse_move( [[maybe_unused]] Window* pWindow, [[maybe_unused]] double_t dPosX, [[maybe_unused]] double_t dPosY ) noexcept
+  virtual void_t  on_mouse_move( [[maybe_unused]] Window* pWindow, [[maybe_unused]] double_t x, [[maybe_unused]] double_t y ) noexcept
   {}
   /***/
   virtual void_t  on_mouse_enter( [[maybe_unused]] Window* pWindow ) noexcept

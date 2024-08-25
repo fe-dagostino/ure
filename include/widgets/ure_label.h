@@ -68,13 +68,13 @@ public:
 
 protected:
   /***/
-  virtual bool     on_draw( [[maybe_unused]] const Recti& rect ) noexcept override;
+  virtual bool     on_widget_draw( [[maybe_unused]] const Recti& rect ) noexcept override;
   /***/
-  virtual void_t   on_position_changed( [[maybe_unused]] const Position& pos ) noexcept override;
+  virtual void_t   on_widget_position_changed( [[maybe_unused]] const Position& pos ) noexcept override;
   /***/
-  virtual void_t   on_size_changed( [[maybe_unused]] const Size& size ) noexcept override;
+  virtual void_t   on_widget_size_changed( [[maybe_unused]] const Size& size ) noexcept override;
   /***/
-  virtual bool     on_update_background_vertices() noexcept override;
+  virtual bool     on_widget_update_background_vertices() noexcept override;
 
 private:
   /***/
