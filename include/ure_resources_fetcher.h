@@ -43,20 +43,16 @@ class ResourcesFetcher final: public core::singleton_t<ResourcesFetcher>
   friend class singleton_t<ResourcesFetcher>;
 public:
   /***/
-  ResourcesFetcher() = delete;
-  /***/
-  ResourcesFetcher( core::unique_ptr<ResourcesFetcherEvents> events )
-    : m_events( std::move(events) )
+  ResourcesFetcher() noexcept(true)
   {}
 
   /***/
-  ResourcesFetcherEvents* events()
-  { return m_events; }
-
+  bool_t            fetch ( ResourcesFetcherEvents& events,
+                                  const std::string&      name,  
+                                  const std::type_info&   type,
+                                  const std::string& url            ) noexcept(true);
   /***/
-  bool                    fetch( const std::string& name, const std::type_info& type, const std::string& url ) noexcept;
-  /***/
-  bool                    cancel( const std::string& name ) noexcept
+  bool_t            cancel( const std::string& name ) noexcept(true)
   {
     std::lock_guard _mtx(m_mtx_fetch);
     
@@ -70,13 +66,12 @@ public:
   
 protected:
   /***/
-  void_t  on_initialize() noexcept;
+  void_t  on_initialize() noexcept(true);
 
   /***/
-  void_t  on_finalize() noexcept;
+  void_t  on_finalize() noexcept(true);
   
 private:
-  core::unique_ptr<ResourcesFetcherEvents>  m_events;
   std::mutex                                m_mtx_fetch;
   std::set<std::string>                     m_fetching;
 };

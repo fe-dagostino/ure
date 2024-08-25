@@ -42,23 +42,27 @@ namespace ure {
     /***/
     resource_t() = delete;
     /***/
-    constexpr resource_t( const std::string& name, const std::type_info& type, const std::string& url )
-      : m_name(name), m_type(type), m_url(url)
+    constexpr resource_t( ResourcesFetcherEvents& events, const std::string& name, const std::type_info& type, const std::string& url )
+      : m_events(events), m_name(name), m_type(type), m_url(url)
     {}
     /***/ 
-    constexpr const std::string&     name() const
+    constexpr ResourcesFetcherEvents& events() const
+    { return m_events; }
+    /***/ 
+    constexpr const std::string&      name() const
     { return m_name; }
     /***/ 
-    constexpr const std::type_info&  type() const
+    constexpr const std::type_info&   type() const
     { return m_type; }
     /***/ 
-    constexpr const std::string&     url() const
+    constexpr const std::string&      url() const
     { return m_url;  }
 
   private:
-    const std::string     m_name;
-    const std::type_info& m_type;
-    const std::string     m_url;
+    ResourcesFetcherEvents& m_events;
+    const std::string       m_name;
+    const std::type_info&   m_type;
+    const std::string       m_url;
   };
 
 
@@ -112,19 +116,18 @@ static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, voi
   return realsize;
 }
 
-static void_t async_curl_download( resource_t* pResource )
+static void_t async_curl_download( resource_t* resource )
 {
-  std::unique_ptr<resource_t>   resource    = std::unique_ptr<resource_t>(pResource);
-  ResourcesFetcher&             fetcher     = *ResourcesFetcher::get_instance();
-  CURL *                        easy_handle = curl_easy_init();
+  std::unique_ptr<resource_t>   _resource    = std::unique_ptr<resource_t>(resource);
+  CURL *                        _easy_handle = curl_easy_init();
 
-  struct MemoryStruct           chunk;
+  struct MemoryStruct           _chunk;
  
-  if ( easy_handle == nullptr )
+  if ( _easy_handle == nullptr )
   {
-    fetcher.events()->on_download_failed( resource->name() );
+    _resource->events().on_download_failed( _resource->name() );
 
-    if ( ResourcesFetcher::get_instance()->cancel( resource->name() ) == false )
+    if ( ResourcesFetcher::get_instance()->cancel( _resource->name() ) == false )
     {
       //@todo
     } 
@@ -134,20 +137,20 @@ static void_t async_curl_download( resource_t* pResource )
 
   if ( 
         /* specify URL to get */
-        (curl_easy_setopt(easy_handle, CURLOPT_URL            , resource->url().c_str()  ) != CURLE_OK) ||
+        (curl_easy_setopt(_easy_handle, CURLOPT_URL            , _resource->url().c_str()  ) != CURLE_OK) ||
         /* send all data to this function  */
-        (curl_easy_setopt(easy_handle, CURLOPT_WRITEFUNCTION  , WriteMemoryCallback      ) != CURLE_OK) ||
+        (curl_easy_setopt(_easy_handle, CURLOPT_WRITEFUNCTION  , WriteMemoryCallback      ) != CURLE_OK) ||
         /* we pass our 'chunk' struct to the callback function */
-        (curl_easy_setopt(easy_handle, CURLOPT_WRITEDATA      , (void *)&chunk           ) != CURLE_OK) ||
+        (curl_easy_setopt(_easy_handle, CURLOPT_WRITEDATA      , (void *)&_chunk           ) != CURLE_OK) ||
         /* some servers do not like requests that are made without a user-agent field, so we provide one */  
-        (curl_easy_setopt(easy_handle, CURLOPT_USERAGENT      , "libcurl-agent/1.0"      ) != CURLE_OK) ||
-        (curl_easy_setopt(easy_handle, CURLOPT_FOLLOWLOCATION , 1L                       ) != CURLE_OK) ||
-        (curl_easy_setopt(easy_handle, CURLOPT_HTTPPROXYTUNNEL, 1L                       ) != CURLE_OK)
+        (curl_easy_setopt(_easy_handle, CURLOPT_USERAGENT      , "libcurl-agent/1.0"      ) != CURLE_OK) ||
+        (curl_easy_setopt(_easy_handle, CURLOPT_FOLLOWLOCATION , 1L                       ) != CURLE_OK) ||
+        (curl_easy_setopt(_easy_handle, CURLOPT_HTTPPROXYTUNNEL, 1L                       ) != CURLE_OK)
       )
   {
-    fetcher.events()->on_download_failed( resource->name() );
+    _resource->events().on_download_failed( _resource->name() );
 
-    if ( ResourcesFetcher::get_instance()->cancel( resource->name() ) == false )
+    if ( ResourcesFetcher::get_instance()->cancel( _resource->name() ) == false )
     {
       //@todo
     } 
@@ -155,15 +158,15 @@ static void_t async_curl_download( resource_t* pResource )
   else
   {
     /* get it! */
-    CURLcode res = curl_easy_perform(easy_handle);
+    CURLcode res = curl_easy_perform(_easy_handle);
     /* check for errors */
     if(res != CURLE_OK) 
     {
       fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
 
-      fetcher.events()->on_download_failed( resource->name() );
+      _resource->events().on_download_failed( _resource->name() );
 
-      if ( ResourcesFetcher::get_instance()->cancel( resource->name() ) == false )
+      if ( ResourcesFetcher::get_instance()->cancel( _resource->name() ) == false )
       {
         //@todo
       } 
@@ -176,11 +179,11 @@ static void_t async_curl_download( resource_t* pResource )
       *
       * Do something nice with it!
       */
-      printf("%lu bytes retrieved\n", (unsigned long)chunk.size);
+      printf("%lu bytes retrieved\n", (unsigned long)_chunk.size);
 
-      fetcher.events()->on_download_succeeded( resource->name(), resource->type(), (const byte_t*)chunk.memory, chunk.size );
+      _resource->events().on_download_succeeded( _resource->name(), _resource->type(), (const byte_t*)_chunk.memory, _chunk.size );
 
-      if ( ResourcesFetcher::get_instance()->cancel( resource->name() ) == false )
+      if ( ResourcesFetcher::get_instance()->cancel( _resource->name() ) == false )
       {
         //@todo
       } 
@@ -189,7 +192,7 @@ static void_t async_curl_download( resource_t* pResource )
   }
 
   /* cleanup curl stuff */
-  curl_easy_cleanup(easy_handle);
+  curl_easy_cleanup(_easy_handle);
 }
 
 static void_t th_requests_scheduler()
@@ -204,7 +207,7 @@ static void_t th_requests_scheduler()
   }
 }
 
-bool ResourcesFetcher::fetch( const std::string& name, const std::type_info& type, const std::string& url ) noexcept
+bool ResourcesFetcher::fetch( ResourcesFetcherEvents& events, const std::string& name, const std::type_info& type, const std::string& url ) noexcept
 {
   if ( name.empty() || url.empty() )
     return false;
@@ -215,7 +218,7 @@ bool ResourcesFetcher::fetch( const std::string& name, const std::type_info& typ
   if ( m_fetching.contains( name ) == true )
     return true;
 
-  resource_t* pResource = new(std::nothrow)resource_t(name, type, url);
+  resource_t* pResource = new(std::nothrow)resource_t( events, name, type, url);
   if ( pResource == nullptr )
   {
     return false;

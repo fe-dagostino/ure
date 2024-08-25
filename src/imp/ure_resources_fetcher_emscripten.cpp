@@ -32,18 +32,21 @@ public:
   /***/
   resource_t() = delete;
   /***/
-  constexpr resource_t( const std::string& name, const std::type_info& type )
-    : m_name(name), m_type(type)
+  constexpr resource_t( ResourcesFetcherEvents& events, const std::string& name, const std::type_info& type )
+    : m_events(events), m_name(name), m_type(type)
   {}
+  /***/ 
+  constexpr ResourcesFetcherEvents& events() const
+  { return m_events; }
   /***/ 
   constexpr const std::string&     name() const noexcept
   { return m_name; }
-
   /***/
   constexpr const std::type_info&  type() const noexcept
   { return m_type; }
 
 private:
+  ResourcesFetcherEvents& m_events;
   const std::string       m_name;
   const std::type_info&   m_type;
 
@@ -56,14 +59,11 @@ static void_t emscripten_download_succeeded(emscripten_fetch_t *fetch)
 
   if ( fetch->userData != nullptr ) 
   {
-    std::unique_ptr<resource_t> resource =  std::unique_ptr<resource_t>( reinterpret_cast<resource_t*>(fetch->userData) );
+    std::unique_ptr<resource_t> _resource =  std::unique_ptr<resource_t>( reinterpret_cast<resource_t*>(fetch->userData) );
 
-    if ( ResourcesFetcher::get_instance()->events() != nullptr )
-    {
-      ResourcesFetcher::get_instance()->events()->on_download_succeeded( resource->name(), resource->type(), (const byte_t*)fetch->data, fetch->numBytes );
-    }
+    _resource->events().on_download_succeeded( _resource->name(), _resource->type(), (const byte_t*)fetch->data, fetch->numBytes );
 
-    if ( ResourcesFetcher::get_instance()->cancel( resource->name() ) == false )
+    if ( ResourcesFetcher::get_instance()->cancel( _resource->name() ) == false )
     {
       //@todo
     } 
@@ -80,14 +80,11 @@ static void_t emscripten_download_failed(emscripten_fetch_t *fetch)
 
   if ( fetch->userData != nullptr ) 
   {
-    std::unique_ptr<resource_t> resource =  std::unique_ptr<resource_t>( (resource_t*)fetch->userData );
+    std::unique_ptr<resource_t> _resource =  std::unique_ptr<resource_t>( (resource_t*)fetch->userData );
 
-    if ( ResourcesFetcher::get_instance()->events() != nullptr )
-    {
-      ResourcesFetcher::get_instance()->events()->on_download_failed( resource->name() );
-    }
+    _resource->events().on_download_failed( _resource->name() );
 
-    if ( ResourcesFetcher::get_instance()->cancel( resource->name() ) == false )
+    if ( ResourcesFetcher::get_instance()->cancel( _resource->name() ) == false )
     {
       //@todo
     } 
@@ -96,7 +93,7 @@ static void_t emscripten_download_failed(emscripten_fetch_t *fetch)
   emscripten_fetch_close(fetch); // Also free data on failure.
 }
 
-bool ResourcesFetcher::fetch( const std::string& name, const std::type_info& type, const std::string& url ) noexcept
+bool ResourcesFetcher::fetch( ResourcesFetcherEvents& events, const std::string& name, const std::type_info& type, const std::string& url ) noexcept
 {
   if ( name.empty() || url.empty() )
     return false;
@@ -107,8 +104,8 @@ bool ResourcesFetcher::fetch( const std::string& name, const std::type_info& typ
   if ( m_fetching.contains( name ) == true )
     return true;
 
-  resource_t* pResource = new(std::nothrow)resource_t( name, type );
-  if ( pResource == nullptr )
+  resource_t* _resource = new(std::nothrow)resource_t( events, name, type );
+  if ( _resource == nullptr )
   {
     return false;
   }
@@ -119,7 +116,7 @@ bool ResourcesFetcher::fetch( const std::string& name, const std::type_info& typ
   emscripten_fetch_attr_t attr;
   emscripten_fetch_attr_init(&attr);
   strcpy(attr.requestMethod, "GET");
-  attr.userData   = pResource;
+  attr.userData   = _resource;
   attr.attributes = EMSCRIPTEN_FETCH_LOAD_TO_MEMORY;
   attr.onsuccess  = emscripten_download_succeeded;
   attr.onerror    = emscripten_download_failed;
