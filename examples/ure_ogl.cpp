@@ -32,7 +32,7 @@ private:
 
     std::unique_ptr<ure::Texture> texture = std::make_unique<ure::Texture>( std::move(bkImage) );
 
-    ure::ResourcesCollector::get_instance()->attach<ure::Texture,std::unique_ptr<ure::Texture>>("wall", std::move(texture) );
+    m_rc->attach<ure::Texture,std::unique_ptr<ure::Texture>>("wall", std::move(texture) );
   }
 
   void addCamera()
@@ -65,7 +65,7 @@ private:
 
     pLayer->set_position( -1.0f*m_size.width/2, -1.0f*m_size.height/2, true );
 
-    auto texture = ure::ResourcesCollector::get_instance()->find<ure::Texture>("wall");
+    auto texture = m_rc->find<ure::Texture>("wall");
     if ( texture.has_value() )
     {
       pLayer->set_background( texture.value(), ure::widgets::Widget::BackgroundOptions::eboAsIs );
@@ -86,8 +86,7 @@ private:
   {
     const std::string sShadersPath( "./resources/shaders/" );
     const std::string sMediaPath( "./resources/media/" );
-
-    ure::Application::initialize( core::unique_ptr<ure::ApplicationEvents>(this,false), sShadersPath, sMediaPath );
+    ure::Application::initialize( core::unique_ptr<ure::ApplicationEvents>(this,false), sShadersPath );
 
     //
     m_pWindow = new(std::nothrow) ure::Window();
@@ -175,23 +174,27 @@ protected:
   /***/
   virtual ure::void_t on_initialize() override
   {
-    ure::ResourcesFetcher::initialize( core::unique_ptr<ure::ResourcesFetcherEvents>(this,false) );
+    m_rc = std::make_unique<ure::ResourcesCollector>();
+
+    /* If your application requires external resources than resource fetcher 
+       will make this easier.
+       In order to control singleton lifetime it is strongly suggested to create
+       and destroy it with the application lifetim, so using on_initialize() and on_finalize() events. */
+    ure::ResourcesFetcher::initialize();
   }
   /***/
   virtual ure::void_t on_initialized() override
-  {
-  }
+  {  }
 
   /***/
   virtual ure::void_t on_finalize() override
   {
+    /* Finalize Resource Fetcher */
     ure::ResourcesFetcher::get_instance()->finalize();
   }
   /***/
   virtual ure::void_t on_finalized() override
-  {
-
-  }
+  {  }
 
   virtual ure::void_t on_run() override 
   {
@@ -223,7 +226,6 @@ protected:
 
     ///////////////
     m_pViewPort->render();
-
 
     ///////////////
     m_pWindow->swap_buffers();
@@ -263,10 +265,14 @@ protected:
   }
 
 private:
+  using resources_collector_t = std::unique_ptr<ure::ResourcesCollector>;
+
   bool                        m_bFullScreen;
   ure::position_t<ure::int_t> m_position;
   ure::Size                   m_size;
   ure::Size                   m_fb_size;
+
+  resources_collector_t       m_rc;                   /* resource collector */
 
   ure::Window*      m_pWindow;
   ure::ViewPort*    m_pViewPort;

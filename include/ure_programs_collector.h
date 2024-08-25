@@ -111,7 +111,12 @@ protected:
   { m_sShadersPath = DEFAULT_SHADER_PATH; }
   /***/
   void_t on_finalize() noexcept
-  {}
+  {
+    while ( m_mapPrograms.empty() == false )
+    {
+      m_mapPrograms.extract(m_mapPrograms.begin());
+    }
+  }
 
 private:
   typedef std::unordered_map<std::string, std::unique_ptr<Program>>  map_programs_t;

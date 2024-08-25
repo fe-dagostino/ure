@@ -45,8 +45,7 @@ static void error_callback(int32_t error, const char* description)
 
 Application::Application( 
                           core::unique_ptr<ApplicationEvents> events,
-                          const std::string& sShadersPath, 
-                          const std::string& sMediaPath 
+                          const std::string& sShadersPath 
                         ) noexcept
   : m_events( std::move(events) ), m_exit(false)
 {
@@ -54,9 +53,6 @@ Application::Application(
 
   ProgramsCollector::initialize();
   ProgramsCollector::get_instance()->set_shaders_path( sShadersPath );
-
-  ResourcesCollector::initialize();
-  ResourcesCollector::get_instance()->set_resources_path( sMediaPath );
 }
 
 Application::~Application() noexcept
@@ -177,10 +173,9 @@ void_t  Application::on_finalize()
   }
 #endif  //_USE_DEVIL
 
-  glfwTerminate();
-
   ProgramsCollector::get_instance()->finalize();
-  ResourcesCollector::get_instance()->finalize();
+
+  glfwTerminate();
 
   if ( m_events != nullptr )
   {

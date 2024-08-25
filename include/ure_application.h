@@ -60,22 +60,21 @@ public:
 protected:
   /***/
   Application(  core::unique_ptr<ApplicationEvents> events, 
-                const std::string& sShadersPath, 
-                const std::string& sMediaPath  
+                const std::string& sShadersPath 
              ) noexcept;
 public:
   /***/
   void_t               run();
   
   /***/
-  inline ApplicationEvents* set_events( core::unique_ptr<ApplicationEvents> events ) noexcept
+  constexpr ApplicationEvents* set_events( core::unique_ptr<ApplicationEvents> events ) noexcept
   { 
     ApplicationEvents* pRetVal = events.release();
     m_events = std::move(events);  
     return pRetVal;
   }
   /***/
-  inline ApplicationEvents* get_events() noexcept
+  constexpr ApplicationEvents* get_events() noexcept
   { return m_events.get(); }
 
   /***/

@@ -38,7 +38,7 @@ Canvas::~Canvas() noexcept
   
 }
   
-void  Canvas::draw_points( const std::vector<glm::vec2>& points, const glm::vec4& color, float_t fThickness ) noexcept
+void_t  Canvas::draw_points( const std::vector<glm::vec2>& points, const glm::vec4& color, float_t fThickness ) noexcept
 {
 #if defined(_NV_CARD_)  
 // Values are not part of ES Specs but still supported on NV cards
@@ -56,14 +56,14 @@ void  Canvas::draw_points( const std::vector<glm::vec2>& points, const glm::vec4
 #endif
 }
 
-void  Canvas::draw_lines( const std::vector<glm::vec2>& points, const glm::vec4& color, float_t fThickness ) noexcept
+void_t  Canvas::draw_lines( const std::vector<glm::vec2>& points, const glm::vec4& color, float_t fThickness ) noexcept
 {
   glLineWidth( fThickness );
   
   draw( GL_LINE_STRIP, points, color, fThickness );
 }
 
-void  Canvas::draw_rect( const std::vector<glm::vec2>& points, const glm::vec4& color ) noexcept
+void_t  Canvas::draw_rect( const std::vector<glm::vec2>& points, const glm::vec4& color ) noexcept
 {
   if ( points.size() != 4 )
     return;

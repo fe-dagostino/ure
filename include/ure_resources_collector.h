@@ -41,21 +41,27 @@ namespace ure {
 /**
  * 
  */
-class ResourcesCollector final: public core::singleton_t<ResourcesCollector>
+class ResourcesCollector final 
 {
-  friend class singleton_t<ResourcesCollector>;
 public:
   enum class resource_flag_t : word_t {
     EXPENDABLE = 0x0000,         /* Resource can be released or replaced in order to limit memory usage */  
     PRESERVE   = 0x0001,         /* Resource will not be removed if not explicity requested.            */
   };
 
+  ResourcesCollector( const std::string_view& path = DEFAULT_RESOURCES_PATH ) noexcept(true)
+    : m_resources_path(path)
+  {}
+
+  ~ResourcesCollector() noexcept(true)
+  {}
+
   /***/
-  constexpr void                set_resources_path( const std::string& path ) noexcept
-  { m_sResourcesPath = path; }
+  constexpr void                set_resources_path( const std::string& path ) noexcept(true)
+  { m_resources_path = path; }
   /***/
-  constexpr const std::string&  get_resources_path() const noexcept
-  { return m_sResourcesPath; }
+  constexpr const std::string&  get_resources_path() const noexcept(true)
+  { return m_resources_path; }
   
   /**
    * @brief Find specified resiyrce if registered.
@@ -68,7 +74,7 @@ public:
    */
   template<class derived_t>
     requires std::is_nothrow_convertible_v<derived_t*,Object*>
-  std::optional<std::shared_ptr<derived_t>>   find( const std::string& name ) noexcept
+  std::optional<std::shared_ptr<derived_t>>   find( const std::string& name ) noexcept(true)
   {
     map_resources_t::const_iterator  iter = m_mapResources.find( name );
     if ( iter == m_mapResources.end() )
@@ -84,7 +90,7 @@ public:
    * @return true  if exist
    * @return false if not exist
    */
-  inline bool_t  contains( const std::string& name ) const noexcept
+  inline bool_t  contains( const std::string& name ) const noexcept(true)
   { return m_mapResources.contains(name); }
   
   /**
@@ -103,7 +109,7 @@ public:
   constexpr std::pair<bool,pointer_t>   attach(  const std::string& name, 
                                                  pointer_t resource, 
                                                  word_t flags = ure::word_t(ure::ResourcesCollector::resource_flag_t::EXPENDABLE) 
-                                              ) noexcept
+                                              ) noexcept(true)
   {
     if ( m_mapResources.contains( name ) == true )
       return std::make_pair(false, std::move(resource));
@@ -123,7 +129,7 @@ public:
    */
   template<class derived_t>
     requires std::is_nothrow_convertible_v<derived_t*,Object*>
-  std::shared_ptr<derived_t>      detach( const std::string& name ) noexcept
+  std::shared_ptr<derived_t>      detach( const std::string& name ) noexcept(true)
   {
     map_resources_t::iterator  iter = m_mapResources.find( name );
     if ( iter == m_mapResources.end() )
@@ -131,15 +137,7 @@ public:
     
     return std::static_pointer_cast<derived_t>( m_mapResources.extract(iter).mapped()->_obj );
   }
-
-public:
-  /***/
-  void_t on_initialize() noexcept
-  { m_sResourcesPath = DEFAULT_RESOURCES_PATH; }
-  /***/
-  void_t on_finalize() noexcept
-  {}
-  
+ 
 private:
   struct item_t {
     item_t( word_t flags, std::shared_ptr<Object> obj )
@@ -152,7 +150,7 @@ private:
 
   typedef std::unordered_map<std::string, std::unique_ptr<item_t>>  map_resources_t;
 private:
-  std::string      m_sResourcesPath;
+  std::string      m_resources_path;
   map_resources_t  m_mapResources;
   
 };
