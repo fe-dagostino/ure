@@ -54,13 +54,29 @@ public:
     return *this;
   }
   
+  /***/
+  constexpr const position_t& operator-=( const position_t& pos ) noexcept
+  { 
+    x -= pos.x; 
+    y -= pos.y;
+    return *this;
+  }
+
+  /***/
+  friend constexpr position_t operator+( const position_t& left, const position_t& right ) noexcept
+  { return position_t( left.x+right.x, left.y+right.y ); }
+  /***/
+  friend constexpr position_t operator-( const position_t& left, const position_t& right ) noexcept
+  { return position_t( left.x-right.x, left.y-right.y ); }
+
   data_t x;
   data_t y;
 };
 
-typedef position_t<sizei_t>  Position;
-typedef glm::vec2            Position2D;
-typedef glm::vec3            Position3D;
+typedef position_t<sizei_t>   Position;
+typedef position_t<double_t>  Position_d;
+typedef glm::vec2             Position2D;
+typedef glm::vec3             Position3D;
 
 }
 
