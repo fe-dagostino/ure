@@ -166,7 +166,7 @@ private:
   static void_t key_callback          (WindowHandler window, int_t key, int_t scancode, int_t action, int_t mods);
   /***/
   static void_t char_callback         (WindowHandler window, uint_t codepoint );
-  /***/
+  /* not supported by emscripten 3.1.64 */
   static void_t char_mods_callback    (WindowHandler window, uint_t codepoint, int_t mods );
   /***/
   static void_t fbsize_callback       (WindowHandler window, int_t width, int_t height );

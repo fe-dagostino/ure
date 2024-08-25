@@ -450,8 +450,10 @@ void_t Window::set_callbacks( bool bRegister )
     glfwSetScrollCallback            ( m_hWindow, mouse_scroll_callback  );  /* GLFW 3.0 */ 
     glfwSetKeyCallback               ( m_hWindow, key_callback           );  /* GLFW 1.0 */
     glfwSetCharCallback              ( m_hWindow, char_callback          );  /* GLFW 2.4 */
-    glfwSetCharModsCallback          ( m_hWindow, char_mods_callback     );  /* GLFW 3.1 */
     glfwSetDropCallback              ( m_hWindow, drop_path_callback     );  /* GLFW 3.1 */
+#ifndef __EMSCRIPTEN__
+    glfwSetCharModsCallback          ( m_hWindow, char_mods_callback     );  /* GLFW 3.1 */
+#endif
   } 
   else
   {
@@ -470,8 +472,10 @@ void_t Window::set_callbacks( bool bRegister )
     glfwSetScrollCallback            ( m_hWindow, nullptr );  /* GLFW 3.0 */ 
     glfwSetKeyCallback               ( m_hWindow, nullptr );  /* GLFW 1.0 */
     glfwSetCharCallback              ( m_hWindow, nullptr );  /* GLFW 2.4 */
-    glfwSetCharModsCallback          ( m_hWindow, nullptr );  /* GLFW 3.1 */ 
     glfwSetDropCallback              ( m_hWindow, nullptr );  /* GLFW 3.1 */ 
+#ifndef __EMSCRIPTEN__
+    glfwSetCharModsCallback          ( m_hWindow, nullptr );  /* GLFW 3.1 */ 
+#endif
   }
 }
 
@@ -717,7 +721,7 @@ void_t Window::char_callback( WindowHandler window, uint_t codepoint )
   }
 }
 
-void_t Window::char_mods_callback( WindowHandler window, uint_t codepoint, int_t mods )
+void_t Window::char_mods_callback( [[maybe_unused]] WindowHandler window, [[maybe_unused]] uint_t codepoint, [[maybe_unused]] int_t mods )
 {
   Window* pWindow = static_cast<Window*>(glfwGetWindowUserPointer( window ));
   

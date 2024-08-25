@@ -29,8 +29,6 @@
 #ifdef __EMSCRIPTEN__
 # include <emscripten.h>
 # include <emscripten/fetch.h>
-# define GL_GLEXT_PROTOTYPES
-# define EGL_EGLEXT_PROTOTYPES
 #endif  
 
 #if defined(_GLFW_ENABLED)
