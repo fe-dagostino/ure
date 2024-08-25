@@ -41,16 +41,17 @@ namespace ure {
 class ResourcesFetcher final: public core::singleton_t<ResourcesFetcher>
 {
   friend class singleton_t<ResourcesFetcher>;
-public:
+protected:
   /***/
   ResourcesFetcher() noexcept(true)
   {}
 
+public:
   /***/
   bool_t            fetch ( ResourcesFetcherEvents& events,
-                                  const std::string&      name,  
-                                  const std::type_info&   type,
-                                  const std::string& url            ) noexcept(true);
+                            const std::string&      name,  
+                            const std::type_info&   type,
+                            const std::string& url            ) noexcept(true);
   /***/
   bool_t            cancel( const std::string& name ) noexcept(true)
   {
