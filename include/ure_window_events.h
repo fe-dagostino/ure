@@ -59,87 +59,96 @@ public:
   };
 
   /***/
-  WindowEvents() noexcept
+  WindowEvents() noexcept(true)
   {}
 
   /***/
-  virtual ~WindowEvents() noexcept
+  virtual ~WindowEvents() noexcept(true)
   {}
   
   /**
    * Called in just before windows creation.
    * It will be a nice place to see own window hints
    */
-  virtual void_t  on_creating( [[maybe_unused]] Window* pWindow ) noexcept;
+  virtual void_t  on_creating( [[maybe_unused]] Window* pWindow ) noexcept(true);
   /***/
-  virtual void_t  on_created( [[maybe_unused]] Window* pWindow ) noexcept;
+  virtual void_t  on_created( [[maybe_unused]] Window* pWindow ) noexcept(true);
   /**
    * Called to notify new window position.
    */
-  virtual void_t  on_position_changed( [[maybe_unused]] Window* pWindow, [[maybe_unused]] int_t iPosX, [[maybe_unused]] int_t iPosY ) noexcept
+  virtual void_t  on_position_changed( [[maybe_unused]] Window* pWindow, [[maybe_unused]] int_t iPosX, [[maybe_unused]] int_t iPosY ) noexcept(true)
   {}
   /**
    * Called to notify new window size.
    */
-  virtual void_t  on_size_changed( [[maybe_unused]] Window* pWindow, [[maybe_unused]] sizei_t iWidth, [[maybe_unused]] sizei_t iHeight ) noexcept
+  virtual void_t  on_size_changed( [[maybe_unused]] Window* pWindow, [[maybe_unused]] sizei_t iWidth, [[maybe_unused]] sizei_t iHeight ) noexcept(true)
   {}
   /**
    * Called to notify new window size.
    */
-  virtual void_t  on_fb_size_changed( [[maybe_unused]] Window* pWindow, [[maybe_unused]] sizei_t iWidth, [[maybe_unused]] sizei_t iHeight ) noexcept
+  virtual void_t  on_fb_size_changed( [[maybe_unused]] Window* pWindow, [[maybe_unused]] sizei_t iWidth, [[maybe_unused]] sizei_t iHeight ) noexcept(true)
+  {}
+  /****/
+  virtual void_t  on_content_scale(  [[maybe_unused]] Window* pWindow, [[maybe_unused]] float_t xscale, [[maybe_unused]] float_t yscale ) noexcept(true)
   {}
   /**
    * Called when user attempt to close the window.
    */
-  virtual void_t  on_close( [[maybe_unused]] Window* pWindow ) noexcept
+  virtual void_t  on_close( [[maybe_unused]] Window* pWindow ) noexcept(true)
   {}
   /**
    * Called when the window whose content needs to be refreshed.
    */
-  virtual void_t  on_refresh( [[maybe_unused]] Window* pWindow ) noexcept
+  virtual void_t  on_refresh( [[maybe_unused]] Window* pWindow ) noexcept(true)
   {}
   /***/  
-  virtual void_t  on_got_focus( [[maybe_unused]] Window* pWindow ) noexcept
+  virtual void_t  on_got_focus( [[maybe_unused]] Window* pWindow ) noexcept(true)
   {}
   /***/
-  virtual void_t  on_lost_focus( [[maybe_unused]] Window* pWindow ) noexcept
+  virtual void_t  on_lost_focus( [[maybe_unused]] Window* pWindow ) noexcept(true)
   {}
   /***/  
-  virtual void_t  on_iconified( [[maybe_unused]] Window* pWindow ) noexcept
+  virtual void_t  on_iconified( [[maybe_unused]] Window* pWindow ) noexcept(true)
+  {}
+  /***/  
+  virtual void_t  on_maximized( [[maybe_unused]] Window* pWindow ) noexcept(true)
   {}
   /***/
-  virtual void_t  on_restored( [[maybe_unused]] Window* pWindow ) noexcept
+  virtual void_t  on_restored( [[maybe_unused]] Window* pWindow ) noexcept(true)
   {}
   /***/
-  virtual void_t  on_mouse_button_pressed( [[maybe_unused]] Window* pWindow, [[maybe_unused]] mouse_button_t button, [[maybe_unused]] int_t mods ) noexcept
+  virtual void_t  on_mouse_button_pressed( [[maybe_unused]] Window* pWindow, [[maybe_unused]] mouse_button_t button, [[maybe_unused]] int_t mods ) noexcept(true)
   {}
   /***/
-  virtual void_t  on_mouse_button_released( [[maybe_unused]] Window* pWindow, [[maybe_unused]] mouse_button_t button, [[maybe_unused]] int_t mods ) noexcept
+  virtual void_t  on_mouse_button_released( [[maybe_unused]] Window* pWindow, [[maybe_unused]] mouse_button_t button, [[maybe_unused]] int_t mods ) noexcept(true)
   {}
   /***/
-  virtual void_t  on_mouse_move( [[maybe_unused]] Window* pWindow, [[maybe_unused]] double_t x, [[maybe_unused]] double_t y ) noexcept
+  virtual void_t  on_mouse_move( [[maybe_unused]] Window* pWindow, [[maybe_unused]] double_t x, [[maybe_unused]] double_t y ) noexcept(true)
   {}
   /***/
-  virtual void_t  on_mouse_enter( [[maybe_unused]] Window* pWindow ) noexcept
+  virtual void_t  on_mouse_enter( [[maybe_unused]] Window* pWindow ) noexcept(true)
   {}
   /***/
-  virtual void_t  on_mouse_leave( [[maybe_unused]] Window* pWindow ) noexcept
+  virtual void_t  on_mouse_leave( [[maybe_unused]] Window* pWindow ) noexcept(true)
   {}
   /***/
-  virtual void_t  on_mouse_scroll( [[maybe_unused]] Window* pWindow, [[maybe_unused]] double_t dOffsetX, [[maybe_unused]] double_t dOffsetY ) noexcept
+  virtual void_t  on_mouse_scroll( [[maybe_unused]] Window* pWindow, [[maybe_unused]] double_t dOffsetX, [[maybe_unused]] double_t dOffsetY ) noexcept(true)
   {}
   /***/
-  virtual void_t  on_key_released( [[maybe_unused]] Window* pWindow, [[maybe_unused]] int_t iKey, [[maybe_unused]] int_t iScanCode, [[maybe_unused]] word_t wMods ) noexcept
+  virtual void_t  on_key_released( [[maybe_unused]] Window* pWindow, [[maybe_unused]] int_t iKey, [[maybe_unused]] int_t iScanCode, [[maybe_unused]] word_t wMods ) noexcept(true)
   {}
   /**
    * Default implementation will close widows when ESCAPE key went pressed.
    */
-  virtual void_t  on_key_pressed ( [[maybe_unused]] Window* pWindow, [[maybe_unused]] int_t iKey, [[maybe_unused]] int_t iScanCode, [[maybe_unused]] word_t wMods ) noexcept;  
+  virtual void_t  on_key_pressed ( [[maybe_unused]] Window* pWindow, [[maybe_unused]] int_t iKey, [[maybe_unused]] int_t iScanCode, [[maybe_unused]] word_t wMods ) noexcept(true);  
   /***/
-  virtual void_t  on_key_repeated( [[maybe_unused]] Window* pWindow, [[maybe_unused]] int_t iKey, [[maybe_unused]] int_t iScanCode, [[maybe_unused]] word_t wMods ) noexcept 
+  virtual void_t  on_key_repeated( [[maybe_unused]] Window* pWindow, [[maybe_unused]] int_t iKey, [[maybe_unused]] int_t iScanCode, [[maybe_unused]] word_t wMods ) noexcept(true) 
   {}
   /***/
-  virtual void_t  on_unicode_char( [[maybe_unused]] Window* pWindow, [[maybe_unused]] uint_t iCodePoint ) noexcept 
+  virtual void_t  on_unicode_char( [[maybe_unused]] Window* pWindow, [[maybe_unused]] uint_t iCodePoint ) noexcept(true) 
+  {}
+  /***/
+  virtual void_t  on_unicode_char_mods( [[maybe_unused]] Window* pWindow, [[maybe_unused]] uint_t codepoint, [[maybe_unused]] int_t mods ) noexcept(true) 
   {}
 
 };

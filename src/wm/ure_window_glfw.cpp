@@ -435,37 +435,50 @@ void_t Window::set_callbacks( bool bRegister )
 {
   if ( bRegister )
   {
-    glfwSetWindowPosCallback      ( m_hWindow, pos_callback          );
-    glfwSetWindowSizeCallback     ( m_hWindow, size_callback         );
-    glfwSetWindowCloseCallback    ( m_hWindow, close_callback        );
-    glfwSetWindowRefreshCallback  ( m_hWindow, refresh_callback      );
-    glfwSetWindowFocusCallback    ( m_hWindow, focus_callback        );
-    glfwSetWindowIconifyCallback  ( m_hWindow, iconify_callback      );
-    glfwSetFramebufferSizeCallback( m_hWindow, fbsize_callback       );
-    glfwSetMouseButtonCallback    ( m_hWindow, mouse_button_callback );
-    glfwSetCursorPosCallback      ( m_hWindow, mouse_pos_callback    );
-    glfwSetCursorEnterCallback    ( m_hWindow, mouse_enter_callback  );
-    glfwSetScrollCallback         ( m_hWindow, mouse_scroll_callback );
-    glfwSetKeyCallback            ( m_hWindow, key_callback          );
-    glfwSetCharCallback           ( m_hWindow, char_callback         );
+    glfwSetWindowPosCallback         ( m_hWindow, pos_callback           );  /* GLFW 3.0 */ 
+    glfwSetWindowSizeCallback        ( m_hWindow, size_callback          );  /* GLFW 1.0 */
+    glfwSetWindowCloseCallback       ( m_hWindow, close_callback         );  /* GLFW 2.5 */
+    glfwSetWindowRefreshCallback     ( m_hWindow, refresh_callback       );  /* GLFW 2.5 */
+    glfwSetWindowFocusCallback       ( m_hWindow, focus_callback         );  /* GLFW 3.0 */ 
+    glfwSetWindowIconifyCallback     ( m_hWindow, iconify_callback       );  /* GLFW 3.0 */
+    glfwSetWindowMaximizeCallback    ( m_hWindow, maximize_callback      );  /* GLFW 3.3 */
+    glfwSetFramebufferSizeCallback   ( m_hWindow, fbsize_callback        );  /* GLFW 3.0 */
+    glfwSetWindowContentScaleCallback( m_hWindow, content_scale_callback );  /* GLFW 3.3 */
+    glfwSetMouseButtonCallback       ( m_hWindow, mouse_button_callback  );  /* GLFW 1.0 */
+    glfwSetCursorPosCallback         ( m_hWindow, mouse_pos_callback     );  /* GLFW 3.0 */
+    glfwSetCursorEnterCallback       ( m_hWindow, mouse_enter_callback   );  /* GLFW 3.0 */ 
+    glfwSetScrollCallback            ( m_hWindow, mouse_scroll_callback  );  /* GLFW 3.0 */ 
+    glfwSetKeyCallback               ( m_hWindow, key_callback           );  /* GLFW 1.0 */
+    glfwSetCharCallback              ( m_hWindow, char_callback          );  /* GLFW 2.4 */
+    glfwSetCharModsCallback          ( m_hWindow, char_mods_callback     );  /* GLFW 3.1 */
+    glfwSetDropCallback              ( m_hWindow, drop_path_callback     );  /* GLFW 3.1 */
   } 
   else
   {
-    glfwSetWindowPosCallback      ( m_hWindow, nullptr );
-    glfwSetWindowSizeCallback     ( m_hWindow, nullptr );
-    glfwSetWindowCloseCallback    ( m_hWindow, nullptr );
-    glfwSetWindowRefreshCallback  ( m_hWindow, nullptr );
-    glfwSetWindowFocusCallback    ( m_hWindow, nullptr );
-    glfwSetWindowIconifyCallback  ( m_hWindow, nullptr );
-    glfwSetFramebufferSizeCallback( m_hWindow, nullptr );
-    glfwSetMouseButtonCallback    ( m_hWindow, nullptr );
-    glfwSetCursorPosCallback      ( m_hWindow, nullptr );
-    glfwSetCursorEnterCallback    ( m_hWindow, nullptr );
-    glfwSetScrollCallback         ( m_hWindow, nullptr );
-    glfwSetKeyCallback            ( m_hWindow, nullptr );
-    glfwSetCharCallback           ( m_hWindow, nullptr );
+    glfwSetWindowPosCallback         ( m_hWindow, nullptr );  /* GLFW 3.0 */
+    glfwSetWindowSizeCallback        ( m_hWindow, nullptr );  /* GLFW 1.0 */
+    glfwSetWindowCloseCallback       ( m_hWindow, nullptr );  /* GLFW 2.5 */
+    glfwSetWindowRefreshCallback     ( m_hWindow, nullptr );  /* GLFW 2.5 */
+    glfwSetWindowFocusCallback       ( m_hWindow, nullptr );  /* GLFW 3.0 */ 
+    glfwSetWindowIconifyCallback     ( m_hWindow, nullptr );  /* GLFW 3.0 */
+    glfwSetWindowMaximizeCallback    ( m_hWindow, nullptr );  /* GLFW 3.3 */
+    glfwSetFramebufferSizeCallback   ( m_hWindow, nullptr );  /* GLFW 3.0 */
+    glfwSetWindowContentScaleCallback( m_hWindow, nullptr );  /* GLFW 3.3 */
+    glfwSetMouseButtonCallback       ( m_hWindow, nullptr );  /* GLFW 1.0 */
+    glfwSetCursorPosCallback         ( m_hWindow, nullptr );  /* GLFW 3.0 */
+    glfwSetCursorEnterCallback       ( m_hWindow, nullptr );  /* GLFW 3.0 */
+    glfwSetScrollCallback            ( m_hWindow, nullptr );  /* GLFW 3.0 */ 
+    glfwSetKeyCallback               ( m_hWindow, nullptr );  /* GLFW 1.0 */
+    glfwSetCharCallback              ( m_hWindow, nullptr );  /* GLFW 2.4 */
+    glfwSetCharModsCallback          ( m_hWindow, nullptr );  /* GLFW 3.1 */ 
+    glfwSetDropCallback              ( m_hWindow, nullptr );  /* GLFW 3.1 */ 
   }
 }
+
+
+// glfwSetMonitorCallback         /* GLFW 3.0 */
+// glfwSetJoystickCallback        /* GLFW 3.2 */
+
 
 bool  Window::check( window_flag_t flags ) noexcept
 {
@@ -560,6 +573,23 @@ void_t Window::iconify_callback( WindowHandler window, int_t iconified )
   }
 }
 
+void_t Window::maximize_callback    (WindowHandler window, int_t maximized )
+{
+  Window* pWindow = static_cast<Window*>(glfwGetWindowUserPointer( window ));
+  
+  if ( pWindow == nullptr )
+    return;
+
+  for ( WindowEvents* e : pWindow->get_connections() )
+  {
+    if ( maximized == GL_TRUE )
+      e->on_maximized( pWindow );
+    else
+      e->on_restored( pWindow );
+  }
+
+}
+
 void_t Window::fbsize_callback( WindowHandler window, int_t width, int_t height )
 {
   Window* pWindow = static_cast<Window*>(glfwGetWindowUserPointer( window ));
@@ -570,6 +600,19 @@ void_t Window::fbsize_callback( WindowHandler window, int_t width, int_t height 
   for ( WindowEvents* e : pWindow->get_connections() )
   {
     e->on_fb_size_changed( pWindow, width, height );
+  }
+}
+
+void_t Window::content_scale_callback(WindowHandler window, float_t xscale, float_t yscale)
+{
+  Window* pWindow = static_cast<Window*>(glfwGetWindowUserPointer( window ));
+
+  if ( pWindow == nullptr )
+    return;  
+
+  for ( WindowEvents* e : pWindow->get_connections() )
+  {
+    e->on_content_scale( pWindow, xscale, yscale );
   }
 }
 
@@ -674,5 +717,22 @@ void_t Window::char_callback( WindowHandler window, uint_t codepoint )
   }
 }
 
+void_t Window::char_mods_callback( WindowHandler window, uint_t codepoint, int_t mods )
+{
+  Window* pWindow = static_cast<Window*>(glfwGetWindowUserPointer( window ));
+  
+  if ( pWindow == nullptr )
+    return;
+
+  for ( WindowEvents* e : pWindow->get_connections() )
+  {
+    e->on_unicode_char_mods( pWindow, codepoint, mods );
+  }
+}
+
+void_t Window::drop_path_callback( [[maybe_unused]] WindowHandler window, [[maybe_unused]] int_t path_count, [[maybe_unused]] const char_t* paths[] )
+{
+  /* @todo */
+}
 
 }

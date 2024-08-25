@@ -49,7 +49,7 @@ Application::Application(
                         ) noexcept
   : m_events( std::move(events) ), m_exit(false)
 {
-  glfwSetErrorCallback(error_callback);
+  glfwSetErrorCallback(error_callback);  /* GLFW 3.3 */
 
   ProgramsCollector::initialize();
   ProgramsCollector::get_instance()->set_shaders_path( sShadersPath );

@@ -72,76 +72,76 @@ public:
    * This function should be called before create in order to handle 
    * also creation related events.
    */
-  bool               connect( WindowEvents* pEvents ) noexcept;
+  bool               connect( WindowEvents* pEvents ) noexcept(true);
   /***/
-  bool               disconnect( WindowEvents* pEvents ) noexcept;
+  bool               disconnect( WindowEvents* pEvents ) noexcept(true);
   /***/
-  const events_type& get_connections() const noexcept;
+  const events_type& get_connections() const noexcept(true);
   
   /***/
   bool               create( std::unique_ptr<window_options> options, enum_t flags = static_cast<enum_t>(processing_flag_t::epfCalling) );
   /***/
-  void_t             make_context_current() noexcept;
+  void_t             make_context_current() noexcept(true);
   /***/
-  const Renderer*    get_renderer() const noexcept
+  const Renderer*    get_renderer() const noexcept(true)
   { return m_ptrRenderer.get(); }
 
   /***/
-  bool               show( enum_t flags = static_cast<enum_t>(processing_flag_t::epfCalling) ) noexcept;
+  bool               show( enum_t flags = static_cast<enum_t>(processing_flag_t::epfCalling) ) noexcept(true);
   /***/
-  bool               hide( enum_t flags = static_cast<enum_t>(processing_flag_t::epfCalling) ) noexcept;
+  bool               hide( enum_t flags = static_cast<enum_t>(processing_flag_t::epfCalling) ) noexcept(true);
   /**
    * Return true if windows is in windowed mode or false if window is in full screen mode. 
    */
-  bool               is_windowed() const noexcept;
+  bool               is_windowed() const noexcept(true);
   /***/
-  bool               set_title( const std::string& sTitle, enum_t flags = static_cast<enum_t>(processing_flag_t::epfCalling) ) noexcept;
+  bool               set_title( const std::string& sTitle, enum_t flags = static_cast<enum_t>(processing_flag_t::epfCalling) ) noexcept(true);
   /***/
-  bool               set_position( const position_t<int_t>& position, enum_t flags = static_cast<enum_t>(processing_flag_t::epfCalling) ) noexcept;
+  bool               set_position( const position_t<int_t>& position, enum_t flags = static_cast<enum_t>(processing_flag_t::epfCalling) ) noexcept(true);
   /***/
-  bool               set_size( const Size& size, enum_t flags = static_cast<enum_t>(processing_flag_t::epfCalling) ) noexcept;
+  bool               set_size( const Size& size, enum_t flags = static_cast<enum_t>(processing_flag_t::epfCalling) ) noexcept(true);
   /***/
-  void_t             get_framebuffer_size( Size& size ) noexcept;
+  void_t             get_framebuffer_size( Size& size ) noexcept(true);
   /***/
-  bool               show_normal( enum_t flags = static_cast<enum_t>(processing_flag_t::epfCalling) ) noexcept;
+  bool               show_normal( enum_t flags = static_cast<enum_t>(processing_flag_t::epfCalling) ) noexcept(true);
   /***/
-  bool               show_minimized( enum_t flags = static_cast<enum_t>(processing_flag_t::epfCalling) ) noexcept;
+  bool               show_minimized( enum_t flags = static_cast<enum_t>(processing_flag_t::epfCalling) ) noexcept(true);
   /**
    *  It is possible to select the minimum number of screen updates the driver should wait 
    *  before swapping buffers:
    */
-  void_t             set_swap_interval( int iRefresh ) noexcept;
+  void_t             set_swap_interval( int iRefresh ) noexcept(true);
   /***/
-  void_t             swap_buffers() noexcept;
+  void_t             swap_buffers() noexcept(true);
   /***/
-  void_t             close() noexcept;
+  void_t             close() noexcept(true);
   /***/
-  bool               destroy( enum_t flags = static_cast<enum_t>(processing_flag_t::epfCalling) ) noexcept;
+  bool               destroy( enum_t flags = static_cast<enum_t>(processing_flag_t::epfCalling) ) noexcept(true);
   /***/
-  bool               get_input_mode( int mode, int& value ) noexcept;
+  bool               get_input_mode( int mode, int& value ) noexcept(true);
   /***/
-  bool               set_input_mode( int mode, int value  ) noexcept;
+  bool               set_input_mode( int mode, int value  ) noexcept(true);
   
   /***/
-  bool               get_cursor_position( position_t<double>& position ) noexcept;
+  bool               get_cursor_position( position_t<double>& position ) noexcept(true);
   /***/
-  bool               set_cursor_position( const position_t<double>& position ) noexcept;
+  bool               set_cursor_position( const position_t<double>& position ) noexcept(true);
   
   /** 
    */
-  bool               check( window_flag_t flags ) noexcept;
+  bool               check( window_flag_t flags ) noexcept(true);
   
   /**
    * Return true if a message has been processed, false if message queue was empty.
    */
-  bool               process_message() noexcept;
+  bool               process_message() noexcept(true);
   
   /**
    */  
-  bool               send_message( Message* pMessage ) noexcept;
+  bool               send_message( Message* pMessage ) noexcept(true);
   /**
    */
-  bool               post_message( Message* pMessage ) noexcept;
+  bool               post_message( Message* pMessage ) noexcept(true);
   
 protected:
   /***/
@@ -149,31 +149,39 @@ protected:
   
 private:
   /***/
-  static void_t pos_callback         (WindowHandler window, int_t xpos, int_t ypos );
+  static void_t pos_callback          (WindowHandler window, int_t xpos, int_t ypos );
   /***/
-  static void_t size_callback        (WindowHandler window, int_t width, int_t height );
+  static void_t size_callback         (WindowHandler window, int_t width, int_t height );
   /***/
-  static void_t close_callback       (WindowHandler window );
+  static void_t close_callback        (WindowHandler window );
   /***/
-  static void_t refresh_callback     (WindowHandler window );
+  static void_t refresh_callback      (WindowHandler window );
   /***/
-  static void_t focus_callback       (WindowHandler window, int_t focus );
+  static void_t focus_callback        (WindowHandler window, int_t focus );
   /***/
-  static void_t iconify_callback     (WindowHandler window, int_t iconified );
+  static void_t iconify_callback      (WindowHandler window, int_t iconified );
   /***/
-  static void_t key_callback         (WindowHandler window, int_t key, int_t scancode, int_t action, int_t mods);
+  static void_t maximize_callback     (WindowHandler window, int_t maximized );
   /***/
-  static void_t char_callback        (WindowHandler window, uint_t codepoint );
+  static void_t key_callback          (WindowHandler window, int_t key, int_t scancode, int_t action, int_t mods);
   /***/
-  static void_t fbsize_callback      (WindowHandler window, int_t width, int_t height );
+  static void_t char_callback         (WindowHandler window, uint_t codepoint );
   /***/
-  static void_t mouse_button_callback(WindowHandler window, int_t button, int_t action, int_t mods );
+  static void_t char_mods_callback    (WindowHandler window, uint_t codepoint, int_t mods );
   /***/
-  static void_t mouse_pos_callback   (WindowHandler window, double_t xpos, double_t ypos );
+  static void_t fbsize_callback       (WindowHandler window, int_t width, int_t height );
   /***/
-  static void_t mouse_enter_callback (WindowHandler window, int_t entered );
+  static void_t content_scale_callback(WindowHandler window, float_t xscale, float_t yscale);
   /***/
-  static void_t mouse_scroll_callback(WindowHandler window, double_t xoffset, double_t yoffset );
+  static void_t mouse_button_callback (WindowHandler window, int_t button, int_t action, int_t mods );
+  /***/
+  static void_t mouse_pos_callback    (WindowHandler window, double_t xpos, double_t ypos );
+  /***/
+  static void_t mouse_enter_callback  (WindowHandler window, int_t entered );
+  /***/
+  static void_t mouse_scroll_callback (WindowHandler window, double_t xoffset, double_t yoffset );
+  /***/
+  static void_t drop_path_callback    (WindowHandler window, int_t path_count, const char_t* paths[] );
 
 private:
   /***/
