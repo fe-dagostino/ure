@@ -86,7 +86,6 @@ protected:
     
 protected:
   using scene_node_map_t  = std::unordered_map<std::string, std::unique_ptr<SceneNodeBase>>;
-  //using scene_node_maps_t = std::unordered_map<std::string, std::unique_ptr<scene_node_map_t>>;
   using scene_node_maps_t = std::unordered_map<std::string, std::unique_ptr<scene_node_map_t>>;
 
   /***/
