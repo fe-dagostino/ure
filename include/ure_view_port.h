@@ -38,74 +38,77 @@ class ViewPort
 {
 public:
   /***/
-  ViewPort() noexcept
-    : m_ptrSceneGraph( nullptr ), m_pos( 0.0f, 0.0f ), m_size( 2, 2 ) 
+  ViewPort() noexcept(true)
+    : m_scene_graph( nullptr ), m_projection_matrix( glm::mat4( 1.0f ) ),
+      m_pos( 0.0f, 0.0f ), m_size( 2, 2 ) 
   {
-    m_matProjection = glm::mat4( 1.0f );
     reset();
   }
 
   /***/
-  ViewPort( SceneGraph*& pSceneGraph, const glm::mat4& mProjection ) noexcept
-    : m_ptrSceneGraph( nullptr ), m_pos( 0.0f, 0.0f ), m_size( 2, 2 )
+  ViewPort( std::unique_ptr<SceneGraph> scene_graph, const glm::mat4& projection_matrix ) noexcept(true)
+    : m_scene_graph( std::move(scene_graph) ), m_projection_matrix( projection_matrix ),
+      m_pos( 0.0f, 0.0f ), m_size( 2, 2 )
   {
-    set_scene(pSceneGraph);
-    m_matProjection = mProjection;
+    m_projection_matrix = projection_matrix;
     
     reset();
   }
 
   /***/
-  ~ViewPort() noexcept
+  ~ViewPort() noexcept(true)
   {}
 
   /***/
-  void  use() noexcept;
+  void_t use() noexcept(true);
   /***/
-  void  reset() noexcept;
+  void_t reset() noexcept(true);
 
   /**
    * GL_COLOR_BUFFER_BIT     Indicates the buffers currently enabled for color writing.
    * GL_DEPTH_BUFFER_BIT     Indicates the depth buffer.
    * GL_STENCIL_BUFFER_BIT   Indicates the stencil buffer.
    */
-  void  clear_buffer( GLbitfield mask = GL_COLOR_BUFFER_BIT ) noexcept;
+  void_t clear_buffer( GLbitfield mask = GL_COLOR_BUFFER_BIT ) noexcept(true);
 
   /***/
-  inline SceneGraph*  set_scene(SceneGraph*& pSceneGraph ) noexcept
+  inline std::unique_ptr<SceneGraph>  set_scene( std::unique_ptr<SceneGraph> scene_graph ) noexcept(true)
   {
-    SceneGraph* pRetVal = m_ptrSceneGraph.release();
+    std::unique_ptr<SceneGraph> old_sg = std::move(m_scene_graph);
     
-    m_ptrSceneGraph.reset( pSceneGraph ); 
-    pSceneGraph = nullptr;
+    m_scene_graph = std::move(scene_graph);
     
-    return pRetVal;
+    return old_sg;
   }
 
   /***/
-  inline SceneGraph*  get_scene() const noexcept
-  { return m_ptrSceneGraph.get(); }
+  inline bool_t has_scene_graph() const noexcept(true)
+  { return (m_scene_graph != nullptr); }
 
   /***/
-  inline void         set_area( int_t x, int_t y, sizei_t width, sizei_t height ) noexcept
+  inline SceneGraph&  get_scene() const noexcept(true)
+  { return *m_scene_graph; }
+
+  /***/
+  constexpr void_t    set_area( int_t x, int_t y, sizei_t width, sizei_t height ) noexcept(true)
   {
     m_pos.x       = x;     m_pos.y       = y;
     m_size.width  = width; m_size.height = height;      
   }
   /***/
-  inline void         get_area( int_t& x, int_t& y, sizei_t& width, sizei_t& height ) const noexcept
+  constexpr void_t    get_area( int_t& x, int_t& y, sizei_t& width, sizei_t& height ) const noexcept(true)
   {
     x      = m_pos.x;      y      = m_pos.y;
     width  = m_size.width; height = m_size.height;
   }
 
   /***/
-  inline bool         render() noexcept
+  inline bool_t       render() noexcept(true)
   {
-    if ( m_ptrSceneGraph == nullptr )
+    if ( m_scene_graph == nullptr )
       return false;
     
-    return m_ptrSceneGraph->render( get_projection_matrix().get() );
+    return m_scene_graph->render( get_projection_matrix().get() );
   }
 
   /**
@@ -113,12 +116,12 @@ public:
    * Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
    * glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
    */
-  inline TMatrix&     get_projection_matrix() 
-  { return m_matProjection; }
+  constexpr xform_matrix_t&   get_projection_matrix() noexcept(true)
+  { return m_projection_matrix; }
 
 private:
-  std::unique_ptr<SceneGraph> m_ptrSceneGraph;
-  TMatrix                     m_matProjection;
+  std::unique_ptr<SceneGraph> m_scene_graph;
+  xform_matrix_t              m_projection_matrix;
   Position2D                  m_pos;
   Size                        m_size;
   

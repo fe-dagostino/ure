@@ -31,18 +31,7 @@
 
 namespace ure {
 
-SceneGraph::SceneGraph( )
-  : SceneNode( "Root", nullptr ),
-    m_red(0.0f), m_green(0.0f), m_blue(0.0f), m_alpha(1.0f)
-{
-}
-
-SceneGraph::~SceneGraph()
-{
-  
-}
-
-void  SceneGraph::set_background( GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha )
+void_t  SceneGraph::set_background( GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha ) noexcept(true)
 {
   m_red   = red;
   m_green = green;
@@ -54,7 +43,7 @@ void  SceneGraph::set_background( GLclampf red, GLclampf green, GLclampf blue, G
   glClearColor( m_red, m_green, m_blue, m_alpha );
 }
 
-void  SceneGraph::get_background( GLclampf& red, GLclampf& green, GLclampf& blue, GLclampf& alpha )
+void_t  SceneGraph::get_background( GLclampf& red, GLclampf& green, GLclampf& blue, GLclampf& alpha ) noexcept(true)
 {
   red     = m_red;
   green   = m_green;
@@ -62,7 +51,7 @@ void  SceneGraph::get_background( GLclampf& red, GLclampf& green, GLclampf& blue
   alpha   = m_alpha;
 }
 
-const SceneCameraNode*  SceneGraph::get_active_camera() const
+const SceneCameraNode*  SceneGraph::get_active_camera() const noexcept(true)
 {
   const scene_node_map_t* mapCameras = get_scene_node_map( "SceneCameraNode" );
   if ( mapCameras == nullptr )
@@ -78,7 +67,7 @@ const SceneCameraNode*  SceneGraph::get_active_camera() const
   return nullptr;
 }
   
-bool  SceneGraph::render( const glm::mat4& mProjection )
+bool  SceneGraph::render( const glm::mat4& mProjection ) noexcept(true)
 {
   const SceneCameraNode* pActiveCamera = get_active_camera();
   Camera*                pCamera       = (pActiveCamera!=nullptr)?(Camera*)pActiveCamera->get_camera():nullptr; 
@@ -86,7 +75,7 @@ bool  SceneGraph::render( const glm::mat4& mProjection )
   return render( mProjection, pCamera );
 }
 
-bool  SceneGraph::render( const glm::mat4& mProjection, Camera* pCamera )
+bool  SceneGraph::render( const glm::mat4& mProjection, Camera* pCamera ) noexcept(true)
 { 
   for ( auto n : m_vRender )
   {
@@ -96,7 +85,7 @@ bool  SceneGraph::render( const glm::mat4& mProjection, Camera* pCamera )
   return true; 
 }
  
-bool  SceneGraph::on_add_scene_node( SceneNodeBase* pSceneNode )
+bool  SceneGraph::on_add_scene_node( SceneNodeBase* pSceneNode ) noexcept(true)
 {
   m_vRender.push_back( pSceneNode );
   return true;

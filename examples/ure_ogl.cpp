@@ -50,8 +50,11 @@ private:
                                         );
                                         
     pCamera->set_view_matrix( CameraMatrix );
-  
-    m_pViewPort->get_scene()->add_scene_node( new ure::SceneCameraNode( "MainCamera", pCamera ) );
+
+    if ( m_pViewPort->has_scene_graph() )
+    {
+      m_pViewPort->get_scene().add_scene_node( new ure::SceneCameraNode( "MainCamera", pCamera ) );
+    }
   }
 
   void addWallLayer()
@@ -79,7 +82,8 @@ private:
     pNode->set_model_matrix( mModel );
     pNode->get_model_matrix().translate( 0, 0,   0 );
 
-    m_pViewPort->get_scene()->add_scene_node( pNode );    
+    if ( m_pViewPort->has_scene_graph() )
+      m_pViewPort->get_scene().add_scene_node( pNode );    
   }
 
   void init( [[__maybe_unused__]] int argc, [[__maybe_unused__]] char** argv )
@@ -130,8 +134,8 @@ private:
 
     //////////////////////////////////////////////////////////////////////////
 
-    ure::SceneGraph* pSceneGraph = new ure::SceneGraph();
-    if ( pSceneGraph == nullptr )
+    std::unique_ptr<ure::SceneGraph> scene_graph = std::make_unique<ure::SceneGraph>();
+    if ( scene_graph == nullptr )
     {
       ure::utils::log( "Unable to allocate SceneGraph" );
       return ;
@@ -139,7 +143,7 @@ private:
 
     glm::mat4 mProjection = glm::perspectiveFov(45.0f, (float)m_size.width, (float)m_size.height, 0.1f, 500.0f);
 
-    m_pViewPort   = new ure::ViewPort( pSceneGraph, mProjection );
+    m_pViewPort   = new ure::ViewPort( std::move(scene_graph), mProjection );
 
 
     loadResources();
@@ -166,8 +170,6 @@ public:
 
     ure::Application::get_instance()->finalize();
   }
-
-protected:
 
 // ure::ApplicationEvents implementation  
 protected:
@@ -211,14 +213,19 @@ protected:
     m_pViewPort->use();
 
     // Update background color
-    m_pViewPort->get_scene()->set_background( 0.2f, 0.2f, 0.2f, 0.0f );
-
-    ure::SceneLayerNode* pLayer1 = m_pViewPort->get_scene()->get_scene_node<ure::SceneLayerNode>("SceneNode","Layer1");
-    if ( pLayer1 != nullptr )
+    if ( m_pViewPort->has_scene_graph() )
     {
-      pLayer1->get_model_matrix().rotateX(0.01);
-      pLayer1->get_model_matrix().rotateY(0.01);
-      pLayer1->get_model_matrix().rotateZ(0.01);
+      ure::SceneGraph& sgr = m_pViewPort->get_scene();
+      
+      sgr.set_background( 0.2f, 0.2f, 0.2f, 0.0f );
+
+      ure::SceneLayerNode* pLayer1 = sgr.get_scene_node<ure::SceneLayerNode>("SceneNode","Layer1");
+      if ( pLayer1 != nullptr )
+      {
+        pLayer1->get_model_matrix().rotateX(0.01);
+        pLayer1->get_model_matrix().rotateY(0.01);
+        pLayer1->get_model_matrix().rotateZ(0.01);
+      }
     }
 
     ///////////////
@@ -247,7 +254,32 @@ protected:
   /***/
   virtual ure::void_t on_finalize_error(/* @todo */) override {};
 
-// ure::ResourcesFetcherEvents implementation
+
+/* ure::WindowsEvents implementation */
+protected:  
+
+  virtual ure::void_t  on_key_pressed ( [[maybe_unused]] ure::Window* window, [[maybe_unused]] ure::key_t key, [[maybe_unused]] ure::int_t scan_code, [[maybe_unused]] ure::word_t mods ) noexcept(true) override
+  {
+    switch (key)
+    {
+      case ure::key_t::KEY_C:
+      {
+        //glm::mat4 view_matrix = glm::mat4(1);
+
+        //m_pViewPort->get_scene()->get_active_camera()->get_camera()->get_view_matrix() = view_matrix;
+
+
+      }; break;
+    
+      default:
+      {
+        ure::WindowEvents::on_key_pressed( window, key, scan_code, mods );
+      }; break;
+    }
+    
+  }
+
+/* ure::ResourcesFetcherEvents implementation */
 protected:  
   virtual ure::void_t on_download_succeeded( [[maybe_unused]] const std::string& name, [[maybe_unused]] const std::type_info& type, [[maybe_unused]] const ure::byte_t* data, [[maybe_unused]] ure::uint_t length ) noexcept(true) override
   {

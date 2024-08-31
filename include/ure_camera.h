@@ -38,17 +38,29 @@ class Camera : public Object
 public:
   
   /***/
-  Camera( bool bActive );
+  Camera( bool_t active ) noexcept(true)
+    : Object(), m_active( active ), 
+      m_camera_position( 0, 0, 0 ), 
+      m_camera_center  ( 0, 0, 0 ), 
+      m_camera_top     ( 0, 0, 0 )
+  { lookAt(); }
+
   /***/
-  virtual ~Camera();
+  constexpr virtual ~Camera() noexcept(true)
+  {}
   
   /**
    */
-  inline bool                    is_active() const
-  { return m_bActive; }
+  constexpr bool_t                is_active() const noexcept(true)
+  { return m_active; }
   /***/
-  bool                           set_active( bool bActive );
-  
+  constexpr bool_t                set_active( bool_t active ) noexcept(true)
+  {
+    bool_t    _old_value = m_active;
+    m_active = active;
+    return  _old_value;
+  }
+
   /**
    * glm::vec3 cameraPosition = glm::vec3(4,3,3); // Camera is at (4,3,3), in World Space
    * glm::vec3 cameraTarget   = glm::vec3(0,0,0); // and looks at the origin
@@ -60,44 +72,56 @@ public:
    *                                         upVector        // probably glm::vec3(0,1,0), but (0,-1,0) would make you looking upside-down, which can be great too
    *                                     );
    */
-  inline TMatrix&       get_view_matrix() noexcept
-  { return m_matView; }
-  inline const TMatrix& get_view_matrix() const noexcept
-  { return m_matView; }
-  inline void_t         set_view_matrix( const TMatrix& tmat ) noexcept
-  { m_matView = tmat; }
-  inline void_t         set_view_matrix( const glm::mat4& mat ) noexcept
-  { m_matView = mat;  }
+  constexpr xform_matrix_t&       get_view_matrix() noexcept(true)
+  { return m_view_matrix; }
+
+  template<typename data_t>
+    requires std::same_as<data_t,xform_matrix_t> || std::same_as<data_t,glm::mat4>
+  constexpr void_t                set_view_matrix( const data_t& tmat ) noexcept(true)
+  { m_view_matrix = tmat; }
   
   /***/  
-  const Position3D&     get_position() const
-  { return m_vPosition; }
+  constexpr const Position3D&     get_position() const noexcept(true)
+  { return m_camera_position; }
   /***/
-  void                  set_position( const Position3D& vPos );
-  
-  /***/
-  const Position3D&     get_center() const
-  { return m_vCenter; }
-  /***/
-  void                  set_center( const Position3D& vCenter );
+  inline void_t                   set_position( const Position3D& camera_position ) noexcept(true)
+  {
+    m_camera_position = camera_position;
+    lookAt();
+  }
 
   /***/
-  const Position3D&     get_up() const
-  { return m_vUp; }
+  constexpr const Position3D&     get_center() const noexcept(true)
+  { return m_camera_center; }
   /***/
-  void                  set_up( const Position3D& vUp );
-  
+  inline void_t                   set_center( const Position3D& camera_center ) noexcept(true)
+  {
+    m_camera_center   = camera_center;
+    lookAt();
+  }
+
+  /***/
+  constexpr const Position3D&     get_up() const noexcept(true)
+  { return m_camera_top; }
+  /***/
+  inline void_t                   set_up( const Position3D& camera_top ) noexcept(true)
+  {
+    m_camera_top      = camera_top;
+    lookAt();
+  }
+
 private:
   /***/
-  void lookAt();
+  inline void_t lookAt() noexcept(true)
+  { m_view_matrix = glm::lookAt( m_camera_position, m_camera_center, m_camera_top ); }
   
 protected:
-  bool         m_bActive;
-  TMatrix      m_matView;
+  bool_t          m_active;
+  xform_matrix_t  m_view_matrix;
   
-  Position3D   m_vPosition;  // Camera Position (eyes)
-  Position3D   m_vCenter;    // Where the camera is pointed to
-  Position3D   m_vUp;        // Top of the camera
+  Position3D      m_camera_position;  // Camera Position (eyes)
+  Position3D      m_camera_center;    // Where the camera is pointed to
+  Position3D      m_camera_top;       // Top of the camera
 };
 
 }

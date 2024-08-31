@@ -28,7 +28,7 @@ namespace ure {
 
 
   
-bool SceneLayerNode::render( const glm::mat4& mProjection, Camera* pCamera )
+bool_t SceneLayerNode::render( const glm::mat4& mProjection, Camera* pCamera ) noexcept(true)
 {
   widgets::Layer* layer = get_object<widgets::Layer>();
   if ( layer == nullptr )
@@ -42,8 +42,8 @@ bool SceneLayerNode::render( const glm::mat4& mProjection, Camera* pCamera )
   glm::mat4  mView = (pCamera==nullptr)?glm::mat4(1.0f):pCamera->get_view_matrix().get();
   
   glm::mat4  mvp =  mProjection * mView * m_matModel.get();
-  if (get_animation() != nullptr)
-    mvp *= get_animation()->get_matrix().get();
+  if (has_animation() == true )
+    mvp *= get_animation().get_matrix().get();
 
   return layer->render( mvp );
 }

@@ -73,12 +73,6 @@ public:
     
     return static_cast<derived_t*>(_nodeIterator->second.get());
   }  
-
-  /**
-   * @param pCamera    pointer to the active camera it will provide
-   *                   projection matrix.
-   */
-  virtual bool      render( const glm::mat4& mProjection, Camera* pCamera ) = 0;
     
 protected:
   /***/

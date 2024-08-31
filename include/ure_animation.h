@@ -35,16 +35,18 @@ class Animation
 {
 public:
   /***/
-  Animation(){};
+  constexpr Animation() noexcept(true)
+  {}
   /***/
-  virtual ~Animation(){};
+  virtual ~Animation() noexcept(true)
+  {}
   
   /***/
-  TMatrix&   get_matrix()
+  xform_matrix_t&   get_matrix() noexcept(true)
   { return m_matAnimation; }
   
 private:
-  TMatrix    m_matAnimation;  
+  xform_matrix_t    m_matAnimation;  
 };
 
 }

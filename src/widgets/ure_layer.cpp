@@ -146,44 +146,44 @@ void_t  Layer::on_mouse_scroll([[maybe_unused]] Window* pWindow, [[maybe_unused]
   
 }
 
-void_t  Layer::on_key_released( [[maybe_unused]] Window* pWindow, int_t iKey, int_t iScanCode, word_t wMods ) noexcept
+void_t  Layer::on_key_released( [[maybe_unused]] Window* pWindow, key_t key, int_t iScanCode, word_t wMods ) noexcept
 {
   if ( is_enabled() == false )
     return;
  
   // Propagate event to all registered functions even 
   // there is no focus.
-  signalKeyReleased.emit( pWindow, this, iKey, iScanCode, wMods );
+  signalKeyReleased.emit( pWindow, this, key, iScanCode, wMods );
 }
 
-void_t  Layer::on_key_pressed( Window* pWindow, int_t iKey, int_t iScanCode, word_t wMods ) noexcept
+void_t  Layer::on_key_pressed( Window* pWindow, key_t key, int_t iScanCode, word_t wMods ) noexcept
 {
   if ( is_enabled() == false )
     return;
   
-  if ( iKey == GLFW_KEY_TAB )
+  if ( key == key_t::KEY_TAB )
   {
     step_focus();
   }
   
   // Propagate event to all registered functions even 
   // there is no focus.
-  signalKeyPressed.emit( pWindow, this, iKey, iScanCode, wMods );
+  signalKeyPressed.emit( pWindow, this, key, iScanCode, wMods );
 }
 
-void_t  Layer::on_key_repeated( Window* pWindow, int_t iKey, int_t iScanCode, word_t wMods ) noexcept
+void_t  Layer::on_key_repeated( Window* pWindow, key_t key, int_t iScanCode, word_t wMods ) noexcept
 {
   if ( is_enabled() == false )
     return;
   
-  if ( iKey == GLFW_KEY_TAB )
+  if ( key == key_t::KEY_TAB )
   {
     step_focus();
   }
   
   // Propagate event to all registered functions even 
   // there is no focus.
-  signalKeyRepeated.emit( pWindow, this, iKey, iScanCode, wMods );
+  signalKeyRepeated.emit( pWindow, this, key, iScanCode, wMods );
 }
 
 void_t  Layer::on_unicode_char( [[maybe_unused]] Window* pWindow, [[maybe_unused]] uint_t iCodePoint ) noexcept

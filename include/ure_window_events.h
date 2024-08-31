@@ -49,21 +49,12 @@ public:
     BUTTON_MIDDLE = BUTTON_3,
   };
 
-  enum class mouse_modifier_key_flag_t : int_t {
-    SHIFT         = 0x0001,   /*  One or more Shift keys were held down. */
-    CONTROL       = 0x0002,   /*  One or more Control keys were held down. */
-    ALT           = 0x0004,   /*  One or more Alt keys were held down. */
-    SUPER         = 0x0008,   /*  One or more Super keys were held down. */
-    CAPS_LOCK     = 0x0010,   /*  Caps Lock key is enabled. */
-    NUM_LOCK      = 0x0020    /*  Num Lock key is enabled. */
-  };
-
   /***/
-  WindowEvents() noexcept(true)
+  constexpr WindowEvents() noexcept(true)
   {}
 
   /***/
-  virtual ~WindowEvents() noexcept(true)
+  constexpr virtual ~WindowEvents() noexcept(true)
   {}
   
   /**
@@ -135,14 +126,14 @@ public:
   virtual void_t  on_mouse_scroll( [[maybe_unused]] Window* pWindow, [[maybe_unused]] double_t dOffsetX, [[maybe_unused]] double_t dOffsetY ) noexcept(true)
   {}
   /***/
-  virtual void_t  on_key_released( [[maybe_unused]] Window* pWindow, [[maybe_unused]] int_t iKey, [[maybe_unused]] int_t iScanCode, [[maybe_unused]] word_t wMods ) noexcept(true)
+  virtual void_t  on_key_released( [[maybe_unused]] Window* pWindow, [[maybe_unused]] key_t key, [[maybe_unused]] int_t iScanCode, [[maybe_unused]] word_t wMods ) noexcept(true)
   {}
   /**
    * Default implementation will close widows when ESCAPE key went pressed.
    */
-  virtual void_t  on_key_pressed ( [[maybe_unused]] Window* pWindow, [[maybe_unused]] int_t iKey, [[maybe_unused]] int_t iScanCode, [[maybe_unused]] word_t wMods ) noexcept(true);  
+  virtual void_t  on_key_pressed ( [[maybe_unused]] Window* pWindow, [[maybe_unused]] key_t key, [[maybe_unused]] int_t iScanCode, [[maybe_unused]] word_t wMods ) noexcept(true);
   /***/
-  virtual void_t  on_key_repeated( [[maybe_unused]] Window* pWindow, [[maybe_unused]] int_t iKey, [[maybe_unused]] int_t iScanCode, [[maybe_unused]] word_t wMods ) noexcept(true) 
+  virtual void_t  on_key_repeated( [[maybe_unused]] Window* pWindow, [[maybe_unused]] key_t key, [[maybe_unused]] int_t iScanCode, [[maybe_unused]] word_t wMods ) noexcept(true) 
   {}
   /***/
   virtual void_t  on_unicode_char( [[maybe_unused]] Window* pWindow, [[maybe_unused]] uint_t iCodePoint ) noexcept(true) 

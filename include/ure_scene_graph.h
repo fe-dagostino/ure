@@ -36,24 +36,30 @@ class SceneGraph : public SceneNode
 {
 public:
   /***/
-  SceneGraph();
+  SceneGraph()
+    : SceneNode( "Root", nullptr ),
+      m_red(0.0f), m_green(0.0f), m_blue(0.0f), m_alpha(1.0f)
+  {
+  }
+
   /***/
-  ~SceneGraph();
+  ~SceneGraph() noexcept(true)
+  { }
   
   /**
    * Return current active camera that will be used during render operation.
    * If there is no camera, return value will be nullptr and identity matrix
    * will be used for render.
    */
-  const SceneCameraNode*  get_active_camera() const;
+  const SceneCameraNode*  get_active_camera() const noexcept(true);
     
   /***/
-  void    set_background( GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha );
+  void    set_background( GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha ) noexcept(true);
   /***/
-  void    get_background( GLclampf& red, GLclampf& green, GLclampf& blue, GLclampf& alpha );
+  void    get_background( GLclampf& red, GLclampf& green, GLclampf& blue, GLclampf& alpha ) noexcept(true);
   
   /***/
-  bool    render( const glm::mat4& mProjection );
+  bool_t  render( const glm::mat4& mProjection ) noexcept(true);
   
 protected:  
   /**
@@ -61,10 +67,10 @@ protected:
    * 
    * @todo implements rendering order
    */
-  virtual bool render( const glm::mat4& mProjection, Camera* pCamera );
+  virtual bool_t render( const glm::mat4& mProjection, Camera* pCamera ) noexcept(true);
 
   /***/
-  virtual bool on_add_scene_node( SceneNodeBase* pSceneNode );
+  virtual bool_t on_add_scene_node( SceneNodeBase* pSceneNode ) noexcept(true);
   
 private:
   GLclampf   m_red, m_green, m_blue, m_alpha;  

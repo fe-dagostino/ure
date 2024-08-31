@@ -36,45 +36,44 @@ class window_options
 public:
   /***/
   constexpr window_options(
-                   const std::string&       monitor,
-                   const std::string&       title,
-                   const position_t<int_t>& position, 
-                   const Size&              size 
-                 ) noexcept
+                   const std::string& monitor,
+                   const std::string& title,
+                   const Position&    position, 
+                   const Size&        size 
+                 ) noexcept(true)
     : m_sMonitor(monitor), m_sTitle(title), 
       m_position(position),
       m_size(size)
   {}
   
   /***/
-  constexpr ~window_options() noexcept
+  constexpr ~window_options() noexcept(true)
   {}
   
   /***/
-  constexpr inline const std::string&   monitor() const noexcept
+  constexpr inline const std::string&   monitor() const noexcept(true)
   { return m_sMonitor; }
   /***/
-  constexpr inline const std
-  ::string&   title() const noexcept
+  constexpr inline const std::string&   title() const noexcept(true)
   { return m_sTitle;   }
   /***/
-  constexpr inline int32_t              x() const noexcept
+  constexpr inline int32_t              x() const noexcept(true)
   { return m_position.x;    }
   /***/
-  constexpr inline int32_t              y() const noexcept
+  constexpr inline int32_t              y() const noexcept(true)
   { return m_position.y;    }
   /***/
-  constexpr inline sizei_t              width() const noexcept
+  constexpr inline sizei_t              width() const noexcept(true)
   { return m_size.width;    }
   /***/
-  constexpr inline sizei_t              height() const noexcept
+  constexpr inline sizei_t              height() const noexcept(true)
   { return m_size.height;    }
   
 private:
-  const std::string       m_sMonitor;
-  const std::string       m_sTitle;
-  const position_t<int_t> m_position;
-  const Size              m_size;
+  const std::string  m_sMonitor;
+  const std::string  m_sTitle;
+  const Position     m_position;
+  const Size         m_size;
 };
 
 }

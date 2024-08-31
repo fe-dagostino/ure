@@ -33,75 +33,85 @@ namespace ure {
 
 /**
  */
-class TMatrix
+class transformation_matrix_t
 {
 public:
   /***/
-  constexpr inline TMatrix( )
+  constexpr inline transformation_matrix_t( ) noexcept(true)
     : m_matrix( glm::mat4( 1.0f) )
   {}
   /***/
-  constexpr inline TMatrix( const TMatrix& tmat )
+  constexpr inline transformation_matrix_t( const transformation_matrix_t& tmat ) noexcept(true)
     : m_matrix( tmat.m_matrix )
   {}
   /***/
-  constexpr inline TMatrix( TMatrix&& tmat )
+  constexpr inline transformation_matrix_t( transformation_matrix_t&& tmat ) noexcept(true)
     : m_matrix( std::move(tmat.m_matrix) )
+  {}
+  /***/
+  constexpr inline transformation_matrix_t( const glm::mat4& mat ) noexcept(true)
+    : m_matrix( mat )
+  {}
+  /***/
+  constexpr inline transformation_matrix_t( glm::mat4&& mat ) noexcept(true)
+    : m_matrix( std::move(mat) )
   {}
 
   /***/
-  constexpr inline ~TMatrix()
+  constexpr inline ~transformation_matrix_t() noexcept(true)
   {}
   
   /***/
-  constexpr inline const glm::mat4&  get() const noexcept
+  constexpr inline const glm::mat4&  get() const noexcept(true)
   { return m_matrix; }
   
   /***/
-  constexpr inline TMatrix&  operator = ( const TMatrix& tmat ) noexcept
+  constexpr inline transformation_matrix_t&  operator = ( const transformation_matrix_t& tmat ) noexcept(true)
   { 
     m_matrix = tmat.m_matrix; 
     return *this;
   }
   /***/
-  constexpr inline TMatrix&  operator = ( TMatrix&& tmat ) noexcept
+  constexpr inline transformation_matrix_t&  operator = ( transformation_matrix_t&& tmat ) noexcept(true)
   { 
     m_matrix = std::move(tmat.m_matrix); 
     return *this;
   }
 
   /***/
-  constexpr inline glm::mat4&  operator = ( const glm::mat4& mat ) noexcept
+  constexpr inline glm::mat4&  operator = ( const glm::mat4& mat ) noexcept(true)
   { 
     m_matrix = mat; 
     return m_matrix;
   }
   /***/
-  constexpr inline glm::mat4&  operator = ( glm::mat4&& mat ) noexcept
+  constexpr inline glm::mat4&  operator = ( glm::mat4&& mat ) noexcept(true)
   { 
     m_matrix = std::move(mat); 
     return m_matrix;
   }
   
   /***/
-  inline void_t  scale( double_t xs, double_t ys, double_t zs )
+  inline void_t  scale( double_t xs, double_t ys, double_t zs ) noexcept(true)
   { m_matrix = glm::scale( m_matrix, glm::vec3(xs,ys,zs) );  }
   /***/
-  inline void_t  translate( double_t x, double_t y, double_t z )
+  inline void_t  translate( double_t x, double_t y, double_t z ) noexcept(true)
   { m_matrix = glm::translate( m_matrix, glm::vec3(x,y,z) ); }
   /***/
-  inline void_t  rotateX( float_t angle )
+  inline void_t  rotateX( float_t angle ) noexcept(true)
   { m_matrix = glm::rotate( m_matrix, angle, glm::vec3(1.0f,0.0f,0.0f) ); }
   /***/
-  inline void_t  rotateY( float_t angle )
+  inline void_t  rotateY( float_t angle ) noexcept(true)
   { m_matrix = glm::rotate( m_matrix, angle, glm::vec3(0.0f,1.0f,0.0f) ); }
   /***/
-  inline void_t  rotateZ( float_t angle )
+  inline void_t  rotateZ( float_t angle ) noexcept(true)
   { m_matrix = glm::rotate( m_matrix, angle, glm::vec3(0.0f,0.0f,1.0f) ); }  
   
 private:
   glm::mat4         m_matrix;
 };
+
+typedef transformation_matrix_t xform_matrix_t;
 
 }
 

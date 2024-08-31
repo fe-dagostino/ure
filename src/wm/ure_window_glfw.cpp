@@ -32,7 +32,7 @@
 namespace ure {
 
 
-bool  Window::create( std::unique_ptr<window_options> options, enum_t flags )
+bool_t Window::create( std::unique_ptr<window_options> options, enum_t flags ) noexcept(true)
 {
   if ((m_hWindow != nullptr) || (options == nullptr))
     return false;
@@ -41,7 +41,7 @@ bool  Window::create( std::unique_ptr<window_options> options, enum_t flags )
   
   if ( flags & static_cast<enum_t>(processing_flag_t::epfEnqueue) )
   {
-    bool bResult = true;
+    bool_t bResult = true;
     
     Message* pMessage  = new CreateWindowMsg( this, std::move(options) );
     
@@ -119,7 +119,11 @@ bool  Window::create( std::unique_ptr<window_options> options, enum_t flags )
   else 
   {
     ure::utils::log( "Failed to initialize OpenGL context" );
-    throw std::exception();
+
+    m_ptrRenderer.release();
+    
+    glfwTerminate();
+    return false;
   }
 
   // Only in windowed mode it is necessary to move window
@@ -139,13 +143,13 @@ bool  Window::create( std::unique_ptr<window_options> options, enum_t flags )
   return true;
 }
 
-void_t Window::make_context_current() noexcept
+void_t Window::make_context_current() noexcept(true)
 {
   assert( m_hWindow != nullptr );
   glfwMakeContextCurrent( m_hWindow );
 }
 
-bool  Window::show( enum_t flags ) noexcept
+bool_t Window::show( enum_t flags ) noexcept(true)
 {
   if ( m_hWindow == nullptr )
     return false;
@@ -156,7 +160,7 @@ bool  Window::show( enum_t flags ) noexcept
     return true;
   }
 
-  bool bResult = false;
+  bool_t bResult = false;
   if ( flags & static_cast<enum_t>(processing_flag_t::epfEnqueue) )
   {
     Message* pMessage  = new ShowWindowMsg( this );
@@ -170,7 +174,7 @@ bool  Window::show( enum_t flags ) noexcept
   return bResult;
 }
 
-bool  Window::hide( enum_t flags ) noexcept
+bool_t Window::hide( enum_t flags ) noexcept(true)
 {
   if ( m_hWindow == nullptr )
     return false;
@@ -181,7 +185,7 @@ bool  Window::hide( enum_t flags ) noexcept
     return true;
   }
 
-  bool bResult = false;
+  bool_t bResult = false;
   if ( flags & static_cast<enum_t>(processing_flag_t::epfEnqueue) )
   {
     Message* pMessage  = new HideWindowMsg( this );
@@ -194,13 +198,13 @@ bool  Window::hide( enum_t flags ) noexcept
   return bResult;
 }
 
-bool  Window::is_windowed() const noexcept
+bool_t Window::is_windowed() const noexcept(true)
 {
   assert( m_hWindow != nullptr );
   return ( glfwGetWindowMonitor( m_hWindow ) == nullptr );
 }
 
-bool  Window::set_title( const std::string& title, enum_t flags ) noexcept
+bool_t Window::set_title( const std::string& title, enum_t flags ) noexcept(true)
 {
   if ( m_hWindow == nullptr )
     return false;
@@ -211,7 +215,7 @@ bool  Window::set_title( const std::string& title, enum_t flags ) noexcept
     return true;
   }
 
-  bool bResult = false;
+  bool_t bResult = false;
   if ( flags & static_cast<enum_t>(processing_flag_t::epfEnqueue) )
   {
     Message* pMessage  = new SetWindowTitleMsg( this, title );
@@ -225,7 +229,7 @@ bool  Window::set_title( const std::string& title, enum_t flags ) noexcept
   return bResult;
 }
 
-bool  Window::set_position( const position_t<int_t>& position, enum_t flags ) noexcept
+bool_t Window::set_position( const position_t<int_t>& position, enum_t flags ) noexcept(true)
 {
   if ( m_hWindow == nullptr )
     return false;
@@ -236,7 +240,7 @@ bool  Window::set_position( const position_t<int_t>& position, enum_t flags ) no
     return true;
   }
   
-  bool bResult = false;
+  bool_t bResult = false;
   if ( flags & static_cast<enum_t>(processing_flag_t::epfEnqueue) )
   {
     Message* pMessage  = new SetWindowPositionMsg( this, position );
@@ -250,7 +254,7 @@ bool  Window::set_position( const position_t<int_t>& position, enum_t flags ) no
   return bResult;  
 }
 
-bool  Window::set_size( const Size& size, enum_t flags ) noexcept
+bool_t Window::set_size( const Size& size, enum_t flags ) noexcept(true)
 {
   if ( m_hWindow == nullptr )
     return false;
@@ -261,7 +265,7 @@ bool  Window::set_size( const Size& size, enum_t flags ) noexcept
     return true;
   }
 
-  bool bResult = false;
+  bool_t bResult = false;
   if ( flags & static_cast<enum_t>(processing_flag_t::epfEnqueue) )
   {
     Message* pMessage  = new SetWindowSizeMsg( this, size );
@@ -276,7 +280,7 @@ bool  Window::set_size( const Size& size, enum_t flags ) noexcept
 }
 
 #ifndef __EMSCRIPTEN__
-void_t  Window::get_framebuffer_size( Size& size ) noexcept
+void_t Window::get_framebuffer_size( Size& size ) noexcept(true)
 {
   assert( m_hWindow != nullptr );
 
@@ -284,7 +288,7 @@ void_t  Window::get_framebuffer_size( Size& size ) noexcept
 }
 #endif
 
-bool  Window::show_normal( enum_t flags ) noexcept
+bool_t Window::show_normal( enum_t flags ) noexcept(true)
 {
   if ( m_hWindow == nullptr )
     return false;
@@ -295,7 +299,7 @@ bool  Window::show_normal( enum_t flags ) noexcept
     return true;
   }
 
-  bool bResult = false;
+  bool_t bResult = false;
   if ( flags & static_cast<enum_t>(processing_flag_t::epfEnqueue) )
   {
     Message* pMessage  = new ShowWindowNormalMsg( this );
@@ -309,7 +313,7 @@ bool  Window::show_normal( enum_t flags ) noexcept
   return bResult;
 }
 
-bool  Window::show_minimized( enum_t flags ) noexcept
+bool_t Window::show_minimized( enum_t flags ) noexcept(true)
 {
   if ( m_hWindow == nullptr )
     return false;
@@ -320,7 +324,7 @@ bool  Window::show_minimized( enum_t flags ) noexcept
     return true;
   }
   
-  bool bResult = false;
+  bool_t bResult = false;
   if ( flags & static_cast<enum_t>(processing_flag_t::epfEnqueue) )
   {
     Message* pMessage  = new ShowWindowMinimizedMsg( this );
@@ -334,28 +338,28 @@ bool  Window::show_minimized( enum_t flags ) noexcept
   return bResult;
 }
 
-void_t  Window::set_swap_interval( int_t iRefresh ) noexcept
+void_t Window::set_swap_interval( int_t iRefresh ) noexcept(true)
 {
   assert( m_hWindow != nullptr );
   
   glfwSwapInterval(iRefresh);
 }
 
-void_t  Window::swap_buffers() noexcept
+void_t Window::swap_buffers() noexcept(true)
 {
   assert( m_hWindow != nullptr );
  
   glfwSwapBuffers(m_hWindow);
 }
 
-void_t  Window::close() noexcept
+void_t Window::close() noexcept(true)
 {
   assert( m_hWindow != nullptr );
 
   glfwSetWindowShouldClose( m_hWindow, GL_TRUE );
 }
 
-bool  Window::destroy( uint32_t flags ) noexcept
+bool_t Window::destroy( uint32_t flags ) noexcept(true)
 {
   if ( m_hWindow == nullptr )
     return false;
@@ -372,7 +376,7 @@ bool  Window::destroy( uint32_t flags ) noexcept
     return true;
   }
 
-  bool bResult = false;
+  bool_t bResult = false;
   if ( flags & static_cast<enum_t>(processing_flag_t::epfEnqueue) )
   {
     Message* pMessage  = new DestroyWindowMsg( this );
@@ -386,7 +390,7 @@ bool  Window::destroy( uint32_t flags ) noexcept
   return bResult;
 }
 
-bool  Window::get_input_mode( int_t mode, int_t& value ) noexcept
+bool_t Window::get_input_mode( int_t mode, int_t& value ) noexcept(true)
 {
   if ( m_hWindow == nullptr )
     return false;
@@ -396,7 +400,7 @@ bool  Window::get_input_mode( int_t mode, int_t& value ) noexcept
   return true;
 }
 
-bool  Window::set_input_mode( int_t mode, int_t value ) noexcept
+bool_t Window::set_input_mode( int_t mode, int_t value ) noexcept(true)
 {
   if ( m_hWindow == nullptr )
     return false;
@@ -406,7 +410,7 @@ bool  Window::set_input_mode( int_t mode, int_t value ) noexcept
   return true;
 }
 
-bool  Window::get_cursor_position( position_t<double>& position ) noexcept
+bool_t Window::get_cursor_position( position_t<double>& position ) noexcept(true)
 {
   if ( m_hWindow == nullptr )
     return false;
@@ -416,7 +420,7 @@ bool  Window::get_cursor_position( position_t<double>& position ) noexcept
   return true;
 }
 
-bool  Window::set_cursor_position( const position_t<double>& position ) noexcept
+bool_t Window::set_cursor_position( const position_t<double>& position ) noexcept(true)
 {
   if ( m_hWindow == nullptr )
     return false;
@@ -426,12 +430,12 @@ bool  Window::set_cursor_position( const position_t<double>& position ) noexcept
   return true;
 }
   
-void_t  Window::set_window_hint(int_t iTarget, int_t iHint) noexcept
+void_t Window::set_window_hint(int_t iTarget, int_t iHint) noexcept(true)
 {
   glfwWindowHint( iTarget, iHint );
 }
  
-void_t Window::set_callbacks( bool bRegister )
+void_t Window::set_callbacks( bool_t bRegister )
 {
   if ( bRegister )
   {
@@ -484,7 +488,7 @@ void_t Window::set_callbacks( bool bRegister )
 // glfwSetJoystickCallback        /* GLFW 3.2 */
 
 
-bool  Window::check( window_flag_t flags ) noexcept
+bool_t Window::check( window_flag_t flags ) noexcept(true)
 {
   if ( flags == window_flag_t::eWindowShouldClose )    
     return glfwWindowShouldClose( m_hWindow );
@@ -696,13 +700,13 @@ void_t Window::key_callback( WindowHandler window, int_t key, int_t scancode, in
     switch( action )
     {
       case GLFW_RELEASE:
-        e->on_key_released( pWindow, key, scancode, mods );
+        e->on_key_released( pWindow, static_cast<key_t>(key), scancode, mods );
       break;
       case GLFW_PRESS:
-        e->on_key_pressed( pWindow, key, scancode, mods );
+        e->on_key_pressed ( pWindow, static_cast<key_t>(key), scancode, mods );
       break;
       case GLFW_REPEAT:
-        e->on_key_repeated( pWindow, key, scancode, mods );
+        e->on_key_repeated( pWindow, static_cast<key_t>(key), scancode, mods );
       break;
     }
   }

@@ -72,14 +72,14 @@ public:
    * This function should be called before create in order to handle 
    * also creation related events.
    */
-  bool               connect( WindowEvents* pEvents ) noexcept(true);
+  bool_t             connect( WindowEvents* pEvents ) noexcept(true);
   /***/
-  bool               disconnect( WindowEvents* pEvents ) noexcept(true);
+  bool_t             disconnect( WindowEvents* pEvents ) noexcept(true);
   /***/
   const events_type& get_connections() const noexcept(true);
   
   /***/
-  bool               create( std::unique_ptr<window_options> options, enum_t flags = static_cast<enum_t>(processing_flag_t::epfCalling) );
+  bool_t             create( std::unique_ptr<window_options> options, enum_t flags = static_cast<enum_t>(processing_flag_t::epfCalling) ) noexcept(true);
   /***/
   void_t             make_context_current() noexcept(true);
   /***/
@@ -87,25 +87,25 @@ public:
   { return m_ptrRenderer.get(); }
 
   /***/
-  bool               show( enum_t flags = static_cast<enum_t>(processing_flag_t::epfCalling) ) noexcept(true);
+  bool_t             show( enum_t flags = static_cast<enum_t>(processing_flag_t::epfCalling) ) noexcept(true);
   /***/
-  bool               hide( enum_t flags = static_cast<enum_t>(processing_flag_t::epfCalling) ) noexcept(true);
+  bool_t             hide( enum_t flags = static_cast<enum_t>(processing_flag_t::epfCalling) ) noexcept(true);
   /**
    * Return true if windows is in windowed mode or false if window is in full screen mode. 
    */
-  bool               is_windowed() const noexcept(true);
+  bool_t             is_windowed() const noexcept(true);
   /***/
-  bool               set_title( const std::string& sTitle, enum_t flags = static_cast<enum_t>(processing_flag_t::epfCalling) ) noexcept(true);
+  bool_t             set_title( const std::string& sTitle, enum_t flags = static_cast<enum_t>(processing_flag_t::epfCalling) ) noexcept(true);
   /***/
-  bool               set_position( const position_t<int_t>& position, enum_t flags = static_cast<enum_t>(processing_flag_t::epfCalling) ) noexcept(true);
+  bool_t             set_position( const position_t<int_t>& position, enum_t flags = static_cast<enum_t>(processing_flag_t::epfCalling) ) noexcept(true);
   /***/
-  bool               set_size( const Size& size, enum_t flags = static_cast<enum_t>(processing_flag_t::epfCalling) ) noexcept(true);
+  bool_t             set_size( const Size& size, enum_t flags = static_cast<enum_t>(processing_flag_t::epfCalling) ) noexcept(true);
   /***/
   void_t             get_framebuffer_size( Size& size ) noexcept(true);
   /***/
-  bool               show_normal( enum_t flags = static_cast<enum_t>(processing_flag_t::epfCalling) ) noexcept(true);
+  bool_t             show_normal( enum_t flags = static_cast<enum_t>(processing_flag_t::epfCalling) ) noexcept(true);
   /***/
-  bool               show_minimized( enum_t flags = static_cast<enum_t>(processing_flag_t::epfCalling) ) noexcept(true);
+  bool_t             show_minimized( enum_t flags = static_cast<enum_t>(processing_flag_t::epfCalling) ) noexcept(true);
   /**
    *  It is possible to select the minimum number of screen updates the driver should wait 
    *  before swapping buffers:
@@ -116,36 +116,36 @@ public:
   /***/
   void_t             close() noexcept(true);
   /***/
-  bool               destroy( enum_t flags = static_cast<enum_t>(processing_flag_t::epfCalling) ) noexcept(true);
+  bool_t             destroy( enum_t flags = static_cast<enum_t>(processing_flag_t::epfCalling) ) noexcept(true);
   /***/
-  bool               get_input_mode( int mode, int& value ) noexcept(true);
+  bool_t             get_input_mode( int mode, int& value ) noexcept(true);
   /***/
-  bool               set_input_mode( int mode, int value  ) noexcept(true);
+  bool_t             set_input_mode( int mode, int value  ) noexcept(true);
   
   /***/
-  bool               get_cursor_position( position_t<double>& position ) noexcept(true);
+  bool_t             get_cursor_position( position_t<double>& position ) noexcept(true);
   /***/
-  bool               set_cursor_position( const position_t<double>& position ) noexcept(true);
+  bool_t             set_cursor_position( const position_t<double>& position ) noexcept(true);
   
   /** 
    */
-  bool               check( window_flag_t flags ) noexcept(true);
+  bool_t             check( window_flag_t flags ) noexcept(true);
   
   /**
    * Return true if a message has been processed, false if message queue was empty.
    */
-  bool               process_message() noexcept(true);
+  bool_t             process_message() noexcept(true);
   
   /**
    */  
-  bool               send_message( Message* pMessage ) noexcept(true);
+  bool_t             send_message( Message* pMessage ) noexcept(true);
   /**
    */
-  bool               post_message( Message* pMessage ) noexcept(true);
+  bool_t             post_message( Message* pMessage ) noexcept(true);
   
 protected:
   /***/
-  void_t             set_window_hint( int_t iTarget, int_t iHint ) noexcept;
+  void_t             set_window_hint( int_t iTarget, int_t iHint ) noexcept(true);
   
 private:
   /***/

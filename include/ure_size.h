@@ -34,24 +34,24 @@ struct size_t final
 {
 public:
   /***/
-  constexpr size_t() noexcept 
+  constexpr size_t() noexcept(true) 
     : width(0), height(0)
   {}
   /***/
-  constexpr size_t( const data_t& w, const data_t& h ) noexcept 
+  constexpr size_t( const data_t& w, const data_t& h ) noexcept(true)
     : width(w), height(h)
   {}
 
   /***/
-  constexpr ~size_t() noexcept 
+  constexpr ~size_t() noexcept(true)
   {}
   
   data_t width;
   data_t height;
 };
 
-typedef size_t<sizei_t> Size;
-
+typedef size_t<sizei_t>   Size;
+typedef size_t<double_t>  Size_d;
 }
 
 #endif // URE_SIZE_H

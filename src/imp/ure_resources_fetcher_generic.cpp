@@ -42,20 +42,20 @@ namespace ure {
     /***/
     resource_t() = delete;
     /***/
-    constexpr resource_t( ResourcesFetcherEvents& events, const std::string& name, const std::type_info& type, const std::string& url )
+    constexpr resource_t( ResourcesFetcherEvents& events, const std::string& name, const std::type_info& type, const std::string& url ) noexcept(true)
       : m_events(events), m_name(name), m_type(type), m_url(url)
     {}
     /***/ 
-    constexpr ResourcesFetcherEvents& events() const
+    constexpr ResourcesFetcherEvents& events() const noexcept(true)
     { return m_events; }
     /***/ 
-    constexpr const std::string&      name() const
+    constexpr const std::string&      name() const noexcept(true)
     { return m_name; }
     /***/ 
-    constexpr const std::type_info&   type() const
+    constexpr const std::type_info&   type() const noexcept(true)
     { return m_type; }
     /***/ 
-    constexpr const std::string&      url() const
+    constexpr const std::string&      url() const noexcept(true)
     { return m_url;  }
 
   private:
@@ -72,7 +72,7 @@ using mailbox_type = lock_free::mailbox<resource_t*, core::ds_impl_t::mutex, 0,
 
 
 static mailbox_type*       s_mbx  = nullptr;
-static std::atomic<bool>   s_exit = false;
+static std::atomic<bool_t> s_exit = false;
 static std::thread         s_scheduler;
 
 
@@ -96,7 +96,7 @@ struct MemoryStruct {
   size_t size;
 };
 
-static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp)
+static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp) noexcept(true)
 {
   size_t realsize = size * nmemb;
   struct MemoryStruct *mem = (struct MemoryStruct *)userp;
@@ -116,7 +116,7 @@ static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, voi
   return realsize;
 }
 
-static void_t async_curl_download( resource_t* resource )
+static void_t async_curl_download( resource_t* resource ) noexcept(true)
 {
   std::unique_ptr<resource_t>   _resource    = std::unique_ptr<resource_t>(resource);
   CURL *                        _easy_handle = curl_easy_init();
@@ -195,7 +195,7 @@ static void_t async_curl_download( resource_t* resource )
   curl_easy_cleanup(_easy_handle);
 }
 
-static void_t th_requests_scheduler()
+static void_t th_requests_scheduler() noexcept(true)
 {
   while ( s_exit == false )
   {
@@ -207,7 +207,7 @@ static void_t th_requests_scheduler()
   }
 }
 
-bool ResourcesFetcher::fetch( ResourcesFetcherEvents& events, const std::string& name, const std::type_info& type, const std::string& url ) noexcept
+bool_t ResourcesFetcher::fetch( ResourcesFetcherEvents& events, const std::string& name, const std::type_info& type, const std::string& url ) noexcept(true)
 {
   if ( name.empty() || url.empty() )
     return false;
@@ -232,7 +232,7 @@ bool ResourcesFetcher::fetch( ResourcesFetcherEvents& events, const std::string&
   return true;
 } 
 
-void_t ResourcesFetcher::on_initialize() noexcept
+void_t ResourcesFetcher::on_initialize() noexcept(true)
 {
   curl_global_init(CURL_GLOBAL_ALL);
 
@@ -243,7 +243,7 @@ void_t ResourcesFetcher::on_initialize() noexcept
   }
 }
 
-void_t ResourcesFetcher::on_finalize() noexcept
+void_t ResourcesFetcher::on_finalize() noexcept(true)
 {
   s_exit = true;
 

@@ -94,13 +94,13 @@ protected:
   /***/
   virtual void_t  on_mouse_scroll( Window* pWindow, double_t dOffsetX, double_t dOffsetY ) noexcept override;
   /***/
-  virtual void_t  on_key_released( Window* pWindow, int_t iKey, int_t iScanCode, word_t wMods ) noexcept override;
+  virtual void_t  on_key_released( Window* pWindow, key_t key, int_t iScanCode, word_t wMods ) noexcept override;
   /**
    * Default implementation will close widows when ESCAPE key went pressed.
    */
-  virtual void_t  on_key_pressed ( Window* pWindow, int_t iKey, int_t iScanCode, word_t wMods ) noexcept override;  
+  virtual void_t  on_key_pressed ( Window* pWindow, key_t key, int_t iScanCode, word_t wMods ) noexcept override;  
   /***/
-  virtual void_t  on_key_repeated( Window* pWindow, int_t iKey, int_t iScanCode, word_t wMods ) noexcept override;
+  virtual void_t  on_key_repeated( Window* pWindow, key_t key, int_t iScanCode, word_t wMods ) noexcept override;
   /***/
   virtual void_t  on_unicode_char( Window* pWindow, uint_t iCodePoint ) noexcept override;
   

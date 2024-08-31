@@ -32,17 +32,17 @@ public:
   /***/
   resource_t() = delete;
   /***/
-  constexpr resource_t( ResourcesFetcherEvents& events, const std::string& name, const std::type_info& type )
+  constexpr resource_t( ResourcesFetcherEvents& events, const std::string& name, const std::type_info& type ) noexcept(true)
     : m_events(events), m_name(name), m_type(type)
   {}
   /***/ 
-  constexpr ResourcesFetcherEvents& events() const
+  constexpr ResourcesFetcherEvents& events() const noexcept(true)
   { return m_events; }
   /***/ 
-  constexpr const std::string&     name() const noexcept
+  constexpr const std::string&     name() const noexcept(true)
   { return m_name; }
   /***/
-  constexpr const std::type_info&  type() const noexcept
+  constexpr const std::type_info&  type() const noexcept(true)
   { return m_type; }
 
 private:
@@ -53,7 +53,7 @@ private:
 };
 
 
-static void_t emscripten_download_succeeded(emscripten_fetch_t *fetch) 
+static void_t emscripten_download_succeeded(emscripten_fetch_t *fetch) noexcept(true)
 {
   printf("Finished downloading %llu bytes from URL %s.\n", fetch->numBytes, fetch->url);
 
@@ -74,7 +74,7 @@ static void_t emscripten_download_succeeded(emscripten_fetch_t *fetch)
   emscripten_fetch_close(fetch); // Free data associated with the fetch.
 }
 
-static void_t emscripten_download_failed(emscripten_fetch_t *fetch) 
+static void_t emscripten_download_failed(emscripten_fetch_t *fetch) noexcept(true)
 {
   printf("Downloading %s failed, HTTP failure status code: %d.\n", fetch->url, fetch->status);
 
@@ -93,7 +93,7 @@ static void_t emscripten_download_failed(emscripten_fetch_t *fetch)
   emscripten_fetch_close(fetch); // Also free data on failure.
 }
 
-bool ResourcesFetcher::fetch( ResourcesFetcherEvents& events, const std::string& name, const std::type_info& type, const std::string& url ) noexcept
+bool_t ResourcesFetcher::fetch( ResourcesFetcherEvents& events, const std::string& name, const std::type_info& type, const std::string& url ) noexcept(true)
 {
   if ( name.empty() || url.empty() )
     return false;
@@ -125,11 +125,11 @@ bool ResourcesFetcher::fetch( ResourcesFetcherEvents& events, const std::string&
   return true;
 } 
 
-void_t ResourcesFetcher::on_initialize() noexcept
+void_t ResourcesFetcher::on_initialize() noexcept(true)
 {
 }
 
-void_t ResourcesFetcher::on_finalize() noexcept
+void_t ResourcesFetcher::on_finalize() noexcept(true)
 {
 }
 

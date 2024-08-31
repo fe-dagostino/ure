@@ -189,32 +189,32 @@ bool  Widget::draw( const glm::mat4& mvp, const Recti& rect )
   return bRetVal;
 }
 
-void_t  Widget::on_widget_key_released( Window* pWindow, Layer* pLayer, int_t iKey, int_t iScanCode, word_t wMods ) noexcept
+void_t  Widget::on_widget_key_released( Window* pWindow, Layer* pLayer, key_t key, int_t iScanCode, word_t wMods ) noexcept
 { 
   if (( has_focus() == false ) || ( is_enabled() == false ))
     return;
     
-  signalKeyReleased.emit( pWindow, pLayer, iKey, iScanCode, wMods );   
+  signalKeyReleased.emit( pWindow, pLayer, key, iScanCode, wMods );   
 } 
   
-void_t  Widget::on_widget_key_pressed ( Window* pWindow, Layer* pLayer, int_t iKey, int_t iScanCode, word_t wMods ) noexcept
+void_t  Widget::on_widget_key_pressed ( Window* pWindow, Layer* pLayer, key_t key, int_t iScanCode, word_t wMods ) noexcept
 {
   if (( has_focus() == false ) || ( is_enabled() == false ))
     return;
     
-  handleDefaultKeys( iKey, iScanCode );
+  handleDefaultKeys( key, iScanCode );
   
-  signalKeyPressed.emit ( pWindow, pLayer, iKey, iScanCode, wMods ); 
+  signalKeyPressed.emit ( pWindow, pLayer, key, iScanCode, wMods ); 
 } 
 
-void_t  Widget::on_widget_key_repeated( Window* pWindow, Layer* pLayer, int_t iKey, int_t iScanCode, word_t wMods ) noexcept
+void_t  Widget::on_widget_key_repeated( Window* pWindow, Layer* pLayer, key_t key, int_t iScanCode, word_t wMods ) noexcept
 { 
   if (( has_focus() == false ) || ( is_enabled() == false ))
     return;
   
-  handleDefaultKeys( iKey, iScanCode );
+  handleDefaultKeys( key, iScanCode );
   
-  signalKeyRepeated.emit( pWindow, pLayer, iKey, iScanCode, wMods );  
+  signalKeyRepeated.emit( pWindow, pLayer, key, iScanCode, wMods );  
 } 
 
 bool  Widget::step_focus()
@@ -262,15 +262,17 @@ bool  Widget::has_focusable()
 }
 
 // Called only in case current widget is both visible and enabled.
-void_t  Widget::handleDefaultKeys( int_t iKey, [[maybe_unused]] int_t iScanCode )
+void_t  Widget::handleDefaultKeys( key_t key, [[maybe_unused]] int_t iScanCode )
 {
-  switch ( iKey )
+  switch ( key )
   {
-    case GLFW_KEY_ENTER :  // ENTER KEY
+    case key_t::KEY_ENTER :  // ENTER KEY
     {
       // Raise on click event as for mouse when 
       signalOnClick.emit( this );
     }; break;
+    default:
+    break;
   }
 }
 

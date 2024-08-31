@@ -52,23 +52,23 @@ public:
   {}  
   
   /***/  
-  virtual bool          render( const glm::mat4& mProjection, Camera* pCamera );
+  virtual bool_t          render( const glm::mat4& mProjection, Camera* pCamera ) noexcept(true) override; 
   
   /***/
-  inline TMatrix&       get_model_matrix() noexcept
+  inline xform_matrix_t&       get_model_matrix() noexcept
   { return m_matModel; }
   /***/
-  inline const TMatrix& get_model_matrix() const noexcept
+  inline const xform_matrix_t& get_model_matrix() const noexcept
   { return m_matModel; }
   /***/
-  inline void_t         set_model_matrix( const TMatrix& tmat ) noexcept
+  inline void_t         set_model_matrix( const xform_matrix_t& tmat ) noexcept
   { m_matModel = tmat; }
   /***/
   inline void_t         set_model_matrix( const glm::mat4& mat ) noexcept
   { m_matModel = mat;  }  
 
 private:
-  TMatrix   m_matModel;
+  xform_matrix_t   m_matModel;
 };
 
 }

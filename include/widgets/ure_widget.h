@@ -178,21 +178,21 @@ protected:
    * Usual implementation propagate event only to focused child, that can be done
    * exending the class with a specialized event.
    */
-  virtual void_t   on_widget_key_released( Window* pGlWindow, Layer* pGlLayer, int_t iKey, int_t iScanCode, word_t wMods ) noexcept;
+  virtual void_t   on_widget_key_released( Window* pGlWindow, Layer* pGlLayer, key_t key, int_t iScanCode, word_t wMods ) noexcept;
   /**
    * Default implementation will check if current widget has th focus and then will 
    * propagate the event to all child widgets.
    * Usual implementation propagate event only to focused child, that can be done
    * exending the class with a specialized event.
    */
-  virtual void_t   on_widget_key_pressed ( Window* pGlWindow, Layer* pGlLayer, int_t iKey, int_t iScanCode, word_t wMods ) noexcept;
+  virtual void_t   on_widget_key_pressed ( Window* pGlWindow, Layer* pGlLayer, key_t key, int_t iScanCode, word_t wMods ) noexcept;
   /**
    * Default implementation will check if current widget has th focus and then will 
    * propagate the event to all child widgets.
    * Usual implementation propagate event only to focused child, that can be done
    * exending the class with a specialized event.
    */
-  virtual void_t   on_widget_key_repeated( Window* pGlWindow, Layer* pGlLayer, int_t iKey, int_t iScanCode, word_t wMods ) noexcept;
+  virtual void_t   on_widget_key_repeated( Window* pGlWindow, Layer* pGlLayer, key_t key, int_t iScanCode, word_t wMods ) noexcept;
   
   /***/
   virtual void_t   on_widget_begin_drawing( [[maybe_unused]] const Recti& rect ) noexcept
@@ -228,7 +228,7 @@ protected:
    * NOTE: this method should be called only when current 
    *       widget is both visible and enabled.
    */
-  void_t handleDefaultKeys( int_t iKey, int_t iScanCode );
+  void_t handleDefaultKeys( key_t key, int_t iScanCode );
   
 private:
 
@@ -236,7 +236,7 @@ private:
   void_t _updateBkVertices() noexcept;
 
 protected:
-  using Key_Signal = sigc::signal<void_t(Window*, Layer*, int_t, int_t, word_t)>;
+  using Key_Signal = sigc::signal<void_t(Window*, Layer*, key_t, int_t, word_t)>;
   
   Key_Signal   signalKeyReleased;
   Key_Signal   signalKeyPressed;
