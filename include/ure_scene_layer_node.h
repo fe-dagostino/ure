@@ -41,30 +41,30 @@ public:
    * @param layer   a pointer to Layer instance; this instance can be shared
    *                between more nodes.
    */
-  SceneLayerNode( const std::string& name, widgets::Layer* pLayer )
-   : SceneNode( name, pLayer )
+  SceneLayerNode( const std::string& name, std::shared_ptr<widgets::Layer> layer ) noexcept(true)
+   : SceneNode( name, layer )
   {
     // Init model matrix
     m_matModel = glm::mat4( 1.0f );
   }
   /***/
-  virtual ~SceneLayerNode()
+  virtual ~SceneLayerNode() noexcept(true)
   {}  
   
   /***/  
-  virtual bool_t          render( const glm::mat4& mProjection, Camera* pCamera ) noexcept(true) override; 
+  virtual bool_t               render( const glm::mat4& mProjection, const camera_ptr& camera ) noexcept(true) override; 
   
   /***/
-  inline xform_matrix_t&       get_model_matrix() noexcept
+  inline xform_matrix_t&       get_model_matrix() noexcept(true)
   { return m_matModel; }
   /***/
-  inline const xform_matrix_t& get_model_matrix() const noexcept
+  inline const xform_matrix_t& get_model_matrix() const noexcept(true)
   { return m_matModel; }
   /***/
-  inline void_t         set_model_matrix( const xform_matrix_t& tmat ) noexcept
+  inline void_t                set_model_matrix( const xform_matrix_t& tmat ) noexcept(true)
   { m_matModel = tmat; }
   /***/
-  inline void_t         set_model_matrix( const glm::mat4& mat ) noexcept
+  inline void_t                set_model_matrix( const glm::mat4& mat ) noexcept(true)
   { m_matModel = mat;  }  
 
 private:

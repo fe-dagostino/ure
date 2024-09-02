@@ -37,25 +37,25 @@ class SceneCameraNode : public SceneNodeBase
 {
 public:
   /***/
-  SceneCameraNode( const std::string& name, Camera* pCamera )
-    : SceneNodeBase( "SceneCameraNode", name, pCamera )
+  SceneCameraNode( const std::string& name, camera_ptr camera ) noexcept(true)
+    : SceneNodeBase( "SceneCameraNode", name, camera )
   {}
   /***/
-  virtual ~SceneCameraNode()
-  {};
+  virtual ~SceneCameraNode() noexcept(true)
+  {}
   
   /***/
-  inline constexpr const Camera*   get_camera() const noexcept
+  inline camera_ptr get_camera() const noexcept(true)
   { return get_object<Camera>(); }
   /***/
-  inline constexpr Camera*         get_camera() noexcept
+  inline camera_ptr get_camera() noexcept(true)
   { return get_object<Camera>(); }
 
-  /***/  
-  virtual bool render( [[__maybe_unused__]] const glm::mat4& mProjection, [[__maybe_unused__]] Camera* pCamera ) noexcept
-  { return true; };
-
 protected:
+
+  /***/  
+  virtual bool render( [[__maybe_unused__]] const glm::mat4& mProjection, [[__maybe_unused__]] const camera_ptr& camera ) noexcept(true) override
+  { return true; };
   
 };
 

@@ -29,7 +29,7 @@ namespace ure {
 namespace widgets {
 
 
-Layer::Layer( ViewPort& rViewPort )
+Layer::Layer( ViewPort& rViewPort ) noexcept(true)
  : Widget(nullptr)
 {
   int_t    x,y = 0;
@@ -41,13 +41,12 @@ Layer::Layer( ViewPort& rViewPort )
   set_size( w, h, false );
 }
 
-Layer::~Layer()
+Layer::~Layer() noexcept(true)
 {
 
 }
 
-
-bool  Layer::render( const glm::mat4& mvp )
+bool_t  Layer::render( const glm::mat4& mvp ) noexcept(true)
 {
   if ( is_visible() == false )
     return false;
@@ -60,93 +59,93 @@ bool  Layer::render( const glm::mat4& mvp )
 
 /// Implements GLWindowEvents
   
-void_t  Layer::on_creating( [[maybe_unused]] Window* pWindow ) noexcept
+void_t  Layer::on_creating( [[maybe_unused]] Window* pWindow ) noexcept(true)
 {}
 
-void_t  Layer::on_created( [[maybe_unused]] Window* pWindow ) noexcept
+void_t  Layer::on_created( [[maybe_unused]] Window* pWindow ) noexcept(true)
 {}
 
-void_t  Layer::on_position_changed( [[maybe_unused]] Window* pWindow, [[maybe_unused]] int_t iPosX, [[maybe_unused]] int_t iPosY ) noexcept
+void_t  Layer::on_position_changed( [[maybe_unused]] Window* pWindow, [[maybe_unused]] int_t iPosX, [[maybe_unused]] int_t iPosY ) noexcept(true)
 {}
 
-void_t  Layer::on_size_changed( [[maybe_unused]] Window* pWindow, [[maybe_unused]] sizei_t iWidth, [[maybe_unused]] sizei_t iHeight ) noexcept
+void_t  Layer::on_size_changed( [[maybe_unused]] Window* pWindow, [[maybe_unused]] sizei_t iWidth, [[maybe_unused]] sizei_t iHeight ) noexcept(true)
 {}
 
-void_t  Layer::on_fb_size_changed( [[maybe_unused]] Window* pWindow, [[maybe_unused]] sizei_t iWidth, [[maybe_unused]] sizei_t iHeight ) noexcept
+void_t  Layer::on_fb_size_changed( [[maybe_unused]] Window* pWindow, [[maybe_unused]] sizei_t iWidth, [[maybe_unused]] sizei_t iHeight ) noexcept(true)
 {}
 
-void_t  Layer::on_close( [[maybe_unused]] Window* pWindow ) noexcept
+void_t  Layer::on_close( [[maybe_unused]] Window* pWindow ) noexcept(true)
 {}
 
-void_t  Layer::on_refresh( [[maybe_unused]] Window* pWindow ) noexcept
+void_t  Layer::on_refresh( [[maybe_unused]] Window* pWindow ) noexcept(true)
 {
   if ( is_enabled() == false )
     return;
 }
 
-void_t  Layer::on_got_focus( [[maybe_unused]] Window* pWindow ) noexcept
+void_t  Layer::on_got_focus( [[maybe_unused]] Window* pWindow ) noexcept(true)
 {}
 
-void_t  Layer::on_lost_focus( [[maybe_unused]] Window* pWindow ) noexcept
+void_t  Layer::on_lost_focus( [[maybe_unused]] Window* pWindow ) noexcept(true)
 {}
 
-void_t  Layer::on_iconified( [[maybe_unused]] Window* pWindow ) noexcept
+void_t  Layer::on_iconified( [[maybe_unused]] Window* pWindow ) noexcept(true)
 {
   if ( is_enabled() == false )
     return;
   
 }
 
-void_t  Layer::on_restored( [[maybe_unused]] Window* pWindow ) noexcept
+void_t  Layer::on_restored( [[maybe_unused]] Window* pWindow ) noexcept(true)
 {
   if ( is_enabled() == false )
     return;
   
 }
 
-void_t  Layer::on_mouse_button_pressed( [[maybe_unused]] Window* pWindow, [[maybe_unused]] mouse_button_t button, [[maybe_unused]] int_t mods ) noexcept
+void_t  Layer::on_mouse_button_pressed( [[maybe_unused]] Window* pWindow, [[maybe_unused]] mouse_button_t button, [[maybe_unused]] int_t mods ) noexcept(true)
 {
   if ( is_enabled() == false )
     return;
   
 }
 
-void_t  Layer::on_mouse_button_released( [[maybe_unused]] Window* pWindow, [[maybe_unused]] mouse_button_t button, [[maybe_unused]] int_t mods ) noexcept
+void_t  Layer::on_mouse_button_released( [[maybe_unused]] Window* pWindow, [[maybe_unused]] mouse_button_t button, [[maybe_unused]] int_t mods ) noexcept(true)
 {
   if ( is_enabled() == false )
     return;
   
 }
 
-void_t  Layer::on_mouse_move( [[maybe_unused]] Window* pWindow, [[maybe_unused]] double_t dPosX, [[maybe_unused]] double_t dPosY ) noexcept
+void_t  Layer::on_mouse_move( [[maybe_unused]] Window* pWindow, [[maybe_unused]] double_t dPosX, [[maybe_unused]] double_t dPosY ) noexcept(true)
 {
   if ( is_enabled() == false )
     return;
   
 }
 
-void_t  Layer::on_mouse_enter( [[maybe_unused]] Window* pWindow ) noexcept
+void_t  Layer::on_mouse_enter( [[maybe_unused]] Window* pWindow ) noexcept(true)
 {
   if ( is_enabled() == false )
     return;
   
 }
 
-void_t  Layer::on_mouse_leave( [[maybe_unused]] Window* pWindow ) noexcept
+void_t  Layer::on_mouse_leave( [[maybe_unused]] Window* pWindow ) noexcept(true)
 {
   if ( is_enabled() == false )
     return;
   
 }
 
-void_t  Layer::on_mouse_scroll([[maybe_unused]] Window* pWindow, [[maybe_unused]] double_t dOffsetX, [[maybe_unused]] double_t dOffsetY ) noexcept
+void_t  Layer::on_mouse_scroll([[maybe_unused]] Window* pWindow, [[maybe_unused]] double_t dOffsetX, [[maybe_unused]] double_t dOffsetY ) noexcept(true)
 {
   if ( is_enabled() == false )
     return;
   
 }
 
-void_t  Layer::on_key_released( [[maybe_unused]] Window* pWindow, key_t key, int_t iScanCode, word_t wMods ) noexcept
+void_t  Layer::on_key_released( [[maybe_unused]] Window* pWindow, key_t key, int_t iScanCode, word_t wMods ) noexcept(true)
 {
   if ( is_enabled() == false )
     return;
@@ -156,7 +155,7 @@ void_t  Layer::on_key_released( [[maybe_unused]] Window* pWindow, key_t key, int
   signalKeyReleased.emit( pWindow, this, key, iScanCode, wMods );
 }
 
-void_t  Layer::on_key_pressed( Window* pWindow, key_t key, int_t iScanCode, word_t wMods ) noexcept
+void_t  Layer::on_key_pressed( Window* pWindow, key_t key, int_t iScanCode, word_t wMods ) noexcept(true)
 {
   if ( is_enabled() == false )
     return;
@@ -171,7 +170,7 @@ void_t  Layer::on_key_pressed( Window* pWindow, key_t key, int_t iScanCode, word
   signalKeyPressed.emit( pWindow, this, key, iScanCode, wMods );
 }
 
-void_t  Layer::on_key_repeated( Window* pWindow, key_t key, int_t iScanCode, word_t wMods ) noexcept
+void_t  Layer::on_key_repeated( Window* pWindow, key_t key, int_t iScanCode, word_t wMods ) noexcept(true)
 {
   if ( is_enabled() == false )
     return;
@@ -186,7 +185,7 @@ void_t  Layer::on_key_repeated( Window* pWindow, key_t key, int_t iScanCode, wor
   signalKeyRepeated.emit( pWindow, this, key, iScanCode, wMods );
 }
 
-void_t  Layer::on_unicode_char( [[maybe_unused]] Window* pWindow, [[maybe_unused]] uint_t iCodePoint ) noexcept
+void_t  Layer::on_unicode_char( [[maybe_unused]] Window* pWindow, [[maybe_unused]] uint_t iCodePoint ) noexcept(true)
 {
   if ( is_enabled() == false )
     return;

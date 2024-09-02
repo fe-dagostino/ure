@@ -26,11 +26,9 @@
 
 namespace ure {
 
-
-  
-bool_t SceneLayerNode::render( const glm::mat4& mProjection, Camera* pCamera ) noexcept(true)
+bool_t SceneLayerNode::render( const glm::mat4& mProjection, const camera_ptr& camera ) noexcept(true)
 {
-  widgets::Layer* layer = get_object<widgets::Layer>();
+  std::shared_ptr<widgets::Layer> layer = get_object<widgets::Layer>();
   if ( layer == nullptr )
     return false;
   
@@ -39,9 +37,10 @@ bool_t SceneLayerNode::render( const glm::mat4& mProjection, Camera* pCamera ) n
 
   // Retrieving camera (view) matrix from active camera.
   // If not present an identity matrix will be used.
-  glm::mat4  mView = (pCamera==nullptr)?glm::mat4(1.0f):pCamera->get_view_matrix().get();
+  glm::mat4  mView = (camera==nullptr)?glm::mat4(1.0f):camera->get_view_matrix().get();
   
   glm::mat4  mvp =  mProjection * mView * m_matModel.get();
+
   if (has_animation() == true )
     mvp *= get_animation().get_matrix().get();
 

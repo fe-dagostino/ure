@@ -27,13 +27,13 @@ namespace ure {
 
 namespace widgets {
 
-Label::Label( Widget* pParent )
+Label::Label( Widget* pParent ) noexcept(true)
  : Widget( pParent ), m_fgColor( 0.0f, 0.0f, 0.0f, 1.0f ), 
    m_eAlignment(wtaAutoResize), m_pText( nullptr )
 {
 }
 
-bool  Label::set_label( Font* pFont, const std::wstring& sLabel, const glm::vec4& fgColor, WidgetTextAligment align ) noexcept
+bool_t  Label::set_label( Font* pFont, const std::wstring& sLabel, const glm::vec4& fgColor, WidgetTextAligment align ) noexcept(true)
 {
   if ( pFont == nullptr )
     return false;
@@ -61,7 +61,7 @@ bool  Label::set_label( Font* pFont, const std::wstring& sLabel, const glm::vec4
   return true;
 }
 
-bool    Label::on_widget_draw( [[maybe_unused]] const Recti& rect ) noexcept
+bool    Label::on_widget_draw( [[maybe_unused]] const Recti& rect ) noexcept(true)
 {
   if ( m_pText != nullptr )
   {
@@ -71,23 +71,23 @@ bool    Label::on_widget_draw( [[maybe_unused]] const Recti& rect ) noexcept
   return true;
 }
 
-void_t  Label::on_widget_position_changed( [[maybe_unused]] const Position& pos ) noexcept
+void_t  Label::on_widget_position_changed( [[maybe_unused]] const Position& pos ) noexcept(true)
 {
   _updateVertices( getAlignment() );
 }
 
-void_t  Label::on_widget_size_changed( [[maybe_unused]] const Size& size ) noexcept
+void_t  Label::on_widget_size_changed( [[maybe_unused]] const Size& size ) noexcept(true)
 {
   _updateVertices( getAlignment() );
 }
   
-bool_t  Label::on_widget_update_background_vertices() noexcept
+bool_t  Label::on_widget_update_background_vertices() noexcept(true)
 {
   _updateVertices( getAlignment() );
   return false;  
 } 
 
-void_t  Label::_updateVertices( WidgetTextAligment align )
+void_t  Label::_updateVertices( WidgetTextAligment align ) noexcept(true)
 {
   m_eAlignment = align;
   

@@ -37,11 +37,11 @@ class SceneNode : public SceneNodeBase
 {
 public:
   /***/
-  SceneNode( const std::string& name, Object* pObject )
-    : SceneNodeBase( "SceneNode", name, pObject )
+  SceneNode( const std::string& name, std::shared_ptr<Object> object ) noexcept(true)
+    : SceneNodeBase( "SceneNode", name, object )
   {}
-  /***/
-  virtual ~SceneNode()
+  /***/ 
+  virtual ~SceneNode() noexcept(true)
   {}
 
   /**
@@ -51,12 +51,12 @@ public:
    * @return true 
    * @return false 
    */
-  bool              add_scene_node( SceneNodeBase* pSceneNode );
+  bool_t            add_scene_node( SceneNodeBase* pSceneNode ) noexcept(true);
   /** 
    */
   template<class derived_t>
     requires std::is_nothrow_convertible_v<derived_t*,SceneNodeBase*>  
-  derived_t*        get_scene_node( const std::string& sNodeType, const std::string& sInstanceName ) noexcept
+  derived_t*        get_scene_node( const std::string& sNodeType, const std::string& sInstanceName ) noexcept(true)
   {
     if ( sNodeType.empty() || sInstanceName.empty() )
       return nullptr;
@@ -76,14 +76,15 @@ public:
     
 protected:
   /***/
-  virtual bool      on_add_scene_node( SceneNodeBase* ) { return true; };
+  virtual bool_t      on_add_scene_node( SceneNodeBase* ) noexcept(true)
+  { return true; };
     
 protected:
   using scene_node_map_t  = std::unordered_map<std::string, std::unique_ptr<SceneNodeBase>>;
   using scene_node_maps_t = std::unordered_map<std::string, std::unique_ptr<scene_node_map_t>>;
 
   /***/
-  const scene_node_map_t*   get_scene_node_map( const std::string& sNodeType ) const;
+  const scene_node_map_t*   get_scene_node_map( const std::string& sNodeType ) const noexcept(true);
     
 protected:
   scene_node_maps_t   m_maps;

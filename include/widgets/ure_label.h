@@ -51,38 +51,38 @@ class Label : public Widget
 {
 public:
   /***/
-  Label( Widget* pParent );
+  Label( Widget* pParent ) noexcept(true);
   /***/
-  virtual ~Label()
+  virtual ~Label() noexcept(true)
   {}
   
   /***/
-  inline const std::wstring& get_label() const noexcept
+  inline constexpr const std::wstring& get_label() const noexcept(true)
   { return m_sLabel;  }
   /***/
-  inline const glm::vec4&    get_foreground() const noexcept
+  inline constexpr const glm::vec4&    get_foreground() const noexcept(true)
   { return m_fgColor; }
   
   /***/
-  bool                       set_label( Font* pFont, const std::wstring& sLabel, const glm::vec4& fgColor, WidgetTextAligment align ) noexcept;
+  bool_t                     set_label( Font* pFont, const std::wstring& sLabel, const glm::vec4& fgColor, WidgetTextAligment align ) noexcept(true);
 
 protected:
   /***/
-  virtual bool     on_widget_draw( [[maybe_unused]] const Recti& rect ) noexcept override;
+  virtual bool_t   on_widget_draw( [[maybe_unused]] const Recti& rect ) noexcept(true) override;
   /***/
-  virtual void_t   on_widget_position_changed( [[maybe_unused]] const Position& pos ) noexcept override;
+  virtual void_t   on_widget_position_changed( [[maybe_unused]] const Position& pos ) noexcept(true) override;
   /***/
-  virtual void_t   on_widget_size_changed( [[maybe_unused]] const Size& size ) noexcept override;
+  virtual void_t   on_widget_size_changed( [[maybe_unused]] const Size& size ) noexcept(true) override;
   /***/
-  virtual bool     on_widget_update_background_vertices() noexcept override;
+  virtual bool_t   on_widget_update_background_vertices() noexcept(true) override;
 
 private:
   /***/
-  inline WidgetTextAligment getAlignment() const
+  inline WidgetTextAligment getAlignment() const noexcept(true)
   { return m_eAlignment; }
   
   /***/
-  void_t                    _updateVertices( WidgetTextAligment align );
+  void_t                    _updateVertices( WidgetTextAligment align ) noexcept(true);
 
 private:
   std::wstring              m_sLabel;

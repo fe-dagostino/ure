@@ -36,12 +36,15 @@ class Layer : public Widget, public WindowEvents
 {
 public:
   /***/
-  Layer( ViewPort& rViewPort );
+  Layer( ViewPort& rViewPort ) noexcept(true);
   /***/
-  virtual ~Layer();
+  virtual ~Layer() noexcept(true);
     
+  constexpr WindowEvents* get_windows_events() noexcept(true) 
+  { return static_cast<WindowEvents*>(this); }
+
   /***/
-  bool            render( const glm::mat4& mvp );
+  bool_t          render( const glm::mat4& mvp ) noexcept(true);
   
 /// Implements WindowEvents
 protected:
@@ -50,59 +53,59 @@ protected:
    * Called in just before windows creation.
    * It will be a nice place to see own window hints
    */
-  virtual void_t  on_creating( Window* pWindow ) noexcept override; 
+  virtual void_t  on_creating( Window* pWindow ) noexcept(true) override; 
   /***/
-  virtual void_t  on_created( [[maybe_unused]] Window* pWindow ) noexcept override;
+  virtual void_t  on_created( [[maybe_unused]] Window* pWindow ) noexcept(true) override;
   /**
    * Called to notify new window position.
    */
-  virtual void_t  on_position_changed( Window* pWindow, int_t iPosX, int_t iPosY ) noexcept override;
+  virtual void_t  on_position_changed( Window* pWindow, int_t iPosX, int_t iPosY ) noexcept(true) override;
   /**
    * Called to notify new window size.
    */
-  virtual void_t  on_size_changed( Window* pWindow, sizei_t iWidth, sizei_t iHeight ) noexcept override;
+  virtual void_t  on_size_changed( Window* pWindow, sizei_t iWidth, sizei_t iHeight ) noexcept(true) override;
   /**
    * Called to notify new window size.
    */
-  virtual void_t  on_fb_size_changed( Window* pWindow, sizei_t iWidth, sizei_t iHeight ) noexcept override;
+  virtual void_t  on_fb_size_changed( Window* pWindow, sizei_t iWidth, sizei_t iHeight ) noexcept(true) override;
   /**
    * Called when user attempt to close the window.
    */
-  virtual void_t  on_close( Window* pWindow ) noexcept override;
+  virtual void_t  on_close( Window* pWindow ) noexcept(true) override;
   /**
    * Called when the window whose content needs to be refreshed.
    */
-  virtual void_t  on_refresh( Window* pWindow ) noexcept override;
+  virtual void_t  on_refresh( Window* pWindow ) noexcept(true) override;
   /***/  
-  virtual void_t  on_got_focus( Window* pWindow ) noexcept override;
+  virtual void_t  on_got_focus( Window* pWindow ) noexcept(true) override;
   /***/
-  virtual void_t  on_lost_focus( Window* pWindow ) noexcept override;
+  virtual void_t  on_lost_focus( Window* pWindow ) noexcept(true) override;
   /***/  
-  virtual void_t  on_iconified( Window* pWindow ) noexcept override;
+  virtual void_t  on_iconified( Window* pWindow ) noexcept(true) override;
   /***/
-  virtual void_t  on_restored( Window* pWindow ) noexcept override;
+  virtual void_t  on_restored( Window* pWindow ) noexcept(true) override;
   /***/
-  virtual void_t  on_mouse_button_pressed( Window* pWindow, mouse_button_t button, int_t mods ) noexcept override;
+  virtual void_t  on_mouse_button_pressed( Window* pWindow, mouse_button_t button, int_t mods ) noexcept(true) override;
   /***/
-  virtual void_t  on_mouse_button_released( Window* pWindow, mouse_button_t button, int_t mods ) noexcept override;
+  virtual void_t  on_mouse_button_released( Window* pWindow, mouse_button_t button, int_t mods ) noexcept(true) override;
   /***/
-  virtual void_t  on_mouse_move( Window* pWindow, double_t dPosX, double_t dPosY ) noexcept override;
+  virtual void_t  on_mouse_move( Window* pWindow, double_t dPosX, double_t dPosY ) noexcept(true) override;
   /***/
-  virtual void_t  on_mouse_enter( Window* pWindow ) noexcept override;
+  virtual void_t  on_mouse_enter( Window* pWindow ) noexcept(true) override;
   /***/
-  virtual void_t  on_mouse_leave( Window* pWindow ) noexcept override;
+  virtual void_t  on_mouse_leave( Window* pWindow ) noexcept(true) override;
   /***/
-  virtual void_t  on_mouse_scroll( Window* pWindow, double_t dOffsetX, double_t dOffsetY ) noexcept override;
+  virtual void_t  on_mouse_scroll( Window* pWindow, double_t dOffsetX, double_t dOffsetY ) noexcept(true) override;
   /***/
-  virtual void_t  on_key_released( Window* pWindow, key_t key, int_t iScanCode, word_t wMods ) noexcept override;
+  virtual void_t  on_key_released( Window* pWindow, key_t key, int_t iScanCode, word_t wMods ) noexcept(true) override;
   /**
    * Default implementation will close widows when ESCAPE key went pressed.
    */
-  virtual void_t  on_key_pressed ( Window* pWindow, key_t key, int_t iScanCode, word_t wMods ) noexcept override;  
+  virtual void_t  on_key_pressed ( Window* pWindow, key_t key, int_t iScanCode, word_t wMods ) noexcept(true) override;  
   /***/
-  virtual void_t  on_key_repeated( Window* pWindow, key_t key, int_t iScanCode, word_t wMods ) noexcept override;
+  virtual void_t  on_key_repeated( Window* pWindow, key_t key, int_t iScanCode, word_t wMods ) noexcept(true) override;
   /***/
-  virtual void_t  on_unicode_char( Window* pWindow, uint_t iCodePoint ) noexcept override;
+  virtual void_t  on_unicode_char( Window* pWindow, uint_t iCodePoint ) noexcept(true) override;
   
 private:
   

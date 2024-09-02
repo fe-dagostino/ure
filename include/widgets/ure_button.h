@@ -38,37 +38,37 @@ class Button : public Label
 public:
 
   /***/
-  Button( Widget* pParent ) noexcept;
+  Button( Widget* pParent ) noexcept(true);
   /***/
-  virtual ~Button() noexcept
+  virtual ~Button() noexcept(true)
   {}  
   
   /***/
-  inline const std::wstring& get_caption() const noexcept
+  inline constexpr const std::wstring& get_caption() const noexcept(true)
   { return Label::get_label();  }
   /***/
-  inline const glm::vec4&    get_foreground() const noexcept
+  inline constexpr const glm::vec4&    get_foreground() const noexcept(true)
   { return Label::get_foreground(); }
   
   /***/
-  bool                       set_caption( Font* pFont, const std::wstring& sCaption, const glm::vec4& fgColor, WidgetTextAligment align );
+  bool                       set_caption( Font* pFont, const std::wstring& sCaption, const glm::vec4& fgColor, WidgetTextAligment align ) noexcept(true);
   
   /***/
-  void_t                     set_focus( Texture* texture );
+  void_t                     set_focus( Texture* texture ) noexcept(true);
   
   /***/
-  virtual bool               is_focusable() const noexcept override
+  virtual bool               is_focusable() const noexcept(true) override
   { return true; }
   
 protected:
   /***/
-  virtual bool_t  on_widget_draw_background( [[maybe_unused]] const Recti& rect ) noexcept override;
+  virtual bool_t  on_widget_draw_background( [[maybe_unused]] const Recti& rect ) noexcept(true) override;
   /***/
-  virtual bool_t  on_widget_draw( [[maybe_unused]] const Recti& rect ) noexcept override;
+  virtual bool_t  on_widget_draw( [[maybe_unused]] const Recti& rect ) noexcept(true) override;
   /***/
-  virtual void_t  on_widget_position_changed( [[maybe_unused]] const Position& pos ) noexcept override;
+  virtual void_t  on_widget_position_changed( [[maybe_unused]] const Position& pos ) noexcept(true) override;
   /***/
-  virtual void_t  on_widget_size_changed( [[maybe_unused]] const Size& size ) noexcept override;
+  virtual void_t  on_widget_size_changed( [[maybe_unused]] const Size& size ) noexcept(true) override;
 
 private:
   std::shared_ptr<Texture>  m_imFocus;

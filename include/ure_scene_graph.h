@@ -54,12 +54,18 @@ public:
   const SceneCameraNode*  get_active_camera() const noexcept(true);
     
   /***/
-  void    set_background( GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha ) noexcept(true);
+  void_t  set_background( GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha ) noexcept(true);
   /***/
-  void    get_background( GLclampf& red, GLclampf& green, GLclampf& blue, GLclampf& alpha ) noexcept(true);
+  void_t  get_background( GLclampf& red, GLclampf& green, GLclampf& blue, GLclampf& alpha ) noexcept(true);
   
   /***/
-  bool_t  render( const glm::mat4& mProjection ) noexcept(true);
+  bool_t  render( const glm::mat4& mProjection ) noexcept(true)
+  {
+    const SceneCameraNode* pActiveCamera = get_active_camera();
+    camera_ptr             camera        = (pActiveCamera!=nullptr)?pActiveCamera->get_camera():nullptr; 
+
+    return render( mProjection, camera );
+  }
   
 protected:  
   /**
@@ -67,7 +73,15 @@ protected:
    * 
    * @todo implements rendering order
    */
-  virtual bool_t render( const glm::mat4& mProjection, Camera* pCamera ) noexcept(true);
+  virtual bool_t render( const glm::mat4& mProjection, const camera_ptr& camera ) noexcept(true)
+  { 
+    for ( auto n : m_vRender )
+    {
+      n->render( mProjection, camera );
+    }
+    
+    return true; 
+  }
 
   /***/
   virtual bool_t on_add_scene_node( SceneNodeBase* pSceneNode ) noexcept(true);

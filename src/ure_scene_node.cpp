@@ -25,7 +25,7 @@
 
 namespace ure {
 
-bool  SceneNode::add_scene_node( SceneNodeBase* pSceneNode )
+bool_t  SceneNode::add_scene_node( SceneNodeBase* pSceneNode ) noexcept(true)
 {  
   const std::string& sNodeType       = pSceneNode->type();
   
@@ -51,7 +51,7 @@ bool  SceneNode::add_scene_node( SceneNodeBase* pSceneNode )
   return on_add_scene_node(pSceneNode);
 }
 
-const SceneNode::scene_node_map_t*   SceneNode::get_scene_node_map( const std::string& sNodeType ) const
+const SceneNode::scene_node_map_t*   SceneNode::get_scene_node_map( const std::string& sNodeType ) const noexcept(true)
 {
   scene_node_maps_t::const_iterator  _iter = m_maps.find( sNodeType );
   if ( _iter == m_maps.end() )

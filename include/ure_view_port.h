@@ -75,9 +75,7 @@ public:
   inline std::unique_ptr<SceneGraph>  set_scene( std::unique_ptr<SceneGraph> scene_graph ) noexcept(true)
   {
     std::unique_ptr<SceneGraph> old_sg = std::move(m_scene_graph);
-    
     m_scene_graph = std::move(scene_graph);
-    
     return old_sg;
   }
 
@@ -101,9 +99,21 @@ public:
     x      = m_pos.x;      y      = m_pos.y;
     width  = m_size.width; height = m_size.height;
   }
+  /***/
+  constexpr int_t   x()      const noexcept(true)
+  { return m_pos.x; }
+  /***/
+  constexpr int_t   y()      const noexcept(true)
+  { return m_pos.y; }
+  /***/
+  constexpr sizei_t width()  const noexcept(true)
+  { return m_size.width; }
+  /***/
+  constexpr sizei_t height() const noexcept(true)
+  { return m_size.height; }
 
   /***/
-  inline bool_t       render() noexcept(true)
+  inline bool_t     render() noexcept(true)
   {
     if ( m_scene_graph == nullptr )
       return false;

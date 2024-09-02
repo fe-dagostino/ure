@@ -27,22 +27,22 @@ namespace ure {
 
 namespace widgets {
 
-Button::Button( Widget* pParent ) noexcept
+Button::Button( Widget* pParent ) noexcept(true)
  : Label( pParent )
 {
 }
 
-bool    Button::set_caption( Font* pFont, const std::wstring& sCaption, const glm::vec4& fgColor, WidgetTextAligment align )
+bool_t  Button::set_caption( Font* pFont, const std::wstring& sCaption, const glm::vec4& fgColor, WidgetTextAligment align ) noexcept(true)
 {
   return set_label( pFont, sCaption, fgColor, align  );
 }
   
-void_t  Button::set_focus( Texture* texture )
+void_t  Button::set_focus( Texture* texture ) noexcept(true)
 {
   m_imFocus.reset(texture);
 }
 
-bool    Button::on_widget_draw_background( [[maybe_unused]] const Recti& rect ) noexcept
+bool    Button::on_widget_draw_background( [[maybe_unused]] const Recti& rect ) noexcept(true)
 {
   if ( has_focus() == true )
   {
@@ -55,17 +55,17 @@ bool    Button::on_widget_draw_background( [[maybe_unused]] const Recti& rect ) 
   return true;
 }
 
-bool    Button::on_widget_draw( const Recti& rect ) noexcept
+bool_t  Button::on_widget_draw( const Recti& rect ) noexcept(true)
 {
   return Label::on_widget_draw( rect );
 }
   
-void_t  Button::on_widget_position_changed( const Position& pos ) noexcept
+void_t  Button::on_widget_position_changed( const Position& pos ) noexcept(true)
 {
   Label::on_widget_position_changed( pos );
 }
 
-void_t  Button::on_widget_size_changed( const Size& size ) noexcept
+void_t  Button::on_widget_size_changed( const Size& size ) noexcept(true)
 {
   Label::on_widget_size_changed( size );
 }

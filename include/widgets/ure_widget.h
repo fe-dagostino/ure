@@ -65,88 +65,88 @@ public:
   
   /**
    */
-  Widget( Widget* pParent );
+  Widget( Widget* pParent ) noexcept(true);
   /**
    */
-  virtual ~Widget();
+  virtual ~Widget() noexcept(true);
   
   /***/
-  inline Widget*            get_parent() noexcept
+  inline Widget*               get_parent() noexcept(true)
   { return m_pParent; }
     
   /***/
-  bool                      add_child( std::unique_ptr<Widget> widget ) noexcept;
+  bool_t                       add_child( std::unique_ptr<Widget> widget ) noexcept(true);
   
   /***/
-  inline widgets_t&         get_children() noexcept
+  inline constexpr widgets_t&  get_children() noexcept(true)
   { return m_vChildren; }
   
   /**
    * @return TRUE if layer is visible.
    */
-  inline bool               is_visible() const noexcept
-  { return m_bVisible;     }
+  inline constexpr bool_t      is_visible() const noexcept(true)
+  { return m_visible;     }
   /**
    * Set if layer is visible or not. When not visible render is disabled.
    */
-  inline void_t             set_visible( bool visible ) noexcept
-  { m_bVisible = visible; }  
+  inline constexpr void_t      set_visible( bool_t visible ) noexcept(true)
+  { m_visible = visible; }  
   
   /**
    * @return TRUE if widget is enabled, so it will be receive envents
    *         like keys, mouse and so on.
    */
-  inline bool               is_enabled() const noexcept
-  { return m_bEnabled;     }
+  inline constexpr bool_t      is_enabled() const noexcept(true)
+  { return m_enabled;     }
   /***/
-  inline void_t             set_enabled( bool enabled ) noexcept
-  { m_bEnabled = enabled;     }
+  inline constexpr void_t      set_enabled( bool_t enabled ) noexcept(true)
+  { m_enabled = enabled;     }
   
   /**
    * @return TRUE if it is referred by parent window as current focused.
    * @return FALSE if the widget has no parent or focus is on an other widget.
    */
-  bool                      has_focus() const noexcept;
+  bool_t                       has_focus() const noexcept(true);
   /**
    * Must be reimplemented at specialized class in order to
    * return a value that differs from default 'false'.
    * Return value should be 'true' if current widget or its children
    * can take the focus.
    */
-  virtual bool              is_focusable() const noexcept
+  virtual bool_t               is_focusable() const noexcept(true)
   { return false; }
   
   /***/
-  inline void_t             set_position( const Position2D& pos ) noexcept
+  inline void_t                set_position( const Position2D& pos ) noexcept(true)
   {  set_position( pos.x, pos.y, true ); }
   /***/
-  void_t                    set_position( int_t x, int_t y, bool notify ) noexcept;
+  void_t                       set_position( int_t x, int_t y, bool_t notify ) noexcept(true);
   /***/
-  inline const Position&    get_position() const noexcept
+  inline const Position&       get_position() const noexcept(true)
   { return m_pos; }
   
   /***/
-  inline void_t             set_size( const Size& size ) noexcept
+  inline void_t                set_size( const Size& size ) noexcept(true)
   { set_size( size.width, size.height, true ); }
   /***/
-  void_t                    set_size( sizei_t width, sizei_t height, bool notify ) noexcept;  
+  void_t                       set_size( sizei_t width, sizei_t height, bool_t notify ) noexcept(true);  
   /***/
-  inline const Size&        get_size() noexcept
+  inline constexpr const Size& get_size() noexcept(true)
   { return m_size; }
   
   /**
    */
-  inline void_t             get_client_area( Recti& rect ) noexcept
+  inline void_t                get_client_area( Recti& rect ) noexcept(true)
   {
     rect.left  = get_position().x; rect.top    = get_position().y;
     rect.right = get_size().width; rect.bottom = get_size().height;
   }
   
   /***/    
-  inline bool               has_background() const noexcept
+  inline constexpr bool_t      has_background() const noexcept(true)
   { return (m_eBackground!=NoBackground); }
   /***/
-  inline void_t             set_background( const glm::vec4& cr )
+  inline constexpr void_t      set_background( const glm::vec4& cr ) noexcept(true)
   {  
     m_crBackground = cr;     
     m_eBackground  = SolidColor;
@@ -156,15 +156,15 @@ public:
    *      The reason is related to format type used to store image where images are store starting
    *      from the bottom line in the image.
    */
-  void_t                          set_background( std::shared_ptr<ure::Texture> texture, BackgroundOptions bo );
+  void_t                          set_background( std::shared_ptr<ure::Texture> texture, BackgroundOptions bo ) noexcept(true);
   
-  inline const glm::vec4&         get_bk_color() const
+  inline const glm::vec4&         get_bk_color() const noexcept(true)
   { return m_crBackground;   }
-  inline std::shared_ptr<Texture> get_bk_image() const
+  inline std::shared_ptr<Texture> get_bk_image() const noexcept(true)
   { return m_bkg_texture;   }
   
   /***/
-  bool                      draw( const glm::mat4& mvp, const Recti& rect );
+  bool_t                    draw( const glm::mat4& mvp, const Recti& rect ) noexcept(true);
   
 public:
   using OnClick_Signal = sigc::signal<void_t(Widget*)>;
@@ -178,57 +178,57 @@ protected:
    * Usual implementation propagate event only to focused child, that can be done
    * exending the class with a specialized event.
    */
-  virtual void_t   on_widget_key_released( Window* pGlWindow, Layer* pGlLayer, key_t key, int_t iScanCode, word_t wMods ) noexcept;
+  virtual void_t   on_widget_key_released( Window* pGlWindow, Layer* pGlLayer, key_t key, int_t iScanCode, word_t wMods ) noexcept(true);
   /**
    * Default implementation will check if current widget has th focus and then will 
    * propagate the event to all child widgets.
    * Usual implementation propagate event only to focused child, that can be done
    * exending the class with a specialized event.
    */
-  virtual void_t   on_widget_key_pressed ( Window* pGlWindow, Layer* pGlLayer, key_t key, int_t iScanCode, word_t wMods ) noexcept;
+  virtual void_t   on_widget_key_pressed ( Window* pGlWindow, Layer* pGlLayer, key_t key, int_t iScanCode, word_t wMods ) noexcept(true);
   /**
    * Default implementation will check if current widget has th focus and then will 
    * propagate the event to all child widgets.
    * Usual implementation propagate event only to focused child, that can be done
    * exending the class with a specialized event.
    */
-  virtual void_t   on_widget_key_repeated( Window* pGlWindow, Layer* pGlLayer, key_t key, int_t iScanCode, word_t wMods ) noexcept;
+  virtual void_t   on_widget_key_repeated( Window* pGlWindow, Layer* pGlLayer, key_t key, int_t iScanCode, word_t wMods ) noexcept(true);
   
   /***/
-  virtual void_t   on_widget_begin_drawing( [[maybe_unused]] const Recti& rect ) noexcept
+  virtual void_t   on_widget_begin_drawing( [[maybe_unused]] const Recti& rect ) noexcept(true)
   {}
   /**
    * Called before drawing background. To hinibit default drawing return 'false'.
    */
-  virtual bool_t   on_widget_draw_background( [[maybe_unused]] const Recti& rect ) noexcept
+  virtual bool_t   on_widget_draw_background( [[maybe_unused]] const Recti& rect ) noexcept(true)
   { return true; }
   /***/
-  virtual bool_t   on_widget_draw( [[maybe_unused]] const Recti& rect ) noexcept
+  virtual bool_t   on_widget_draw( [[maybe_unused]] const Recti& rect ) noexcept(true)
   { return true; }
   /***/
-  virtual void_t   on_widget_end_drawing( [[maybe_unused]] const Recti& rect ) noexcept
+  virtual void_t   on_widget_end_drawing( [[maybe_unused]] const Recti& rect ) noexcept(true)
   {}
   /***/
-  virtual void_t   on_widget_position_changed( [[maybe_unused]] const Position& pos ) noexcept
+  virtual void_t   on_widget_position_changed( [[maybe_unused]] const Position& pos ) noexcept(true)
   {}
   /***/
-  virtual void_t   on_widget_size_changed( [[maybe_unused]] const Size& size ) noexcept
+  virtual void_t   on_widget_size_changed( [[maybe_unused]] const Size& size ) noexcept(true)
   {}
 
   /***/
-  virtual bool_t   on_widget_update_background_vertices() noexcept
+  virtual bool_t   on_widget_update_background_vertices() noexcept(true)
   { return true; }
   
 protected:
   /***/
-  bool   step_focus();
+  bool_t step_focus() noexcept(true);
   /***/
-  bool   has_focusable();
+  bool_t has_focusable() noexcept(true);
   /**
    * NOTE: this method should be called only when current 
    *       widget is both visible and enabled.
    */
-  void_t handleDefaultKeys( key_t key, int_t iScanCode );
+  void_t handleDefaultKeys( key_t key, int_t iScanCode ) noexcept(true);
   
 private:
 
@@ -243,7 +243,7 @@ protected:
   Key_Signal   signalKeyRepeated;
   
   /***/
-  void_t       set_parent( Widget* pParent );
+  void_t       set_parent( Widget* pParent ) noexcept(true);
 
 // Used for disconnection.
 private:
@@ -255,8 +255,8 @@ private:
   BackgroundOptions             m_ebo;
   Position                      m_pos;
   Size                          m_size;
-  bool                          m_bVisible;
-  bool                          m_bEnabled;
+  bool_t                        m_visible;
+  bool_t                        m_enabled;
   Widget*                       m_pParent;
   widgets_t                     m_vChildren;
   widgets_t::iterator           m_Focus;

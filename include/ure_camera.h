@@ -124,6 +124,8 @@ protected:
   Position3D      m_camera_top;       // Top of the camera
 };
 
+using camera_ptr = std::shared_ptr<ure::Camera>;
+
 }
 
 #endif // URE_CAMERA_H

@@ -30,9 +30,9 @@ namespace ure {
 namespace widgets {
 
 
-Widget::Widget( Widget* pParent )
+Widget::Widget( Widget* pParent ) noexcept(true)
  : m_ebo( eboUndefined ), m_pos( 0, 0 ),
-   m_size( 0, 0 ), m_bVisible( true ), m_bEnabled( true ),
+   m_size( 0, 0 ), m_visible( true ), m_enabled( true ),
    m_pParent( nullptr ), m_eBackground( NoBackground ), m_bkg_texture( nullptr )
 {
   m_Focus = m_vChildren.end();
@@ -40,13 +40,13 @@ Widget::Widget( Widget* pParent )
   set_parent( pParent );
 }
 
-Widget::~Widget()
+Widget::~Widget() noexcept(true)
 {
   // Release signals slot on parent.
   set_parent( nullptr );
 }
 
-bool  Widget::add_child( std::unique_ptr<Widget> widget ) noexcept
+bool  Widget::add_child( std::unique_ptr<Widget> widget ) noexcept(true)
 {
   m_vChildren.push_back( std::move(widget) );
   m_vChildren.shrink_to_fit();
@@ -61,7 +61,7 @@ bool  Widget::add_child( std::unique_ptr<Widget> widget ) noexcept
   return true;
 }
 
-bool  Widget::has_focus() const noexcept
+bool_t  Widget::has_focus() const noexcept(true)
 {
   if ( m_pParent == nullptr )
     return false;
@@ -75,7 +75,7 @@ bool  Widget::has_focus() const noexcept
   return false;
 }
 
-void_t  Widget::set_position( int_t x, int_t y, bool notify ) noexcept
+void_t  Widget::set_position( int_t x, int_t y, bool notify ) noexcept(true)
 { 
   if ( (m_pos.x != x) || (m_pos.y != y) )
   {
@@ -91,7 +91,7 @@ void_t  Widget::set_position( int_t x, int_t y, bool notify ) noexcept
   }
 }
   
-void_t  Widget::set_size( sizei_t width, sizei_t height, bool notify ) noexcept
+void_t  Widget::set_size( sizei_t width, sizei_t height, bool notify ) noexcept(true)
 { 
   if (( m_size.width != width ) || (m_size.height != height))
   {
@@ -107,7 +107,7 @@ void_t  Widget::set_size( sizei_t width, sizei_t height, bool notify ) noexcept
   }
 }  
   
-void_t  Widget::set_background( std::shared_ptr<ure::Texture> texture, BackgroundOptions bo )
+void_t  Widget::set_background( std::shared_ptr<ure::Texture> texture, BackgroundOptions bo ) noexcept(true)
 { 
   m_bkg_texture = texture;     
   
@@ -152,7 +152,7 @@ void_t  Widget::set_background( std::shared_ptr<ure::Texture> texture, Backgroun
   }
 }
 
-bool  Widget::draw( const glm::mat4& mvp, const Recti& rect )
+bool_t  Widget::draw( const glm::mat4& mvp, const Recti& rect ) noexcept(true)
 {
   if ( is_visible() == false )
     return false;
@@ -189,7 +189,7 @@ bool  Widget::draw( const glm::mat4& mvp, const Recti& rect )
   return bRetVal;
 }
 
-void_t  Widget::on_widget_key_released( Window* pWindow, Layer* pLayer, key_t key, int_t iScanCode, word_t wMods ) noexcept
+void_t  Widget::on_widget_key_released( Window* pWindow, Layer* pLayer, key_t key, int_t iScanCode, word_t wMods ) noexcept(true)
 { 
   if (( has_focus() == false ) || ( is_enabled() == false ))
     return;
@@ -197,7 +197,7 @@ void_t  Widget::on_widget_key_released( Window* pWindow, Layer* pLayer, key_t ke
   signalKeyReleased.emit( pWindow, pLayer, key, iScanCode, wMods );   
 } 
   
-void_t  Widget::on_widget_key_pressed ( Window* pWindow, Layer* pLayer, key_t key, int_t iScanCode, word_t wMods ) noexcept
+void_t  Widget::on_widget_key_pressed ( Window* pWindow, Layer* pLayer, key_t key, int_t iScanCode, word_t wMods ) noexcept(true)
 {
   if (( has_focus() == false ) || ( is_enabled() == false ))
     return;
@@ -207,7 +207,7 @@ void_t  Widget::on_widget_key_pressed ( Window* pWindow, Layer* pLayer, key_t ke
   signalKeyPressed.emit ( pWindow, pLayer, key, iScanCode, wMods ); 
 } 
 
-void_t  Widget::on_widget_key_repeated( Window* pWindow, Layer* pLayer, key_t key, int_t iScanCode, word_t wMods ) noexcept
+void_t  Widget::on_widget_key_repeated( Window* pWindow, Layer* pLayer, key_t key, int_t iScanCode, word_t wMods ) noexcept(true)
 { 
   if (( has_focus() == false ) || ( is_enabled() == false ))
     return;
@@ -217,7 +217,7 @@ void_t  Widget::on_widget_key_repeated( Window* pWindow, Layer* pLayer, key_t ke
   signalKeyRepeated.emit( pWindow, pLayer, key, iScanCode, wMods );  
 } 
 
-bool  Widget::step_focus()
+bool  Widget::step_focus() noexcept(true)
 {
   if ( has_focusable() == false )
     return true;
@@ -249,7 +249,7 @@ bool  Widget::step_focus()
   return false;
 }
 
-bool  Widget::has_focusable()
+bool  Widget::has_focusable() noexcept(true)
 {
   if ( m_vChildren.empty() )
     return false;
@@ -262,7 +262,7 @@ bool  Widget::has_focusable()
 }
 
 // Called only in case current widget is both visible and enabled.
-void_t  Widget::handleDefaultKeys( key_t key, [[maybe_unused]] int_t iScanCode )
+void_t  Widget::handleDefaultKeys( key_t key, [[maybe_unused]] int_t iScanCode ) noexcept(true)
 {
   switch ( key )
   {
@@ -276,7 +276,7 @@ void_t  Widget::handleDefaultKeys( key_t key, [[maybe_unused]] int_t iScanCode )
   }
 }
 
-void_t  Widget::_updateBkVertices( ) noexcept
+void_t  Widget::_updateBkVertices( ) noexcept(true)
 {
   if ( on_widget_update_background_vertices() == false )
     return;
@@ -301,7 +301,7 @@ void_t  Widget::_updateBkVertices( ) noexcept
 }
 
 
-void_t  Widget::set_parent( Widget* pParent )
+void_t  Widget::set_parent( Widget* pParent ) noexcept(true)
 {
   if ( m_pParent != nullptr )
   {

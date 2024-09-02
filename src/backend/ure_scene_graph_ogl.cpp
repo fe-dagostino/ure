@@ -66,26 +66,8 @@ const SceneCameraNode*  SceneGraph::get_active_camera() const noexcept(true)
 
   return nullptr;
 }
-  
-bool  SceneGraph::render( const glm::mat4& mProjection ) noexcept(true)
-{
-  const SceneCameraNode* pActiveCamera = get_active_camera();
-  Camera*                pCamera       = (pActiveCamera!=nullptr)?(Camera*)pActiveCamera->get_camera():nullptr; 
-
-  return render( mProjection, pCamera );
-}
-
-bool  SceneGraph::render( const glm::mat4& mProjection, Camera* pCamera ) noexcept(true)
-{ 
-  for ( auto n : m_vRender )
-  {
-    n->render( mProjection, pCamera );
-  }
-  
-  return true; 
-}
  
-bool  SceneGraph::on_add_scene_node( SceneNodeBase* pSceneNode ) noexcept(true)
+bool_t  SceneGraph::on_add_scene_node( SceneNodeBase* pSceneNode ) noexcept(true)
 {
   m_vRender.push_back( pSceneNode );
   return true;

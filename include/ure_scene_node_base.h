@@ -37,9 +37,11 @@ class Camera;
 class SceneNodeBase : public Object
 {
 public:
-  /***/
-  SceneNodeBase( const std::string& nodetype, const std::string& name, Object* pObject ) noexcept(true)
-    : Object(), m_sNodeType(nodetype), m_sName( name ), m_ptrObject( pObject )
+  /**
+   * @param object     can be shared over different scene nodes.
+  */
+  SceneNodeBase( const std::string& node_type, const std::string& name, std::shared_ptr<Object> object ) noexcept(true)
+    : Object(), m_node_type(node_type), m_name( name ), m_object( object )
   {}
 
   /***/
@@ -48,27 +50,31 @@ public:
 
   /***/
   inline constexpr const std::string& type() const noexcept(true)
-  { return m_sNodeType; }
+  { return m_node_type; }
 
   /**
    * Return node instance name.
    */
   inline constexpr const std::string& name() const noexcept(true)
-  { return m_sName; }
+  { return m_name; }
   
   /***/
-  template<class derived_t>
-    requires std::is_nothrow_convertible_v<derived_t*,Object*>
-  inline  constexpr const derived_t*       get_object() const noexcept(true)
-  { return dynamic_cast<derived_t*>(m_ptrObject.get()); }
+  inline bool_t has_object() const noexcept(true)
+  { return (bool)m_object; }
 
   /***/
   template<class derived_t>
     requires std::is_nothrow_convertible_v<derived_t*,Object*>
-  inline constexpr derived_t*       get_object() noexcept(true)
-  { return static_cast<derived_t*>(m_ptrObject.get()); }
+  inline const std::shared_ptr<derived_t>  get_object() const noexcept(true)
+  { return std::static_pointer_cast<derived_t>(m_object); }
 
-  inline bool_t has_animation() noexcept(true)
+  /***/
+  template<class derived_t>
+    requires std::is_nothrow_convertible_v<derived_t*,Object*>
+  inline std::shared_ptr<derived_t> get_object() noexcept(true)
+  { return std::static_pointer_cast<derived_t>(m_object); }
+
+  inline bool_t has_animation() const noexcept(true)
   { return (bool)m_animation; }
   /***/
   Animation&    get_animation() noexcept(true)
@@ -82,10 +88,9 @@ public:
   }
   
   /**
-   * @param pCamera    pointer to the active camera it will provide
-   *                   projection matrix.
+   * @param camera     pointer to the active camera it will provide the view matrix.
    */
-  virtual bool_t    render( const glm::mat4& mProjection, Camera* pCamera ) noexcept(true) = 0;
+  virtual bool_t    render( const glm::mat4& mProjection, const std::shared_ptr<Camera>& camera ) noexcept(true) = 0;
   
 protected:
   /***/
@@ -93,9 +98,9 @@ protected:
   {}
   
 private:
-  const std::string            m_sNodeType;    // node type intended to be initialized with derived class name.
-  const std::string            m_sName;        // instance name
-  std::unique_ptr<Object>      m_ptrObject;
+  const std::string            m_node_type;    /* node type intended to be initialized with derived class name. */
+  const std::string            m_name;         /* instance name */
+  std::shared_ptr<Object>      m_object;
   std::unique_ptr<Animation>   m_animation;
   
 };

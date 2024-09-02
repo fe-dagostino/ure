@@ -31,13 +31,15 @@ private:
     bkImage.load( ure::Image::loader_t::eStb, "./resources/media/wall.jpg" );
 
     std::unique_ptr<ure::Texture> texture = std::make_unique<ure::Texture>( std::move(bkImage) );
-
-    m_rc->attach<ure::Texture,std::unique_ptr<ure::Texture>>("wall", std::move(texture) );
+    if ( texture )
+    {
+      m_rc->attach<ure::Texture,std::unique_ptr<ure::Texture>>("wall", std::move(texture) );
+    }
   }
 
   void addCamera()
   {
-    ure::Camera*  pCamera =  new ure::Camera( true );
+    ure::camera_ptr camera = std::make_shared<ure::Camera>( true );
   
     glm::vec3 cameraPosition = glm::vec3(0,0,1);  // Camera is at (4,3,3), in World Space
     glm::vec3 cameraTarget   = glm::vec3(0,0,0);  // and looks at the origin
@@ -49,32 +51,32 @@ private:
                                             upVector        // probably glm::vec3(0,1,0), but (0,-1,0) would make you looking upside-down, which can be great too
                                         );
                                         
-    pCamera->set_view_matrix( CameraMatrix );
+    camera->set_view_matrix( CameraMatrix );
 
-    if ( m_pViewPort->has_scene_graph() )
+    if ( m_view_port->has_scene_graph() )
     {
-      m_pViewPort->get_scene().add_scene_node( new ure::SceneCameraNode( "MainCamera", pCamera ) );
+      m_view_port->get_scene().add_scene_node( new ure::SceneCameraNode( "MainCamera", camera ) );
     }
   }
 
   void addWallLayer()
   {
-    ure::widgets::Layer* pLayer = new(std::nothrow) ure::widgets::Layer( *m_pViewPort );
+    std::shared_ptr<ure::widgets::Layer> layer = std::make_shared<ure::widgets::Layer>( *m_view_port );
     
-    m_pWindow->connect(pLayer);
+    m_window->connect( layer->get_windows_events() );
 
-    pLayer->set_visible( true );
-    pLayer->set_enabled( true );
+    layer->set_visible( true );
+    layer->set_enabled( true );
 
-    pLayer->set_position( -1.0f*m_size.width/2, -1.0f*m_size.height/2, true );
+    layer->set_position( -1.0f*m_size.width/2, -1.0f*m_size.height/2, true );
 
     auto texture = m_rc->find<ure::Texture>("wall");
     if ( texture.has_value() )
     {
-      pLayer->set_background( texture.value(), ure::widgets::Widget::BackgroundOptions::eboAsIs );
+      layer->set_background( texture.value(), ure::widgets::Widget::BackgroundOptions::eboAsIs );
     }
 
-    ure::SceneLayerNode* pNode = new(std::nothrow) ure::SceneLayerNode( "Layer1", pLayer );
+    ure::SceneLayerNode* pNode = new(std::nothrow) ure::SceneLayerNode( "Layer1", layer );
    
     glm::mat4 mModel =  glm::ortho( -1.0f*(float)m_size.width/2, (float)m_size.width/2, (float)m_size.height/2, -1.0f*(float)m_size.height/2, 0.1f, 500.0f );
     //glm::mat4 mModel =  glm::ortho( 0.0f, (float)m_size.width, (float)m_size.height, 0.0f, 0.1f, 1.0f );
@@ -82,8 +84,8 @@ private:
     pNode->set_model_matrix( mModel );
     pNode->get_model_matrix().translate( 0, 0,   0 );
 
-    if ( m_pViewPort->has_scene_graph() )
-      m_pViewPort->get_scene().add_scene_node( pNode );    
+    if ( m_view_port->has_scene_graph() )
+      m_view_port->get_scene().add_scene_node( pNode );    
   }
 
   void init( [[__maybe_unused__]] int argc, [[__maybe_unused__]] char** argv )
@@ -93,15 +95,15 @@ private:
     ure::Application::initialize( core::unique_ptr<ure::ApplicationEvents>(this,false), sShadersPath );
 
     //
-    m_pWindow = new(std::nothrow) ure::Window();
-    if ( m_pWindow == nullptr )
+    m_window = std::make_unique<ure::Window>();
+    if ( m_window == nullptr )
     {
       ure::utils::log( "Unable to start application" );
       return ;
     }
 
     // Add this as listener for WindowEvents
-    m_pWindow->connect( this );
+    m_window->connect( this );
     
     std::unique_ptr<ure::window_options> options = 
           std::make_unique<ure::window_options>( 
@@ -111,12 +113,12 @@ private:
 								 m_size 
           );
     
-    m_pWindow->create( std::move(options), static_cast<ure::enum_t>(ure::Window::processing_flag_t::epfCalling) );
-    m_pWindow->set_swap_interval(1);
+    m_window->create( std::move(options), static_cast<ure::enum_t>(ure::Window::processing_flag_t::epfCalling) );
+    m_window->set_swap_interval(1);
 
     //////////////////////////////////////////////////////////////////////////
 
-    const ure::Renderer* renderer = m_pWindow->get_renderer();
+    const ure::Renderer* renderer = m_window->get_renderer();
 
     std::string  sVendor;
     std::string  sRenderer;
@@ -143,7 +145,7 @@ private:
 
     glm::mat4 mProjection = glm::perspectiveFov(45.0f, (float)m_size.width, (float)m_size.height, 0.1f, 500.0f);
 
-    m_pViewPort   = new ure::ViewPort( std::move(scene_graph), mProjection );
+    m_view_port   = std::make_unique<ure::ViewPort>( std::move(scene_graph), mProjection );
 
 
     loadResources();
@@ -166,7 +168,7 @@ public:
   /***/
   void dispose()
   {
-    m_pWindow->destroy();
+    m_window->destroy();
 
     ure::Application::get_instance()->finalize();
   }
@@ -200,22 +202,22 @@ protected:
 
   virtual ure::void_t on_run() override 
   {
-    if ( m_pWindow->check( ure::Window::window_flag_t::eWindowShouldClose ) )
+    if ( m_window->check( ure::Window::window_flag_t::eWindowShouldClose ) )
     {
       ure::Application::get_instance()->exit(true);
       return;
     }
 
-    m_pWindow->get_framebuffer_size( m_fb_size );
+    m_window->get_framebuffer_size( m_fb_size );
     
     ///////////////
-    m_pViewPort->set_area( 0, 0, m_fb_size.width, m_fb_size.height );
-    m_pViewPort->use();
+    m_view_port->set_area( 0, 0, m_fb_size.width, m_fb_size.height );
+    m_view_port->use();
 
     // Update background color
-    if ( m_pViewPort->has_scene_graph() )
+    if ( m_view_port->has_scene_graph() )
     {
-      ure::SceneGraph& sgr = m_pViewPort->get_scene();
+      ure::SceneGraph& sgr = m_view_port->get_scene();
       
       sgr.set_background( 0.2f, 0.2f, 0.2f, 0.0f );
 
@@ -229,17 +231,17 @@ protected:
     }
 
     ///////////////
-    m_pViewPort->clear_buffer( GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT );
+    m_view_port->clear_buffer( GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT );
 
     ///////////////
-    m_pViewPort->render();
+    m_view_port->render();
 
     ///////////////
-    m_pWindow->swap_buffers();
+    m_window->swap_buffers();
     
     ///////////////
     // Will process messages that requires to be executed on main thread.
-    m_pWindow->process_message();
+    m_window->process_message();
 
     ure::Application::get_instance()->poll_events();
 
@@ -266,7 +268,7 @@ protected:
       {
         //glm::mat4 view_matrix = glm::mat4(1);
 
-        //m_pViewPort->get_scene()->get_active_camera()->get_camera()->get_view_matrix() = view_matrix;
+        //m_view_port->get_scene()->get_active_camera()->get_camera()->get_view_matrix() = view_matrix;
 
 
       }; break;
@@ -306,9 +308,8 @@ private:
 
   resources_collector_t       m_rc;                   /* resource collector */
 
-  ure::Window*      m_pWindow;
-  ure::ViewPort*    m_pViewPort;
-
+  std::unique_ptr<ure::Window>      m_window;
+  std::unique_ptr<ure::ViewPort>    m_view_port;
 
   core::stop_watch<std::chrono::milliseconds,true>  m_sw;
 };
