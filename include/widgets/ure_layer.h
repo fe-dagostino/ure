@@ -111,8 +111,10 @@ private:
   
 };
 
-}
+using layer_ptr = std::shared_ptr<ure::widgets::Layer>;
 
-}
+} /* namespace widgets */ 
+
+} /* namespace ure */ 
 
 #endif // URE_LAYER_H

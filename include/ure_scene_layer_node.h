@@ -51,6 +51,13 @@ public:
   virtual ~SceneLayerNode() noexcept(true)
   {}  
   
+  /***/
+  inline widgets::layer_ptr get_layer() const noexcept(true)
+  { return get_object<widgets::Layer>(); }
+  /***/
+  inline widgets::layer_ptr get_layer() noexcept(true)
+  { return get_object<widgets::Layer>(); }
+
   /***/  
   virtual bool_t               render( const glm::mat4& mProjection, const camera_ptr& camera ) noexcept(true) override; 
   
