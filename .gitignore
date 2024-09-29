@@ -1,5 +1,6 @@
 # vscode default build directory
-build
+build*/
+include/ure_config.h
 
 # Prerequisites
 *.d
