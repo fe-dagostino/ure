@@ -24,7 +24,7 @@
 #ifndef URE_COMMON_DEFS_H
 #define URE_COMMON_DEFS_H
 
-#include "config.h"
+#include "ure_config.h"
 
 #ifdef __EMSCRIPTEN__
 # include <emscripten.h>

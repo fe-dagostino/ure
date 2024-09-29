@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.9)
+cmake_minimum_required(VERSION 3.22)
 
 set(libname "ure")
 
@@ -160,9 +160,14 @@ if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
     endif()
 endif()
 
-add_subdirectory(submodules/libsigc++)
-add_subdirectory(submodules/lock-free)
-add_subdirectory(submodules/glm      )
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+message(STATUS "${PROJECT_SOURCE_DIR}")
+
+include(FetchContent)
+#add_subdirectory(submodules/libsigc++)
+include(libsigc++)
+include(lock-free)
+include(glm)
 
 if (NOT ENABLE_WASM)
   include_directories( ${FREETYPE_INCLUDE_DIRS}                                 )
@@ -171,16 +176,11 @@ endif()
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/include                        )
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/3rd-party/glad/include         )
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/submodules/lock-free/include   )
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/submodules/glm                 )
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/submodules/stb                 )
 
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/submodules/libsigc++           )
-include_directories( ${CMAKE_CURRENT_BINARY_DIR}/submodules/libsigc++           ) # necessary for sigc++config.h
 #include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/submodules/imgui/           )
 #include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/submodules/imgui/backends/  )
 #message (FATAL_ERROR "${CMAKE_CURRENT_BINARY_DIR}" )
-link_directories( ${CMAKE_CURRENT_BINARY_DIR}/submodules/libsigc++           )
 
 # uncomment to set a default CXX standard for the external tools like clang-tidy and cppcheck
 # and the targets that do not specify a standard.
@@ -255,26 +255,27 @@ if (URE_USE_STB)
 endif (URE_USE_STB)
 
 # Common libraries
-set( EXT_LIBRARIES ${EXT_LIBRARIES} sigc-3.0 )
-set( EXT_LIBRARIES ${EXT_LIBRARIES} glm::glm )
+list(APPEND EXT_LIBRARIES sigc-3.0             )
+list(APPEND EXT_LIBRARIES lock-free::lock-free )
+list(APPEND EXT_LIBRARIES glm::glm             )
 
 if (URE_USE_FREEIMAGE)
   add_compile_definitions( _USE_FREEIMAGE )
-  set( EXT_LIBRARIES ${EXT_LIBRARIES} freeimage )
+  list(APPEND EXT_LIBRARIES freeimage )
 endif (URE_USE_FREEIMAGE)
 
 if (URE_USE_DEVIL)
   add_compile_definitions( _USE_DEVIL )
-  set( EXT_LIBRARIES ${EXT_LIBRARIES} IL )
+  list(APPEND EXT_LIBRARIES IL )
 endif (URE_USE_DEVIL)
 
 if (ENABLE_GLFW)
-  set( EXT_LIBRARIES ${EXT_LIBRARIES} glfw3 )
+list(APPEND EXT_LIBRARIES glfw3 )
 endif()
 
 if (NOT ENABLE_WASM)
-  set( EXT_LIBRARIES ${EXT_LIBRARIES} curl                  )
-  set( EXT_LIBRARIES ${EXT_LIBRARIES} ${FREETYPE_LIBRARIES} )
+  list(APPEND EXT_LIBRARIES curl                  )
+  list(APPEND EXT_LIBRARIES ${FREETYPE_LIBRARIES} )
 endif()
 
 if (ENABLE_WASM)
@@ -393,19 +394,24 @@ if(hasParent)
 endif()  
 
 add_library   ( ${libname}${LIB_VERSION_SO}   SHARED ${LIB_SRC} ${LIB_TARGET_IMP_SRC} ${LIB_FONT_SRC} ${LIB_WIDGETS_SRC} ${LIB_WM_SRC} ${LIB_BE_SRC} ${LIB_GLAD_SRC} )
+add_library   ( ure::ure        ALIAS ${libname}${LIB_VERSION_SO} )
 add_library   ( ${libname}${LIB_VERSION_A}    STATIC ${LIB_SRC} ${LIB_TARGET_IMP_SRC} ${LIB_FONT_SRC} ${LIB_WIDGETS_SRC} ${LIB_WM_SRC} ${LIB_BE_SRC} ${LIB_GLAD_SRC} )
+add_library   ( ure::ure_static ALIAS ${libname}${LIB_VERSION_A} )
 
 target_link_libraries( ${libname}${LIB_VERSION_SO}  ${EXT_LIBRARIES} )
 target_link_libraries( ${libname}${LIB_VERSION_A}   ${EXT_LIBRARIES} )
 target_link_libraries( ${libname}${LIB_VERSION_SO}  ${CMAKE_DL_LIBS} )
 target_link_libraries( ${libname}${LIB_VERSION_A}   ${CMAKE_DL_LIBS} )
 
-target_include_directories( ${libname}${LIB_VERSION_SO} INTERFACE 
+target_include_directories( ${libname}${LIB_VERSION_SO} PUBLIC 
                             "${CMAKE_CURRENT_SOURCE_DIR}/include" 
                           )
-target_include_directories( ${libname}${LIB_VERSION_A}  INTERFACE 
+target_include_directories( ${libname}${LIB_VERSION_A}  PUBLIC 
                             "${CMAKE_CURRENT_SOURCE_DIR}/include" 
                           )
+include(GNUInstallDirs)
+install( TARGETS ${libname}${LIB_VERSION_SO} ${libname}${LIB_VERSION_A} ARCHIVE DESTINATION lib )
+install( FILES   ${LIB_INCLUDE} ${LIB_FONT_INCLUDE} ${LIB_WIDGETS_INCLUDE} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} ) 
 
 if ( URE_BUILD_EXAMPLES )
   add_subdirectory(examples)
