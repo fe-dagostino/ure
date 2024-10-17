@@ -115,10 +115,6 @@ if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS URE_CXX_MIN_VERSION)
   message(FATAL_ERROR "Minimum requirement for CXX is version ${URE_CXX_MIN_VERSION}. Current version is ${CMAKE_CXX_COMPILER_VERSION}")
 endif()
 
-if ( ENABLE_GLFW )
-  find_package(glfw3 3.3 REQUIRED)
-endif()
-
 ####
 ## OTHER OPTIONS
 #### 
@@ -164,10 +160,14 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 message(STATUS "${PROJECT_SOURCE_DIR}")
 
 include(FetchContent)
-#add_subdirectory(submodules/libsigc++)
+
 include(libsigc++)
 include(lock-free)
 include(glm)
+if ( ENABLE_GLFW )
+  include(glfw3)
+endif()
+
 
 if (NOT ENABLE_WASM)
   include_directories( ${FREETYPE_INCLUDE_DIRS}                                 )

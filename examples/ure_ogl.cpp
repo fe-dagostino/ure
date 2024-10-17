@@ -40,7 +40,9 @@ private:
   void addCamera()
   {
     ure::camera_ptr camera = std::make_shared<ure::Camera>( true );
-  
+    if ( camera == nullptr )
+      return ;
+
     glm::vec3 cameraPosition = glm::vec3(0,0,1);  // Camera is at (4,3,3), in World Space
     glm::vec3 cameraTarget   = glm::vec3(0,0,0);  // and looks at the origin
     glm::vec3 upVector       = glm::vec3(0,1,0);  // Head is up (set to 0,-1,0 to look upside-down)
@@ -51,6 +53,7 @@ private:
                                             upVector        // probably glm::vec3(0,1,0), but (0,-1,0) would make you looking upside-down, which can be great too
                                         );
                                         
+    /* Initially we are going to use 2D in 3D space, that means no view matrix to be applied in the MVP */
     camera->set_view_matrix( CameraMatrix );
 
     if ( m_view_port->has_scene_graph() )
@@ -82,7 +85,7 @@ private:
     //glm::mat4 mModel =  glm::ortho( 0.0f, (float)m_size.width, (float)m_size.height, 0.0f, 0.1f, 1.0f );
 
     pNode->set_model_matrix( mModel );
-    pNode->get_model_matrix().translate( 0, 0,   0 );
+    pNode->get_model_matrix().translate( 0, 0, 0 );
 
     if ( m_view_port->has_scene_graph() )
       m_view_port->get_scene().add_scene_node( pNode );    
@@ -105,13 +108,12 @@ private:
     // Add this as listener for WindowEvents
     m_window->connect( this );
     
-    std::unique_ptr<ure::window_options> options = 
-          std::make_unique<ure::window_options>( 
-                (m_bFullScreen==true)?"main":"", 
-								 "GLES GUI Application",
-								 m_position, 
-								 m_size 
-          );
+    std::unique_ptr<ure::window_options> options = std::make_unique<ure::window_options>( 
+                                                                                          (m_bFullScreen==true)?"main":"", 
+                                                                                          "GLES GUI Application",
+                                                                                          m_position, 
+                                                                                          m_size 
+                                                                                        );
     
     m_window->create( std::move(options), static_cast<ure::enum_t>(ure::Window::processing_flag_t::epfCalling) );
     m_window->set_swap_interval(1);
@@ -144,6 +146,8 @@ private:
     }
 
     glm::mat4 mProjection = glm::perspectiveFov(45.0f, (float)m_size.width, (float)m_size.height, 0.1f, 500.0f);
+    //glm::mat4 mProjection = glm::mat4(1);
+    //glm::mat4 mProjection = glm::ortho( -1.0f*m_size.width/2, 1.0f*m_size.width/2, 1.0f*m_size.height/2, -1.0f*m_size.height/2 ); //, -1.0f, 1.0f );
 
     m_view_port   = std::make_unique<ure::ViewPort>( std::move(scene_graph), mProjection );
 
