@@ -13,4 +13,4 @@ set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
 FetchContent_MakeAvailable(glfw3)
 
-include_directories( ${glfw_SOURCE_DIR}/include )
+include_directories( ${GLFW_SOURCE_DIR}/include )
