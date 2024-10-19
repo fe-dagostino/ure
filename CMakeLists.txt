@@ -270,7 +270,7 @@ if (URE_USE_DEVIL)
 endif (URE_USE_DEVIL)
 
 if (ENABLE_GLFW)
-list(APPEND EXT_LIBRARIES glfw )
+  list(APPEND EXT_LIBRARIES glfw )
 endif()
 
 if (NOT ENABLE_WASM)
@@ -398,10 +398,10 @@ add_library   ( ure::ure        ALIAS ${libname}${LIB_VERSION_SO} )
 add_library   ( ${libname}${LIB_VERSION_A}    STATIC ${LIB_SRC} ${LIB_TARGET_IMP_SRC} ${LIB_FONT_SRC} ${LIB_WIDGETS_SRC} ${LIB_WM_SRC} ${LIB_BE_SRC} ${LIB_GLAD_SRC} )
 add_library   ( ure::ure_static ALIAS ${libname}${LIB_VERSION_A} )
 
-target_link_libraries( ${libname}${LIB_VERSION_SO}  ${EXT_LIBRARIES} )
-target_link_libraries( ${libname}${LIB_VERSION_A}   ${EXT_LIBRARIES} )
-target_link_libraries( ${libname}${LIB_VERSION_SO}  ${CMAKE_DL_LIBS} )
-target_link_libraries( ${libname}${LIB_VERSION_A}   ${CMAKE_DL_LIBS} )
+target_link_libraries( ${libname}${LIB_VERSION_SO}  PUBLIC ${EXT_LIBRARIES} )
+target_link_libraries( ${libname}${LIB_VERSION_A}   PUBLIC ${EXT_LIBRARIES} )
+target_link_libraries( ${libname}${LIB_VERSION_SO}  PUBLIC ${CMAKE_DL_LIBS} )
+target_link_libraries( ${libname}${LIB_VERSION_A}   PUBLIC ${CMAKE_DL_LIBS} )
 
 target_include_directories( ${libname}${LIB_VERSION_SO} PUBLIC 
                             "${CMAKE_CURRENT_SOURCE_DIR}/include" 

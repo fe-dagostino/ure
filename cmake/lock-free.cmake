@@ -5,4 +5,4 @@ FetchContent_Declare(
   GIT_TAG        master # master
 )
 
-FetchContent_MakeAvailable( lock-free )
+FetchContent_MakeAvailable(lock-free)

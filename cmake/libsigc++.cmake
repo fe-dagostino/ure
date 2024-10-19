@@ -5,6 +5,6 @@ FetchContent_Declare(
   GIT_TAG        master # master
 )
 
-FetchContent_MakeAvailable( sigc )
+FetchContent_MakeAvailable(sigc)
 
 include_directories( ${sigc_SOURCE_DIR} ${sigc_BINARY_DIR} )
