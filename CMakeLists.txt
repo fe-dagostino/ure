@@ -270,7 +270,7 @@ if (URE_USE_DEVIL)
 endif (URE_USE_DEVIL)
 
 if (ENABLE_GLFW)
-list(APPEND EXT_LIBRARIES glfw3 )
+list(APPEND EXT_LIBRARIES glfw )
 endif()
 
 if (NOT ENABLE_WASM)
