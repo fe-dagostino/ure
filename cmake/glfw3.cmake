@@ -2,10 +2,11 @@
 set(GLFW_VERSION 3.4)
 
 FetchContent_Declare(
-                      glfw
-                      GIT_REPOSITORY https://github.com/glfw/glfw.git
-                      GIT_TAG master
-                    )
+  glfw
+  GIT_REPOSITORY https://github.com/glfw/glfw.git
+  GIT_TAG master
+  GIT_SHALLOW    TRUE
+)
 
 set(GLFW_BUILD_DOCS        OFF CACHE INTERNAL "" )
 set(GLFW_BUILD_TESTS       OFF CACHE INTERNAL "" )

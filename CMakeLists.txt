@@ -164,8 +164,12 @@ include(FetchContent)
 include(libsigc++)
 include(lock-free)
 include(glm)
-if ( ENABLE_GLFW )
-  include(glfw3)
+if (ENABLE_GLFW) 
+  if (ENABLE_WASM==OFF)
+    include(glfw3)
+  else()
+    set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
+  endif()
 endif()
 
 
@@ -196,7 +200,6 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_EXTENSIONS         ON)
 set(CMAKE_CXX_STANDARD_REQUIRED  ON)
 set(CMAKE_C_STANDARD_REQUIRED    ON)
-
 
 if( CMAKE_BUILD_TYPE STREQUAL "Debug" )
   set(  LIB_VERSION_SO        -${CMAKE_PROJECT_VERSION}-debug          )
