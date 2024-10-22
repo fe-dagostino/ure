@@ -31,9 +31,7 @@ jobs:
            ./emsdk activate latest
            source "/home/runner/work/ure/ure/emsdk/emsdk_env.sh"
            emcc -v
-      
-    - name: Verify
-      run: emcc -v
+           cmake -DCMAKE_BUILD_TYPE:STRING=Release -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE -DCMAKE_C_COMPILER:FILEPATH=/home/runner/work/ure/ure/emsdk/upstream/emscripten/emcc -DCMAKE_CXX_COMPILER:FILEPATH=/home/runner/work/ure/ure/emsdk/upstream/emscripten/em++ --no-warn-unused-cli -S/home/runner/work/ure/ure/ -B/home/runner/work/ure/ure/build -G Ninja
     
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
