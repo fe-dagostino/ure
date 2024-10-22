@@ -26,6 +26,7 @@ jobs:
       run: |
            git clone https://github.com/emscripten-core/emsdk.git
            cd emsdk
+           git pull
            ./emsdk install latest
            ./emsdk activate latest
            source "/home/runner/work/ure/ure/emsdk/emsdk_env.sh"
