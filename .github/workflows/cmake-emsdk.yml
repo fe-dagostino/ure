@@ -30,6 +30,7 @@ jobs:
            ./emsdk install latest
            ./emsdk activate latest
            source "/home/runner/work/ure/ure/emsdk/emsdk_env.sh"
+           emcc -v
       
     - name: Verify
       run: emcc -v
