@@ -29,6 +29,13 @@
 
 #include <core/utils.h>
 
+#if defined(_IMGUI_ENABLED)
+# include "imgui.h"
+# include "imgui_impl_glfw.h"
+# include "imgui_impl_opengl3.h"
+#endif
+
+
 namespace ure {
 
 
@@ -139,6 +146,31 @@ bool_t Window::create( std::unique_ptr<window_options> options, enum_t flags ) n
   {
     e->on_created( this );
   }
+
+/**
+ * Note that initialization is immediately after the events 
+ * since in case of EMSCRIPTED in the event we handle resizing of the canvas
+ * used for drawing.
+ */
+#if defined(_IMGUI_ENABLED)
+  // Setup Dear ImGui context
+  IMGUI_CHECKVERSION();
+  ImGui::CreateContext();
+  ImGuiIO& io = ImGui::GetIO();
+  io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+  //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+  // @todo add option for docking branch
+  //io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // IF using Docking Branch
+
+  // Setup Platform/Renderer backends
+  ImGui_ImplGlfw_InitForOpenGL(m_hWindow, true);          // Second param install_callback=true will install GLFW callbacks and chain to existing ones.
+
+# ifdef __EMSCRIPTEN__
+  ImGui_ImplGlfw_InstallEmscriptenCallbacks(m_hWindow, "#canvas");
+# endif
+
+  ImGui_ImplOpenGL3_Init();
+#endif  
 
   return true;
 }
@@ -348,7 +380,7 @@ void_t Window::set_swap_interval( int_t iRefresh ) noexcept(true)
 void_t Window::swap_buffers() noexcept(true)
 {
   assert( m_hWindow != nullptr );
- 
+
   glfwSwapBuffers(m_hWindow);
 }
 
@@ -370,6 +402,12 @@ bool_t Window::destroy( uint32_t flags ) noexcept(true)
   
     set_callbacks( false );
     
+#if defined(_IMGUI_ENABLED)
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+#endif
+
     glfwDestroyWindow(m_hWindow);
     m_hWindow = nullptr;
     

@@ -14,6 +14,10 @@
 #include "core/utils.h"
 #include "core/stop_watch.h"
 
+#if defined(_IMGUI_ENABLED)
+# include "imgui.h"
+#endif
+
 class OglGui : public ure::ApplicationEvents, public ure::WindowEvents, public ure::ResourcesFetcherEvents
 {
 public:
@@ -236,6 +240,10 @@ protected:
 
     ///////////////
     m_view_port->clear_buffer( GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT );
+ 
+#if defined(_IMGUI_ENABLED)
+    ImGui::ShowDemoWindow(); // Show demo window! :)
+#endif
 
     ///////////////
     m_view_port->render();

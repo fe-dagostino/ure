@@ -23,11 +23,24 @@
 
 #include "ure_view_port.h"
 
+#if defined(_IMGUI_ENABLED)
+# include "imgui.h"
+# include "imgui_impl_glfw.h"
+# include "imgui_impl_opengl3.h"
+#endif
+
 namespace ure {
 
 void ViewPort::use() noexcept
 {
   glViewport( m_pos.x, m_pos.y, m_size.width, m_size.height );
+
+#if defined(_IMGUI_ENABLED)
+  // Start the Dear ImGui frame
+  ImGui_ImplOpenGL3_NewFrame();
+  ImGui_ImplGlfw_NewFrame();
+  ImGui::NewFrame();
+#endif  
 }
 
 void ViewPort::reset() noexcept
@@ -42,5 +55,21 @@ void ViewPort::clear_buffer( GLbitfield mask ) noexcept
 {
   glClear( mask );
 }
+
+bool_t       ViewPort::render() noexcept(true)
+{
+  if ( m_scene_graph == nullptr )
+    return false;
+  
+  bool_t _retval = m_scene_graph->render( get_projection_matrix().get() );
+
+#if defined(_IMGUI_ENABLED)
+  ImGui::Render();
+  ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+#endif
+
+  return _retval;
+}
+
 
 }

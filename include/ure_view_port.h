@@ -113,14 +113,8 @@ public:
   { return m_size.height; }
 
   /***/
-  inline bool_t     render() noexcept(true)
-  {
-    if ( m_scene_graph == nullptr )
-      return false;
-    
-    return m_scene_graph->render( get_projection_matrix().get() );
-  }
-
+  bool_t            render() noexcept(true);
+  
   /**
    * eg.
    * Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
