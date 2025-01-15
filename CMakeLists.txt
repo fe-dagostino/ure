@@ -40,6 +40,19 @@ if ( URE_WINDOWS_MANAGER STREQUAL "glfw" )
   if(hasParent)
     set( PARENT_DEFINITIONS "${PARENT_DEFINITIONS} -D_GLFW_ENABLED" )
   endif()
+
+  option( URE_USE_IMGUI "Enable/Disable using ImGui" ON)
+  if ( URE_USE_IMGUI )
+    add_definitions(
+      -D_IMGUI_ENABLED
+    ) 
+
+    set(ENABLE_IMGUI        ON) 
+
+    if(hasParent)
+      set( PARENT_DEFINITIONS "${PARENT_DEFINITIONS} -D_IMGUI_ENABLED" )
+    endif()
+  endif()
 endif()
 
 #### URE_BACKEND_RENDER ####
@@ -164,11 +177,15 @@ include(FetchContent)
 include(libsigc++)
 include(lock-free)
 include(glm)
-if (ENABLE_GLFW) 
+if (ENABLE_GLFW)
   if (NOT ENABLE_WASM)
     include(glfw3)
   else()
     set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
+  endif()
+
+  if (ENABLE_IMGUI)
+    include(imgui)
   endif()
 endif()
 
@@ -276,6 +293,10 @@ if (ENABLE_GLFW)
   list(APPEND EXT_LIBRARIES glfw )
 endif()
 
+if (ENABLE_IMGUI)
+  list(APPEND EXT_LIBRARIES ImGui )
+endif()
+
 if (NOT ENABLE_WASM)
   list(APPEND EXT_LIBRARIES curl                  )
   list(APPEND EXT_LIBRARIES ${FREETYPE_LIBRARIES} )
@@ -372,20 +393,6 @@ set(
       ./3rd-party/glad/src/vulkan.c
    )
 endif()
-
-#set(  PRG_GUI_SRC
-#      ./submodules/imgui/imgui.cpp
-#      ./submodules/imgui/imgui_demo.cpp
-#      ./submodules/imgui/imgui_draw.cpp
-#      ./submodules/imgui/imgui_tables.cpp
-#      ./submodules/imgui/imgui_widgets.cpp
-#  )
-
-#set(  PRG_BACKEND_SRC
-#    ./submodules/imgui/backends/imgui_impl_glfw.cpp
-#    ./submodules/imgui/backends/imgui_impl_opengl3.cpp
-#)
-
 
 #set(  PRG_DATE_SRC
 #      ./submodules/date/src/tz.cpp
