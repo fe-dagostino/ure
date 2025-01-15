@@ -154,20 +154,7 @@ if (NOT ENABLE_WASM)
   message(STATUS "    libs   : ${CURL_LIBRARIES}"                 )
 endif()
 
-find_package(Git)
-if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
-    # Update submodules as needed
-    option(GIT_SUBMODULE "Update submodules with remote" ON)
-    if(GIT_SUBMODULE)
-        message(STATUS "Submodule update")
-        execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive --remote -f
-                        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-                        RESULT_VARIABLE GIT_SUBMOD_RESULT)
-        if(NOT GIT_SUBMOD_RESULT EQUAL "0")
-            message(FATAL_ERROR "git submodule update --init --recursive --remote -f : failed with ${GIT_SUBMOD_RESULT}, please checkout submodules")
-        endif()
-    endif()
-endif()
+
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 message(STATUS "${PROJECT_SOURCE_DIR}")
@@ -177,6 +164,10 @@ include(FetchContent)
 include(libsigc++)
 include(lock-free)
 include(glm)
+if (URE_USE_STB)
+include(stb)
+endif()
+
 if (ENABLE_GLFW)
   if (NOT ENABLE_WASM)
     include(glfw3)
@@ -197,11 +188,7 @@ endif()
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/include                        )
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/3rd-party/glad/include         )
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/submodules/stb                 )
-
-#include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/submodules/imgui/           )
-#include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/submodules/imgui/backends/  )
-#message (FATAL_ERROR "${CMAKE_CURRENT_BINARY_DIR}" )
+#include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/submodules/stb                 )
 
 # uncomment to set a default CXX standard for the external tools like clang-tidy and cppcheck
 # and the targets that do not specify a standard.
