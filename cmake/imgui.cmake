@@ -30,6 +30,8 @@ endif()
 add_library( ImGui   ${IMGUI_SRC} ${IMGUI_BACKEND_SRC} )
 include_directories( ${imgui_SOURCE_DIR} ${imgui_SOURCE_DIR}/backends )
 
+set_property(TARGET ImGui PROPERTY POSITION_INDEPENDENT_CODE ON)
+
 if(hasParent)
   message( INFO " EXPORT ImGui SRC DIR: [${imgui_SOURCE_DIR}]" )
   message( INFO " EXPORT ImGui BIN DIR: [${imgui_BINARY_DIR}]" )
