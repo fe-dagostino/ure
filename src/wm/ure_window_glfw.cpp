@@ -164,6 +164,9 @@ bool_t Window::create( std::unique_ptr<window_options> options, enum_t flags ) n
   // @todo add option for docking branch
   //io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // IF using Docking Branch
 
+  // Setup Dear ImGui style
+  ImGui::StyleColorsDark();
+
   // Setup Platform/Renderer backends
   ImGui_ImplGlfw_InitForOpenGL(m_hWindow, true);          // Second param install_callback=true will install GLFW callbacks and chain to existing ones.
 
