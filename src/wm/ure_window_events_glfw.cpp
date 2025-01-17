@@ -32,15 +32,21 @@ namespace ure {
 void_t  WindowEvents::on_creating( [[maybe_unused]] Window* pWindow ) noexcept
 {
 #if defined(_GLES_ENABLED)  
-  glfwWindowHint( GLFW_CLIENT_API           , GLFW_OPENGL_ES_API );
   glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, URE_CONTEXT_VERSION_MAJOR    );
   glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, URE_CONTEXT_VERSION_MINOR    );
+  glfwWindowHint( GLFW_CLIENT_API           , GLFW_OPENGL_ES_API );
 #endif  
 
 #if defined(_OGL2_ENABLED)  
-  glfwWindowHint( GLFW_CLIENT_API           , GLFW_OPENGL_ES_API );
   glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, URE_CONTEXT_VERSION_MAJOR    );
   glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, URE_CONTEXT_VERSION_MINOR    );
+  glfwWindowHint( GLFW_CLIENT_API           , GLFW_OPENGL_ES_API );
+#endif  
+
+#if defined(_OGL3_ENABLED)  
+  glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, URE_CONTEXT_VERSION_MAJOR    );
+  glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, URE_CONTEXT_VERSION_MINOR    );
+  glfwWindowHint( GLFW_CLIENT_API           , GLFW_OPENGL_ES_API );
 #endif  
 }
 

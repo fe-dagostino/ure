@@ -289,6 +289,19 @@ if (NOT ENABLE_WASM)
   list(APPEND EXT_LIBRARIES ${FREETYPE_LIBRARIES} )
 endif()
 
+if ( ENABLE_GLES )
+  list(APPEND EXT_LIBRARIES GLESv2                )
+endif()
+
+if ( ENABLE_OGL2 OR ENABLE_OGL3 ) 
+  list(APPEND EXT_LIBRARIES GL                    )
+endif()
+
+if ( ENABLE_VULKAN ) 
+  
+endif()
+
+
 if (ENABLE_WASM)
   set( TARGET_IMP "emscripten" )
 else()

@@ -194,7 +194,8 @@ private:
   using mailbox_type = lock_free::mailbox<Message*, core::ds_impl_t::mutex, 0, 
                                           core::arena_allocator<core::node_t<Message*,false,true,false>, uint32_t, 1024, 1024, 0, 0, core::default_allocator<uint32_t>>
                                          >;
-
+  
+  std::string                      m_glsl_version;
   std::unique_ptr<window_options>  m_ptrWinOptions;
   WindowHandler                    m_hWindow;
   std::unique_ptr<Renderer>        m_ptrRenderer;

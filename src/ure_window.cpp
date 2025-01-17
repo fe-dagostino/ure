@@ -37,7 +37,8 @@ EM_JS(int, canvas_get_height, (), {
 
 
 Window::Window()
- : m_ptrWinOptions(nullptr), 
+ : m_glsl_version( "#version 100" ),
+   m_ptrWinOptions(nullptr), 
    m_hWindow( nullptr ), 
    m_ptrRenderer( nullptr ),
    m_mbxMessages( "Window Mailbox" ) 

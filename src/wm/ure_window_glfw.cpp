@@ -115,8 +115,10 @@ bool_t Window::create( std::unique_ptr<window_options> options, enum_t flags ) n
   glfwMakeContextCurrent( m_hWindow );
 
 #if defined(_GLES_ENABLED)
+  m_glsl_version = "#version 100";
   int version = gladLoadGLES2(glfwGetProcAddress);
 #else
+  m_glsl_version = "#version 130";
   int version = gladLoadGL(glfwGetProcAddress);
 #endif  
   if ( version != 0 )
@@ -169,7 +171,7 @@ bool_t Window::create( std::unique_ptr<window_options> options, enum_t flags ) n
   ImGui_ImplGlfw_InstallEmscriptenCallbacks(m_hWindow, "#canvas");
 # endif
 
-  ImGui_ImplOpenGL3_Init();
+  ImGui_ImplOpenGL3_Init( m_glsl_version.c_str() );
 #endif  
 
   return true;
