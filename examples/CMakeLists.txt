@@ -22,9 +22,9 @@ if ( URE_ENABLE_CPPCHECK )
   set(CMAKE_CXX_CPPCHECK "cppcheck")
 endif()
 
-add_executable( ure_ogl                               ure_ogl.cpp            )
+add_executable( ure_ogl                               ure_ogl.cpp           )
 
-target_link_libraries( ure_ogl                        ${DEFAULT_LIBRARIES}   )
+target_link_libraries( ure_ogl                        ${DEFAULT_LIBRARIES}  )
 
 if(ENABLE_WASM)
 if(URE_JS_ONLY)

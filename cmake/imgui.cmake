@@ -30,6 +30,10 @@ endif()
 add_library( ImGui   ${IMGUI_SRC} ${IMGUI_BACKEND_SRC} )
 include_directories( ${imgui_SOURCE_DIR} ${imgui_SOURCE_DIR}/backends )
 
+if ( ENABLE_GLES OR ENABLE_OGL3 )
+  target_compile_definitions( ImGui PUBLIC IMGUI_IMPL_OPENGL_ES2 )
+endif()
+
 set_property(TARGET ImGui PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 if(hasParent)
