@@ -45,4 +45,5 @@ cmake ..
 make -j16
 ```
 
-By default both static and dynamic library are produced.
+By default both `static` and `dynamic` libraries are produced.
+
