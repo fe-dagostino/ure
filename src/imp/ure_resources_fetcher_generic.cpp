@@ -23,6 +23,7 @@
 
 #include "ure_resources_fetcher.h"
 
+#include <core/utils.h>
 #include <mailbox.h>
 
 #include <thread>
@@ -35,35 +36,59 @@
 
 namespace ure {
 
-  /***/
-  class resource_t 
-  {
-  public:
-    /***/
-    resource_t() = delete;
-    /***/
-    constexpr resource_t( ResourcesFetcherEvents& events, const std::string& name, const std::type_info& type, const std::string& url ) noexcept(true)
-      : m_events(events), m_name(name), m_type(type), m_url(url)
-    {}
-    /***/ 
-    constexpr ResourcesFetcherEvents& events() const noexcept(true)
-    { return m_events; }
-    /***/ 
-    constexpr const std::string&      name() const noexcept(true)
-    { return m_name; }
-    /***/ 
-    constexpr const std::type_info&   type() const noexcept(true)
-    { return m_type; }
-    /***/ 
-    constexpr const std::string&      url() const noexcept(true)
-    { return m_url;  }
+/***/
+class resource_t 
+{
+public:
+  using customer_request_t = ResourcesFetcher::customer_request_t;
+  using http_headers_t     = std::vector<std::pair<std::string,std::string>>; 
+  using http_body_t        = std::string; 
 
-  private:
-    ResourcesFetcherEvents& m_events;
-    const std::string       m_name;
-    const std::type_info&   m_type;
-    const std::string       m_url;
-  };
+  /***/
+  resource_t() = delete;
+  /***/
+  constexpr resource_t( ResourcesFetcherEvents& events, 
+                        const std::string&      name, 
+                        const std::type_info&   type, 
+                        const std::string&      url,
+                        customer_request_t      cr,
+                        const http_headers_t&   headers,
+                        const http_body_t&      body
+                      ) noexcept(true)
+    : m_events(events), m_name(name), m_type(type), m_url(url), 
+      m_cr(cr), m_headers(headers), m_body(body)
+  {}
+  /***/ 
+  constexpr ResourcesFetcherEvents& events() const noexcept(true)
+  { return m_events; }
+  /***/ 
+  constexpr const std::string&      name() const noexcept(true)
+  { return m_name; }
+  /***/ 
+  constexpr const std::type_info&   type() const noexcept(true)
+  { return m_type; }
+  /***/ 
+  constexpr const std::string&      url() const noexcept(true)
+  { return m_url;  }
+  /***/
+  constexpr customer_request_t      cr() const noexcept(true)
+  { return m_cr; }
+  /***/
+  constexpr const http_headers_t&   headers() const noexcept(true)
+  { return m_headers; }
+  /***/
+  constexpr const http_body_t&      body() const noexcept(true)
+  { return m_body; }
+
+private:
+  ResourcesFetcherEvents& m_events;
+  const std::string       m_name;
+  const std::type_info&   m_type;
+  const std::string       m_url;
+  customer_request_t      m_cr;
+  http_headers_t          m_headers;
+  http_body_t             m_body;
+};
 
 
 using mailbox_type = lock_free::mailbox<resource_t*, core::ds_impl_t::mutex, 0, 
@@ -135,18 +160,39 @@ static void_t async_curl_download( resource_t* resource ) noexcept(true)
     return;
   }
 
-  if ( 
-        /* specify URL to get */
-        (curl_easy_setopt(_easy_handle, CURLOPT_URL            , _resource->url().c_str()  ) != CURLE_OK) ||
-        /* send all data to this function  */
-        (curl_easy_setopt(_easy_handle, CURLOPT_WRITEFUNCTION  , WriteMemoryCallback      ) != CURLE_OK) ||
-        /* we pass our 'chunk' struct to the callback function */
-        (curl_easy_setopt(_easy_handle, CURLOPT_WRITEDATA      , (void *)&_chunk           ) != CURLE_OK) ||
-        /* some servers do not like requests that are made without a user-agent field, so we provide one */  
-        (curl_easy_setopt(_easy_handle, CURLOPT_USERAGENT      , "libcurl-agent/1.0"      ) != CURLE_OK) ||
-        (curl_easy_setopt(_easy_handle, CURLOPT_FOLLOWLOCATION , 1L                       ) != CURLE_OK) ||
-        (curl_easy_setopt(_easy_handle, CURLOPT_HTTPPROXYTUNNEL, 1L                       ) != CURLE_OK)
-      )
+  bool_t options = true;
+
+  /* Populate CUSTOMER REQUEST */
+  options &= (curl_easy_setopt(_easy_handle, CURLOPT_CUSTOMREQUEST  , ResourcesFetcher::to_string_view( resource->cr()).data() ) == CURLE_OK);
+  /* specify URL to get */
+  options &= (curl_easy_setopt(_easy_handle, CURLOPT_URL            , _resource->url().c_str() ) == CURLE_OK);
+  /* send all data to this function  */
+  options &= (curl_easy_setopt(_easy_handle, CURLOPT_WRITEFUNCTION  , WriteMemoryCallback      ) == CURLE_OK);
+  /* we pass our 'chunk' struct to the callback function */
+  options &= (curl_easy_setopt(_easy_handle, CURLOPT_WRITEDATA      , (void *)&_chunk          ) == CURLE_OK);
+  /* some servers do not like requests that are made without a user-agent field, so we provide one */  
+  options &= (curl_easy_setopt(_easy_handle, CURLOPT_USERAGENT      , "libcurl-agent/1.0"      ) == CURLE_OK);
+  options &= (curl_easy_setopt(_easy_handle, CURLOPT_FOLLOWLOCATION , 1L                       ) == CURLE_OK);
+  options &= (curl_easy_setopt(_easy_handle, CURLOPT_HTTPPROXYTUNNEL, 1L                       ) == CURLE_OK);
+
+  /* Set headers */
+  struct curl_slist *_headers = nullptr;
+  for ( const auto& header : _resource->headers() )
+  { 
+    _headers = curl_slist_append(_headers, core::utils::format( "%s: %s", header.first.c_str(), header.second.c_str() ).c_str() ); 
+  }
+
+  if ( _headers != nullptr )
+  { options &= (curl_easy_setopt(_easy_handle, CURLOPT_HTTPHEADER, _headers) == CURLE_OK); }
+
+  /* Set body */
+  if ( _resource->body().empty() == false )
+  { 
+    const char *body_data = _resource->body().c_str();
+    options &= (curl_easy_setopt(_easy_handle, CURLOPT_POSTFIELDS, body_data) == CURLE_OK); 
+  }
+
+  if ( options == false )
   {
     _resource->events().on_download_failed( _resource->name() );
 
@@ -193,6 +239,8 @@ static void_t async_curl_download( resource_t* resource ) noexcept(true)
 
   /* cleanup curl stuff */
   curl_easy_cleanup(_easy_handle);
+  /* release previous allocated memory */
+  curl_slist_free_all(_headers);
 }
 
 static void_t th_requests_scheduler() noexcept(true)
@@ -207,7 +255,14 @@ static void_t th_requests_scheduler() noexcept(true)
   }
 }
 
-bool_t ResourcesFetcher::fetch( ResourcesFetcherEvents& events, const std::string& name, const std::type_info& type, const std::string& url ) noexcept(true)
+bool_t ResourcesFetcher::fetch( ResourcesFetcherEvents& events, 
+                                const std::string&      name,
+                                const std::type_info&   type,
+                                const std::string&      url,
+                                customer_request_t      cr,
+                                const http_headers_t&   headers,
+                                const http_body_t&      body
+                              ) noexcept(true)
 {
   if ( name.empty() || url.empty() )
     return false;
@@ -218,7 +273,7 @@ bool_t ResourcesFetcher::fetch( ResourcesFetcherEvents& events, const std::strin
   if ( m_fetching.contains( name ) == true )
     return true;
 
-  resource_t* pResource = new(std::nothrow)resource_t( events, name, type, url);
+  resource_t* pResource = new(std::nothrow)resource_t( events, name, type, url, cr, headers, body );
   if ( pResource == nullptr )
   {
     return false;

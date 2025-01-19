@@ -42,16 +42,52 @@ class ResourcesFetcher final: public core::singleton_t<ResourcesFetcher>
 {
   friend class singleton_t<ResourcesFetcher>;
 protected:
+
   /***/
   ResourcesFetcher() noexcept(true)
   {}
 
 public:
+  using http_headers_t     = std::vector<std::pair<std::string,std::string>>; 
+  using http_body_t        = std::string; 
+
+  enum class customer_request_t : enum_t
+  {
+    Get,
+    Post,
+    Put,
+    Delete
+  }; 
+
+  static std::string_view to_string_view( customer_request_t cr )
+  {
+    switch (cr)
+    {
+      case customer_request_t::Get:
+        return "GET";
+      break;
+      case customer_request_t::Post:
+        return "POST";
+      break;
+      case customer_request_t::Put:
+        return "Put";
+      break;
+      case customer_request_t::Delete:
+        return "Delete";
+      break;
+    }
+    return "";
+  }
+
   /***/
-  bool_t            fetch ( ResourcesFetcherEvents& events,
-                            const std::string&      name,  
-                            const std::type_info&   type,
-                            const std::string& url            ) noexcept(true);
+  bool_t            fetch ( ResourcesFetcherEvents&  events,
+                            const std::string&       name,  
+                            const std::type_info&    type,
+                            const std::string&       url,
+                            customer_request_t       cr,
+                            const http_headers_t&    headers,
+                            const http_body_t&       body
+                          ) noexcept(true);
   /***/
   bool_t            cancel( const std::string& name ) noexcept(true)
   {
@@ -64,7 +100,6 @@ public:
 
     return true;
   }
-  
 protected:
   /***/
   void_t  on_initialize() noexcept(true);

@@ -29,11 +29,22 @@ namespace ure {
 class resource_t 
 {
 public:
+  using customer_request_t = ResourcesFetcher::customer_request_t;
+  using http_headers_t     = std::vector<std::pair<std::string,std::string>>; 
+  using http_body_t        = std::string; 
+
   /***/
   resource_t() = delete;
   /***/
-  constexpr resource_t( ResourcesFetcherEvents& events, const std::string& name, const std::type_info& type ) noexcept(true)
-    : m_events(events), m_name(name), m_type(type)
+  constexpr resource_t( ResourcesFetcherEvents& events, 
+                        const std::string&      name, 
+                        const std::type_info&   type,
+                        customer_request_t      cr,
+                        const http_headers_t&   headers,
+                        const http_body_t&      body 
+                      ) noexcept(true)
+    : m_events(events), m_name(name), m_type(type), m_cr(cr), 
+      m_headers(headers), m_body(body)
   {}
   /***/ 
   constexpr ResourcesFetcherEvents& events() const noexcept(true)
@@ -44,12 +55,23 @@ public:
   /***/
   constexpr const std::type_info&  type() const noexcept(true)
   { return m_type; }
+  /***/
+  constexpr customer_request_t     cr() const noexcept(true)
+  { return m_cr; }
+  /***/
+  constexpr const http_headers_t&   headers() const noexcept(true)
+  { return m_headers; }
+  /***/
+  constexpr const http_body_t&      body() const noexcept(true)
+  { return m_body; }
 
 private:
   ResourcesFetcherEvents& m_events;
   const std::string       m_name;
   const std::type_info&   m_type;
-
+  customer_request_t      m_cr;
+  http_headers_t          m_headers;
+  http_body_t             m_body;
 };
 
 
@@ -93,7 +115,14 @@ static void_t emscripten_download_failed(emscripten_fetch_t *fetch) noexcept(tru
   emscripten_fetch_close(fetch); // Also free data on failure.
 }
 
-bool_t ResourcesFetcher::fetch( ResourcesFetcherEvents& events, const std::string& name, const std::type_info& type, const std::string& url ) noexcept(true)
+bool_t ResourcesFetcher::fetch( ResourcesFetcherEvents& events, 
+                                const std::string&      name, 
+                                const std::type_info&   type, 
+                                const std::string&      url, 
+                                customer_request_t      cr,
+                                const http_headers_t&   headers,
+                                const http_body_t&      body 
+                              ) noexcept(true)
 {
   if ( name.empty() || url.empty() )
     return false;
@@ -104,7 +133,7 @@ bool_t ResourcesFetcher::fetch( ResourcesFetcherEvents& events, const std::strin
   if ( m_fetching.contains( name ) == true )
     return true;
 
-  resource_t* _resource = new(std::nothrow)resource_t( events, name, type );
+  resource_t* _resource = new(std::nothrow)resource_t( events, name, type, cr, headers, body );
   if ( _resource == nullptr )
   {
     return false;
@@ -115,7 +144,20 @@ bool_t ResourcesFetcher::fetch( ResourcesFetcherEvents& events, const std::strin
 
   emscripten_fetch_attr_t attr;
   emscripten_fetch_attr_init(&attr);
-  strcpy(attr.requestMethod, "GET");
+  strcpy(attr.requestMethod, ResourcesFetcher::to_string_view(cr).data() );
+
+  if ( headers.empty() == false )
+  {
+    const char* _headers[] = { headers[0].first.c_str(), headers[0].first.c_str(), nullptr }; 
+    attr.requestHeaders = _headers;
+  }
+
+  if ( body.empty() == false )
+  {
+   attr.requestData     = body.c_str();
+   attr.requestDataSize = body.length();
+  }
+
   attr.userData   = _resource;
   attr.attributes = EMSCRIPTEN_FETCH_LOAD_TO_MEMORY;
   attr.onsuccess  = emscripten_download_succeeded;
