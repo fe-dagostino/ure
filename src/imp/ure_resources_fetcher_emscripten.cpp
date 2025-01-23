@@ -30,7 +30,7 @@ class resource_t
 {
 public:
   using customer_request_t = ResourcesFetcher::customer_request_t;
-  using http_headers_t     = std::vector<std::pair<std::string,std::string>>; 
+  using http_headers_t     = std::vector<const char*>; 
   using http_body_t        = std::string; 
 
   /***/
@@ -59,10 +59,10 @@ public:
   constexpr customer_request_t     cr() const noexcept(true)
   { return m_cr; }
   /***/
-  constexpr const http_headers_t&   headers() const noexcept(true)
+  constexpr const http_headers_t&  headers() const noexcept(true)
   { return m_headers; }
   /***/
-  constexpr const http_body_t&      body() const noexcept(true)
+  constexpr std::string_view       body() const noexcept(true)
   { return m_body; }
 
 private:
@@ -146,16 +146,15 @@ bool_t ResourcesFetcher::fetch( ResourcesFetcherEvents& events,
   emscripten_fetch_attr_init(&attr);
   strcpy(attr.requestMethod, ResourcesFetcher::to_string_view(cr).data() );
 
-  if ( headers.empty() == false )
+  if ( _resource->headers().empty() == false )
   {
-    const char* _headers[] = { headers[0].first.c_str(), headers[0].first.c_str(), nullptr }; 
-    attr.requestHeaders = _headers;
+    attr.requestHeaders = _resource->headers().data();
   }
 
-  if ( body.empty() == false )
+  if ( _resource->body().empty( ) == false )
   {
-   attr.requestData     = body.c_str();
-   attr.requestDataSize = body.length();
+    attr.requestData     = _resource->body().data();
+    attr.requestDataSize = _resource->body().length();
   }
 
   attr.userData   = _resource;

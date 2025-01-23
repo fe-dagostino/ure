@@ -48,7 +48,7 @@ protected:
   {}
 
 public:
-  using http_headers_t     = std::vector<std::pair<std::string,std::string>>; 
+  using http_headers_t     = std::vector<const char*>; 
   using http_body_t        = std::string; 
 
   enum class customer_request_t : enum_t

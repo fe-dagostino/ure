@@ -41,7 +41,7 @@ class resource_t
 {
 public:
   using customer_request_t = ResourcesFetcher::customer_request_t;
-  using http_headers_t     = std::vector<std::pair<std::string,std::string>>; 
+  using http_headers_t     = std::vector<const char*>; 
   using http_body_t        = std::string; 
 
   /***/
@@ -77,7 +77,7 @@ public:
   constexpr const http_headers_t&   headers() const noexcept(true)
   { return m_headers; }
   /***/
-  constexpr const http_body_t&      body() const noexcept(true)
+  constexpr std::string_view        body() const noexcept(true)
   { return m_body; }
 
 private:
@@ -177,9 +177,9 @@ static void_t async_curl_download( resource_t* resource ) noexcept(true)
 
   /* Set headers */
   struct curl_slist *_headers = nullptr;
-  for ( const auto& header : _resource->headers() )
-  { 
-    _headers = curl_slist_append(_headers, core::utils::format( "%s: %s", header.first.c_str(), header.second.c_str() ).c_str() ); 
+  for ( std::size_t ndx = 0; ndx < _resource->headers().size()-1; ndx+=2 )
+  {
+    _headers = curl_slist_append(_headers, core::utils::format( "%s: %s", _resource->headers()[ndx], _resource->headers()[ndx+1] ).c_str() );
   }
 
   if ( _headers != nullptr )
@@ -187,9 +187,9 @@ static void_t async_curl_download( resource_t* resource ) noexcept(true)
 
   /* Set body */
   if ( _resource->body().empty() == false )
-  { 
-    const char *body_data = _resource->body().c_str();
-    options &= (curl_easy_setopt(_easy_handle, CURLOPT_POSTFIELDS, body_data) == CURLE_OK); 
+  {
+    const char *body_data = _resource->body().data();
+    options &= (curl_easy_setopt(_easy_handle, CURLOPT_POSTFIELDS, body_data) == CURLE_OK);
   }
 
   if ( options == false )
@@ -199,7 +199,7 @@ static void_t async_curl_download( resource_t* resource ) noexcept(true)
     if ( ResourcesFetcher::get_instance()->cancel( _resource->name() ) == false )
     {
       //@todo
-    } 
+    }
   }
   else
   {
@@ -215,7 +215,7 @@ static void_t async_curl_download( resource_t* resource ) noexcept(true)
       if ( ResourcesFetcher::get_instance()->cancel( _resource->name() ) == false )
       {
         //@todo
-      } 
+      }
     }
     else 
     {
