@@ -17,3 +17,6 @@ set(GLFW_LIBRARY_TYPE   STATIC CACHE INTERNAL "" )
 set(GLFW_INSTALL           OFF CACHE INTERNAL "" )
                     
 FetchContent_MakeAvailable(glfw)
+
+
+include_directories( ${glfw_SOURCE_DIR}/include )
