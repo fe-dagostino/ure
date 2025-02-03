@@ -330,7 +330,7 @@ private:
 #define OSM_ENDPOINT_SD "https://%s.tile.openstreetmap.org/%s/%s/%s.png"
 #define OSM_ENDPOINT "https://tile.openstreetmap.org/%s/%s/%s.png"
 
-extern "C" int main(int argc, char** argv)
+int main(int argc, char** argv)
 {
   OglGui _oglgui(argc, argv);
 
