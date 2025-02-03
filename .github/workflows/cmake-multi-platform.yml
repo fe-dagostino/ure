@@ -57,8 +57,8 @@ jobs:
         sudo apt install -y libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxxf86vm-dev
         sudo apt install -y libxkbcommon-dev
         sudo apt install -y libwayland-dev libwayland-bin
-        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 100 --slave /usr/bin/g++ g++ /usr/bin/g++-12 --slave /usr/bin/gcov gcov /usr/bin/gcov-12
-        sudo update-alternatives --set gcc /usr/bin/gcc-12
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 100 --slave /usr/bin/g++ g++ /usr/bin/g++-14 --slave /usr/bin/gcov gcov /usr/bin/gcov-14
+        sudo update-alternatives --set gcc /usr/bin/gcc-14
         ninja --version
         cmake --version
         gcc --version
