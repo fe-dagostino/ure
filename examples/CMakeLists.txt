@@ -9,7 +9,7 @@ project( examples
 LINK_DIRECTORIES( ${LIB_BINARY_DIR} )
 
 set(  DEFAULT_LIBRARIES
-      ${libname}${LIB_VERSION_SO}
+      ure::ure_static
 )
 
 option(URE_ENABLE_CPPCHECK    "Enable/Disable cppcheck"    OFF)
