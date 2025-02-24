@@ -134,6 +134,7 @@ endif()
 option(URE_USE_STB        "Using STB image loader"         ON)
 option(URE_USE_FREEIMAGE  "Build FreeImage loader"        OFF)
 option(URE_USE_DEVIL      "Build DevIL loader"            OFF)
+option(URE_USE_WEBSOCKETS "Enable websockets support"     OFF)
 
 option(URE_BUILD_EXAMPLES "Enable/Disable examples build"  ON)
 option(URE_BUILD_TESTS    "Enable/Disable tests build"    OFF)
@@ -164,8 +165,13 @@ include(FetchContent)
 include(libsigc++)
 include(lock-free)
 include(glm)
+if (NOT ENABLE_WASM)
+  if (URE_USE_WEBSOCKETS)
+    include(libwebsocket)
+  endif()
+endif()
 if (URE_USE_STB)
-include(stb)
+  include(stb)
 endif()
 
 if (ENABLE_GLFW)
@@ -188,7 +194,6 @@ endif()
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/include                        )
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/3rd-party/glad/include         )
-#include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/submodules/stb                 )
 
 # uncomment to set a default CXX standard for the external tools like clang-tidy and cppcheck
 # and the targets that do not specify a standard.
@@ -204,6 +209,8 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_EXTENSIONS         ON)
 set(CMAKE_CXX_STANDARD_REQUIRED  ON)
 set(CMAKE_C_STANDARD_REQUIRED    ON)
+
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 if( CMAKE_BUILD_TYPE STREQUAL "Debug" )
   set(  LIB_VERSION_SO        -${CMAKE_PROJECT_VERSION}-debug          )
@@ -222,6 +229,7 @@ if( CMAKE_BUILD_TYPE STREQUAL "Debug" )
                   -ggdb3
                   -D_DEBUG
   )
+
 else()
   add_compile_options( -O3 )
 endif()
@@ -241,14 +249,20 @@ endif()
 
 if (ENABLE_WASM)
   set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_FREETYPE=1 " )
-  message("libure: CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}") 
+  message("libure: CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 
   set( URE_LINK_FLAGS "${URE_LINK_FLAGS} -s USE_FREETYPE=1"    )
   set( URE_LINK_FLAGS "${URE_LINK_FLAGS} -s FETCH=1"           )
   if ( ENABLE_GLFW )
     set( URE_LINK_FLAGS "${URE_LINK_FLAGS} -s USE_GLFW=3 -s GL_ENABLE_GET_PROC_ADDRESS" )
-  endif()  
+  endif()
   
+  if (URE_USE_WEBSOCKETS)
+    set( URE_LINK_FLAGS "${URE_LINK_FLAGS} -s WEBSOCKET_SUBPROTOCOL='text,binary'")
+    set( URE_LINK_FLAGS "${URE_LINK_FLAGS} -s ASYNCIFY"       )
+    set( URE_LINK_FLAGS "${URE_LINK_FLAGS} -lwebsocket.js"       )
+  endif()
+
   if(hasParent)
     set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" PARENT_SCOPE )
     set( URE_LINK_FLAGS  "${URE_LINK_FLAGS}"  PARENT_SCOPE )
@@ -262,9 +276,14 @@ if (URE_USE_STB)
 endif (URE_USE_STB)
 
 # Common libraries
-list(APPEND EXT_LIBRARIES sigc-3.0             )
-list(APPEND EXT_LIBRARIES lock-free::lock-free )
-list(APPEND EXT_LIBRARIES glm::glm             )
+list(APPEND EXT_LIBRARIES sigc-3.0                )
+list(APPEND EXT_LIBRARIES lock-free::lock-free    )
+list(APPEND EXT_LIBRARIES glm::glm                )
+if (NOT ENABLE_WASM)
+  if (URE_USE_WEBSOCKETS)
+    list(APPEND EXT_LIBRARIES websockets              )
+  endif()
+endif()
 
 if (URE_USE_FREEIMAGE)
   add_compile_definitions( _USE_FREEIMAGE )
@@ -275,6 +294,10 @@ if (URE_USE_DEVIL)
   add_compile_definitions( _USE_DEVIL )
   list(APPEND EXT_LIBRARIES IL )
 endif (URE_USE_DEVIL)
+
+if (URE_USE_WEBSOCKETS)
+  add_compile_definitions( _USE_WEBSOCKETS )
+endif (URE_USE_WEBSOCKETS)
 
 if (ENABLE_GLFW)
   list(APPEND EXT_LIBRARIES glfw )
