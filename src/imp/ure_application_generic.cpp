@@ -21,31 +21,47 @@
  *
  *************************************************************************************************/
 
-#ifndef URE_RESOURCES_FETCHER_EVENTS_H
-#define URE_RESOURCES_FETCHER_EVENTS_H
+#include "ure_application.h"
 
-#include "ure_common_defs.h"
+#ifdef _USE_WEBSOCKETS
+# include <libwebsockets.h>
+#endif
 
 namespace ure {
 
-/**
- * 
- */
-class ResourcesFetcherEvents 
-{
-public:
-  /***/
-  ResourcesFetcherEvents() noexcept(true)
-  {}
-  /***/
-  virtual ~ResourcesFetcherEvents() noexcept(true) 
-  {}
-  /***/
-  virtual void_t    on_download_succeeded( [[maybe_unused]] std::string_view name, [[maybe_unused]] const std::type_info& type, [[maybe_unused]] const byte_t* data, [[maybe_unused]] uint_t length ) noexcept(true) = 0;
-  /***/
-  virtual void_t    on_download_failed   ( [[maybe_unused]] std::string_view name ) noexcept(true) = 0;
-};
+#ifdef _USE_WEBSOCKETS
 
+struct lws_context*            g_context =  nullptr;
+
+extern struct lws_protocols    g_protocols[];
+
+
+void_t Application::on_initialize_ws() noexcept(true)
+{
+  struct lws_context_creation_info info;
+  memset(&info, 0, sizeof(info));
+
+  info.port      = CONTEXT_PORT_NO_LISTEN; // we do not run any server
+  info.protocols = g_protocols;
+  info.gid       = -1;
+  info.uid       = -1;
+
+  g_context = lws_create_context(&info);
 }
 
-#endif // URE_RESOURCES_FETCHER_EVENTS_H
+void_t Application::on_finalize_ws() noexcept(true)
+{
+  if ( g_context != nullptr )
+  {
+    lws_context_destroy( g_context );
+  }
+}
+
+void_t Application::processing_ws() noexcept(true)
+{
+  lws_service(g_context, -1 );
+}
+
+#endif /* _USE_WEBSOCKETS */
+
+}

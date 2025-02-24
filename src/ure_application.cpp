@@ -25,17 +25,21 @@
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
+#else
+# ifdef _USE_WEBSOCKETS
+#  include <libwebsockets.h>
+# endif
 #endif
 
 namespace ure {
 
-void main_loop( void* arg )
+void_t main_loop( void* arg )
 {
   ApplicationEvents* event = static_cast<ApplicationEvents*>(arg);
   event->on_run();
 }
 
-void Application::run()
+void_t Application::run() noexcept(true)
 {
 #ifdef __EMSCRIPTEN__
   emscripten_set_main_loop_arg ( main_loop, m_events.get(), 0, 1);
@@ -43,8 +47,28 @@ void Application::run()
   while ( exit() == false )
   {
     m_events->on_run();
+#ifdef _USE_WEBSOCKETS
+    /* Processing websockets messages */
+    processing_ws();
+#endif
   }
-#endif   
+#endif
+}
+
+void_t Application::on_initialize() noexcept(true)
+{
+  on_initialize_wm();
+#ifdef _USE_WEBSOCKETS
+  on_initialize_ws();
+#endif
+}
+
+void_t Application::on_finalize() noexcept(true)
+{
+  on_finalize_wm();
+#ifdef _USE_WEBSOCKETS
+  on_finalize_ws();
+#endif
 }
 
 }

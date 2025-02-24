@@ -21,31 +21,30 @@
  *
  *************************************************************************************************/
 
-#ifndef URE_RESOURCES_FETCHER_EVENTS_H
-#define URE_RESOURCES_FETCHER_EVENTS_H
+#ifndef URE_WEBSOCKET_EVENTS_H
+#define URE_WEBSOCKET_EVENTS_H
 
 #include "ure_common_defs.h"
+#include "ure_websocket_options.h"
 
 namespace ure {
 
 /**
  * 
  */
-class ResourcesFetcherEvents 
+class WebSocketEvents 
 {
 public:
   /***/
-  ResourcesFetcherEvents() noexcept(true)
-  {}
+  virtual bool_t    on_websocket_open   ( [[maybe_unused]] const std::string_view id ) noexcept(true) = 0;
   /***/
-  virtual ~ResourcesFetcherEvents() noexcept(true) 
-  {}
+  virtual bool_t    on_websocket_close  ( [[maybe_unused]] const std::string_view id, uint16_t code ) noexcept(true) = 0;
   /***/
-  virtual void_t    on_download_succeeded( [[maybe_unused]] std::string_view name, [[maybe_unused]] const std::type_info& type, [[maybe_unused]] const byte_t* data, [[maybe_unused]] uint_t length ) noexcept(true) = 0;
+  virtual bool_t    on_websocket_message( [[maybe_unused]] const std::string_view id, websocket_options::ws_mode_t mode, const uint8_t* data, uint32_t length ) noexcept(true) = 0;
   /***/
-  virtual void_t    on_download_failed   ( [[maybe_unused]] std::string_view name ) noexcept(true) = 0;
+  virtual bool_t    on_websocket_error  ( [[maybe_unused]] const std::string_view id ) noexcept(true) = 0;
 };
 
 }
 
-#endif // URE_RESOURCES_FETCHER_EVENTS_H
+#endif /* URE_WEBSOCKET_EVENTS_H */

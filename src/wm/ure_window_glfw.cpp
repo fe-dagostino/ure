@@ -95,7 +95,7 @@ bool_t Window::create( std::unique_ptr<window_options> options, enum_t flags ) n
 
   m_hWindow = glfwCreateWindow( 
                                 m_ptrWinOptions->width(), m_ptrWinOptions->height(),
-                                m_ptrWinOptions->title().c_str(),
+                                m_ptrWinOptions->title().data(),
                                 pFsMonitor, 
                                 nullptr
                               );

@@ -3,6 +3,7 @@
 #include "ure_application.h"
 #include "ure_resources_collector.h"
 #include "ure_resources_fetcher.h"
+#include "ure_websocket.h"
 #include "ure_window.h"
 #include "ure_window_options.h"
 #include "ure_scene_graph.h"
@@ -18,7 +19,7 @@
 # include "imgui.h"
 #endif
 
-class OglGui : public ure::ApplicationEvents, public ure::WindowEvents, public ure::ResourcesFetcherEvents
+class OglGui : public ure::ApplicationEvents, public ure::WindowEvents, public ure::ResourcesFetcherEvents, public ure::WebSocketEvents
 {
 public:
   OglGui( int argc, char** argv )
@@ -196,7 +197,8 @@ protected:
   }
   /***/
   virtual ure::void_t on_initialized() override
-  {  }
+  {  
+  }
 
   /***/
   virtual ure::void_t on_finalize() override
@@ -259,6 +261,36 @@ protected:
 
     //std::cout << "fps: " << (double(1000) / m_sw.peek()) << std::endl;
     m_sw.reset();
+
+#ifdef _USE_WEBSOCKETS
+    static bool _ws_init = false;
+    static bool _ws_sent = false;
+    if (_ws_init==false)
+    {
+      m_ws = std::make_unique<ure::WebSocket>( "ws test", *this, ure::websocket_options{"ws://127.0.0.1:8080/api/v1/cpt/notifications", ure::websocket_options::ws_mode_t::text, false } );
+      
+      m_ws->open();
+      _ws_init = true;
+    }
+    else
+    {
+      if ( _ws_sent == false )
+      {
+        if ( m_ws->is_ready() )
+        {
+          if ( m_ws->send( (const uint8_t*)m_msg.c_str(), m_msg.length() ) == true )
+          {
+            _ws_sent = true;
+          }
+          else
+          {
+            printf("Socket failed to send\n");
+          }
+        }
+      }
+    }
+#endif /* _USE_WEBSOCKETS */
+
   }
 
   /***/
@@ -295,7 +327,7 @@ protected:
 
 /* ure::ResourcesFetcherEvents implementation */
 protected:  
-  virtual ure::void_t on_download_succeeded( [[maybe_unused]] const std::string& name, [[maybe_unused]] const std::type_info& type, [[maybe_unused]] const ure::byte_t* data, [[maybe_unused]] ure::uint_t length ) noexcept(true) override
+  virtual ure::void_t on_download_succeeded( [[maybe_unused]] std::string_view name, [[maybe_unused]] const std::type_info& type, [[maybe_unused]] const ure::byte_t* data, [[maybe_unused]] ure::uint_t length ) noexcept(true) override
   {
     ure::Image image;
     if ( image.create( ure::Image::loader_t::eStb, data, length ) )
@@ -305,13 +337,30 @@ protected:
 
   }
 
-  virtual ure::void_t on_download_failed   ( [[maybe_unused]] const std::string& name ) noexcept(true) override
+  virtual ure::void_t on_download_failed   ( [[maybe_unused]] std::string_view name ) noexcept(true) override
   {
 
   }
 
+/* ure::WebSocketEvents implementation */
+  /***/
+  virtual ure::bool_t    on_websocket_open   ( [[maybe_unused]] const std::string_view id ) noexcept(true) override
+  { std::cout << __FUNCTION__ << ":" << __LINE__ << std::endl; return true; }
+  /***/
+  virtual ure::bool_t    on_websocket_close  ( [[maybe_unused]] const std::string_view id, uint16_t code ) noexcept(true) override
+  { std::cout << __FUNCTION__ << ":" << __LINE__ << " code:" << code << std::endl; return true; }
+  /***/
+  virtual ure::bool_t    on_websocket_message( [[maybe_unused]] const std::string_view id, [[maybe_unused]] ure::websocket_options::ws_mode_t mode, [[maybe_unused]] const uint8_t* data, [[maybe_unused]] uint32_t length ) noexcept(true) override
+  { std::cout << __FUNCTION__ << ":" << __LINE__ << " MODE = " << static_cast<std::size_t>(mode) << ", DATA LEN = " << length << std::endl; return true; }
+  /***/
+  virtual ure::bool_t    on_websocket_error  ( [[maybe_unused]] const std::string_view id ) noexcept(true) override
+  { std::cout << __FUNCTION__ << ":" << __LINE__ << std::endl; return true; }
+
 private:
   using resources_collector_t = std::unique_ptr<ure::ResourcesCollector>;
+#ifdef _USE_WEBSOCKETS
+  using websocket_t_ptr       = std::unique_ptr<ure::WebSocket>;
+#endif /* _USE_WEBSOCKETS */
 
   bool                        m_bFullScreen;
   ure::position_t<ure::int_t> m_position;
@@ -323,6 +372,11 @@ private:
   std::unique_ptr<ure::Window>      m_window;
   std::unique_ptr<ure::ViewPort>    m_view_port;
 
+#ifdef _USE_WEBSOCKETS
+  websocket_t_ptr             m_ws;
+#endif /* _USE_WEBSOCKETS */
+
+  const std::string                                 m_msg = "{}";
   core::stop_watch<std::chrono::milliseconds,true>  m_sw;
 };
 

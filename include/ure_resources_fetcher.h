@@ -89,14 +89,14 @@ public:
                             const http_body_t&       body
                           ) noexcept(true);
   /***/
-  bool_t            cancel( const std::string& name ) noexcept(true)
+  bool_t            cancel( std::string_view name ) noexcept(true)
   {
     std::lock_guard _mtx(m_mtx_fetch);
     
-    if ( m_fetching.contains(name) == false )
+    if ( m_fetching.contains(name.data()) == false )
       return false;
 
-    m_fetching.erase(name);
+    m_fetching.erase(name.data());
 
     return true;
   }

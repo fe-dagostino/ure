@@ -46,7 +46,7 @@ static void error_callback(int32_t error, const char* description)
 Application::Application( 
                           core::unique_ptr<ApplicationEvents> events,
                           const std::string& sShadersPath 
-                        ) noexcept
+                        ) noexcept(true)
   : m_events( std::move(events) ), m_exit(false)
 {
   glfwSetErrorCallback(error_callback);  /* GLFW 3.3 */
@@ -55,39 +55,39 @@ Application::Application(
   ProgramsCollector::get_instance()->set_shaders_path( sShadersPath );
 }
 
-Application::~Application() noexcept
+Application::~Application() noexcept(true)
 {
 
 }
 
-void_t  Application::poll_events()
+void_t  Application::poll_events() noexcept(true)
 {
   glfwPollEvents();
 }
 
-void_t  Application::wait_events()
+void_t  Application::wait_events() noexcept(true)
 {
   glfwWaitEvents();
 }
 
-std::string  Application::get_version() const noexcept
+std::string  Application::get_version() const noexcept(true)
 {
   int major, minor, rev;
   glfwGetVersion( &major, &minor, &rev );
   return core::utils::format( "%d.%d.%d", major, minor, rev );
 }
 
-double_t Application::get_time() const noexcept
+double_t Application::get_time() const noexcept(true)
 {
   return glfwGetTime();
 }
   
-void_t   Application::set_time( double_t dTime ) noexcept
+void_t   Application::set_time( double_t dTime ) noexcept(true)
 {
   glfwSetTime( dTime );
 }
 
-const Monitor* Application::get_monitor_by_name( const std::string& name ) noexcept
+const Monitor* Application::get_monitor_by_name( std::string_view name ) noexcept(true)
 {
   if ( name.empty() )
     return nullptr;
@@ -96,13 +96,13 @@ const Monitor* Application::get_monitor_by_name( const std::string& name ) noexc
   if ( m_mapMonitors.empty() )
     m_mapMonitors = Monitor::detect_monitors();
   
-  if ( m_mapMonitors.contains( name.c_str() ) == false )
+  if ( m_mapMonitors.contains( name.data() ) == false )
     return nullptr;
 
-  return m_mapMonitors[name.c_str()].get();
+  return m_mapMonitors[name.data()].get();
 }  
 
-void_t  Application::on_initialize()
+void_t  Application::on_initialize_wm() noexcept(true)
 {
   if ( m_events != nullptr )
   {
@@ -146,7 +146,7 @@ void_t  Application::on_initialize()
   }
 }
 
-void_t  Application::on_finalize()
+void_t  Application::on_finalize_wm() noexcept(true)
 {
   if ( m_events != nullptr )
   {

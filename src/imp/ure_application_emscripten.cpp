@@ -21,31 +21,20 @@
  *
  *************************************************************************************************/
 
-#ifndef URE_RESOURCES_FETCHER_EVENTS_H
-#define URE_RESOURCES_FETCHER_EVENTS_H
-
-#include "ure_common_defs.h"
+#include "ure_application.h"
 
 namespace ure {
 
-/**
- * 
- */
-class ResourcesFetcherEvents 
+void_t Application::on_initialize_ws() noexcept(true)
 {
-public:
-  /***/
-  ResourcesFetcherEvents() noexcept(true)
-  {}
-  /***/
-  virtual ~ResourcesFetcherEvents() noexcept(true) 
-  {}
-  /***/
-  virtual void_t    on_download_succeeded( [[maybe_unused]] std::string_view name, [[maybe_unused]] const std::type_info& type, [[maybe_unused]] const byte_t* data, [[maybe_unused]] uint_t length ) noexcept(true) = 0;
-  /***/
-  virtual void_t    on_download_failed   ( [[maybe_unused]] std::string_view name ) noexcept(true) = 0;
-};
-
 }
 
-#endif // URE_RESOURCES_FETCHER_EVENTS_H
+void_t Application::on_finalize_ws() noexcept(true)
+{
+}
+
+void_t Application::processing_ws() noexcept(true)
+{
+}
+
+}

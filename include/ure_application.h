@@ -28,8 +28,6 @@
 #include "ure_application_events.h"
 #include <core/unique_ptr.h>
 
-
-//#include "GLShape.h"
 #include <core/singleton.h>
 #include "ure_monitor.h"
 
@@ -55,58 +53,71 @@ public:
   /***/
   Application( const Application& ) = delete;
   /***/
-  ~Application() noexcept;
+  ~Application() noexcept(true);
 
 protected:
   /***/
   Application(  core::unique_ptr<ApplicationEvents> events, 
                 const std::string& sShadersPath 
-             ) noexcept;
+             ) noexcept(true);
 public:
   /***/
-  void_t               run();
+  void_t               run() noexcept(true);
   
   /***/
-  constexpr ApplicationEvents* set_events( core::unique_ptr<ApplicationEvents> events ) noexcept
+  constexpr ApplicationEvents* set_events( core::unique_ptr<ApplicationEvents> events ) noexcept(true)
   { 
     ApplicationEvents* pRetVal = events.release();
     m_events = std::move(events);  
     return pRetVal;
   }
   /***/
-  constexpr ApplicationEvents* get_events() noexcept
+  constexpr ApplicationEvents* get_events() noexcept(true)
   { return m_events.get(); }
 
   /***/
-  constexpr bool            exit() const noexcept
+  constexpr bool            exit() const noexcept(true)
   { return m_exit; }
   /***/
-  constexpr void            exit( bool doexit ) noexcept
+  constexpr void            exit( bool doexit ) noexcept(true)
   { m_exit = doexit; }
 
   /***/
-  void_t                    poll_events();
+  void_t                    poll_events() noexcept(true);
   /***/
-  void_t                    wait_events();
+  void_t                    wait_events() noexcept(true);
   /***/ 
-  std::string               get_version() const noexcept;
+  std::string               get_version() const noexcept(true);
   
   /**
    * Return time in seconds since application initialization.
    */
-  double_t                  get_time() const noexcept;
+  double_t                  get_time() const noexcept(true);
   /***/
-  void_t                    set_time( double_t dTime ) noexcept;
+  void_t                    set_time( double_t dTime ) noexcept(true);
     
   /***/
-  const Monitor*            get_monitor_by_name( const std::string& name ) noexcept;
+  const Monitor*            get_monitor_by_name( std::string_view name ) noexcept(true);
 
 public:
   /***/
-  void_t     on_initialize();
+  void_t     on_initialize() noexcept(true);
   /***/
-  void_t     on_finalize();
+  void_t     on_finalize() noexcept(true);
 
+private:
+  /***/
+  void_t     on_initialize_wm() noexcept(true);
+  /***/
+  void_t     on_finalize_wm() noexcept(true);
+
+  /***/
+  void_t     on_initialize_ws() noexcept(true);
+  /***/
+  void_t     on_finalize_ws() noexcept(true);
+  /***/
+  void_t     processing_ws() noexcept(true);
+  
 private:
   core::unique_ptr<ApplicationEvents>  m_events;
   mutable Monitor::monitor_map_t       m_mapMonitors;  

@@ -51,22 +51,22 @@ public:
   {}
   
   /***/
-  constexpr inline const std::string&   monitor() const noexcept(true)
+  constexpr std::string_view   monitor() const noexcept(true)
   { return m_sMonitor; }
   /***/
-  constexpr inline const std::string&   title() const noexcept(true)
+  constexpr std::string_view   title() const noexcept(true)
   { return m_sTitle;   }
   /***/
-  constexpr inline int32_t              x() const noexcept(true)
+  constexpr inline int32_t     x() const noexcept(true)
   { return m_position.x;    }
   /***/
-  constexpr inline int32_t              y() const noexcept(true)
+  constexpr inline int32_t     y() const noexcept(true)
   { return m_position.y;    }
   /***/
-  constexpr inline sizei_t              width() const noexcept(true)
+  constexpr inline sizei_t     width() const noexcept(true)
   { return m_size.width;    }
   /***/
-  constexpr inline sizei_t              height() const noexcept(true)
+  constexpr inline sizei_t     height() const noexcept(true)
   { return m_size.height;    }
   
 private:

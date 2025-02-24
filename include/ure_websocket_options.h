@@ -21,31 +21,54 @@
  *
  *************************************************************************************************/
 
-#ifndef URE_RESOURCES_FETCHER_EVENTS_H
-#define URE_RESOURCES_FETCHER_EVENTS_H
+#ifndef URE_WEBSOCKET_OPTIONS_H
+#define URE_WEBSOCKET_OPTIONS_H
 
 #include "ure_common_defs.h"
+#include <string>
 
 namespace ure {
 
-/**
- * 
- */
-class ResourcesFetcherEvents 
+class websocket_options
 {
 public:
+  enum class ws_mode_t : std::size_t {
+    text    = 0,
+    binary
+  };
+
   /***/
-  ResourcesFetcherEvents() noexcept(true)
+  constexpr websocket_options( websocket_options&& opts ) noexcept(true)
+    : m_url(std::move(opts.m_url)), m_mode(opts.m_mode), m_blocking(opts.m_blocking)
   {}
+
   /***/
-  virtual ~ResourcesFetcherEvents() noexcept(true) 
+  constexpr websocket_options( const std::string& url, ws_mode_t mode, bool blocking = true ) noexcept(true)
+   : m_url(url), m_mode(mode), m_blocking(blocking)
   {}
+
   /***/
-  virtual void_t    on_download_succeeded( [[maybe_unused]] std::string_view name, [[maybe_unused]] const std::type_info& type, [[maybe_unused]] const byte_t* data, [[maybe_unused]] uint_t length ) noexcept(true) = 0;
+  ~websocket_options() noexcept(true)
+  {}
+
   /***/
-  virtual void_t    on_download_failed   ( [[maybe_unused]] std::string_view name ) noexcept(true) = 0;
+  constexpr const std::string_view      url() const noexcept(true)
+  { return m_url; }
+
+  /***/
+  constexpr ws_mode_t                   mode() const noexcept(true)
+  { return m_mode; }
+
+  /***/
+  constexpr bool                        blocking() const noexcept(true)
+  { return m_blocking; }
+
+private:
+  const std::string    m_url;
+  const ws_mode_t      m_mode;
+  const bool           m_blocking;
 };
 
 }
 
-#endif // URE_RESOURCES_FETCHER_EVENTS_H
+#endif /* URE_WEBSOCKET_OPTIONS_H */

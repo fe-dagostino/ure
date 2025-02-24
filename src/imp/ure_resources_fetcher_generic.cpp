@@ -62,13 +62,13 @@ public:
   constexpr ResourcesFetcherEvents& events() const noexcept(true)
   { return m_events; }
   /***/ 
-  constexpr const std::string&      name() const noexcept(true)
+  constexpr std::string_view        name() const noexcept(true)
   { return m_name; }
   /***/ 
   constexpr const std::type_info&   type() const noexcept(true)
   { return m_type; }
   /***/ 
-  constexpr const std::string&      url() const noexcept(true)
+  constexpr std::string_view        url() const noexcept(true)
   { return m_url;  }
   /***/
   constexpr customer_request_t      cr() const noexcept(true)
@@ -165,7 +165,7 @@ static void_t async_curl_download( resource_t* resource ) noexcept(true)
   /* Populate CUSTOMER REQUEST */
   options &= (curl_easy_setopt(_easy_handle, CURLOPT_CUSTOMREQUEST  , ResourcesFetcher::to_string_view( resource->cr()).data() ) == CURLE_OK);
   /* specify URL to get */
-  options &= (curl_easy_setopt(_easy_handle, CURLOPT_URL            , _resource->url().c_str() ) == CURLE_OK);
+  options &= (curl_easy_setopt(_easy_handle, CURLOPT_URL            , _resource->url().data()  ) == CURLE_OK);
   /* send all data to this function  */
   options &= (curl_easy_setopt(_easy_handle, CURLOPT_WRITEFUNCTION  , WriteMemoryCallback      ) == CURLE_OK);
   /* we pass our 'chunk' struct to the callback function */
