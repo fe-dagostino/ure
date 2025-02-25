@@ -29,6 +29,7 @@
 #include "ure_object.h"
 
 #include <string>
+#include <atomic>
 
 namespace ure {
 
