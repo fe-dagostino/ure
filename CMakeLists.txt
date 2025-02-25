@@ -155,8 +155,6 @@ if (NOT ENABLE_WASM)
   message(STATUS "    libs   : ${CURL_LIBRARIES}"                 )
 endif()
 
-
-
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 message(STATUS "${PROJECT_SOURCE_DIR}")
 
@@ -249,7 +247,7 @@ endif()
 
 if (ENABLE_WASM)
   set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_FREETYPE=1 " )
-  message("libure: CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
+  message("libure: CMAKE_CXX_FLAGS: [${CMAKE_CXX_FLAGS}]")
 
   set( URE_LINK_FLAGS "${URE_LINK_FLAGS} -s USE_FREETYPE=1"    )
   set( URE_LINK_FLAGS "${URE_LINK_FLAGS} -s FETCH=1"           )
@@ -268,7 +266,7 @@ if (ENABLE_WASM)
     set( URE_LINK_FLAGS  "${URE_LINK_FLAGS}"  PARENT_SCOPE )
   endif()
 
-  message("libure: URE_LINK_FLAGS : ${URE_LINK_FLAGS}")
+  message("libure: URE_LINK_FLAGS : [${URE_LINK_FLAGS}]")
 endif()
 
 if (URE_USE_STB)
@@ -279,11 +277,6 @@ endif (URE_USE_STB)
 list(APPEND EXT_LIBRARIES sigc-3.0                )
 list(APPEND EXT_LIBRARIES lock-free::lock-free    )
 list(APPEND EXT_LIBRARIES glm::glm                )
-if (NOT ENABLE_WASM)
-  if (URE_USE_WEBSOCKETS)
-    list(APPEND EXT_LIBRARIES websockets              )
-  endif()
-endif()
 
 if (URE_USE_FREEIMAGE)
   add_compile_definitions( _USE_FREEIMAGE )
@@ -297,6 +290,13 @@ endif (URE_USE_DEVIL)
 
 if (URE_USE_WEBSOCKETS)
   add_compile_definitions( _USE_WEBSOCKETS )
+  if(hasParent)
+    set( PARENT_DEFINITIONS "${PARENT_DEFINITIONS} -D_USE_WEBSOCKETS" )
+  endif()
+
+  if (NOT ENABLE_WASM)
+    list(APPEND EXT_LIBRARIES websockets )
+  endif()
 endif (URE_USE_WEBSOCKETS)
 
 if (ENABLE_GLFW)
