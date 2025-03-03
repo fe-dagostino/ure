@@ -170,13 +170,16 @@ bool_t WebSocket::open() noexcept(true)
     path = ppath;
   }
 
+
   static_cast<resource_t*>(m_data)->init( use_ssl );
 
   ccinfo.context        = g_context;
-	ccinfo.ssl_connection = use_ssl;
-	ccinfo.host           = ccinfo.address;
-	ccinfo.origin         = ccinfo.address;
-	ccinfo.ietf_version_or_minus_one = ietf_version;
+  ccinfo.ssl_connection = use_ssl;
+  ccinfo.host           = ccinfo.address;
+  ccinfo.origin         = ccinfo.address;
+  ccinfo.ietf_version_or_minus_one = ietf_version;
+  /* assign path to client info */
+  ccinfo.path = path.c_str();
 
 	if (!strcmp(pprot, "http") || !strcmp(pprot, "https"))
   {
