@@ -47,7 +47,7 @@ public:
   /***/
   virtual void_t on_initialize_error(/* @todo */) = 0;
   /***/
-  virtual void_t on_error( int32_t error, const std::string& description ) = 0;
+  virtual void_t on_error( int32_t error, std::string_view description ) = 0;
   /***/
   virtual void_t on_finalize_error(/* @todo */) = 0;
 };

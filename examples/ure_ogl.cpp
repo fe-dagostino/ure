@@ -35,10 +35,10 @@ private:
 
     bkImage.load( ure::Image::loader_t::eStb, "./resources/media/wall.jpg" );
 
-    std::unique_ptr<ure::Texture> texture = std::make_unique<ure::Texture>( std::move(bkImage) );
+    std::shared_ptr<ure::Texture> texture = std::make_shared<ure::Texture>( std::move(bkImage) );
     if ( texture )
     {
-      m_rc->attach<ure::Texture,std::unique_ptr<ure::Texture>>("wall", std::move(texture) );
+      m_rc->attach<ure::Texture,std::shared_ptr<ure::Texture>>("wall", std::move(texture) );
     }
   }
 
@@ -296,7 +296,7 @@ protected:
   /***/
   virtual ure::void_t on_initialize_error(/* @todo */) override {}
   /***/
-  virtual ure::void_t on_error( [[maybe_unused]] int32_t error, [[maybe_unused]] const std::string& description ) override {}
+  virtual ure::void_t on_error( [[maybe_unused]] int32_t error, [[maybe_unused]] std::string_view description ) override {}
   /***/
   virtual ure::void_t on_finalize_error(/* @todo */) override {};
 
