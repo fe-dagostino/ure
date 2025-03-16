@@ -74,7 +74,7 @@ public:
    */
   template<class derived_t>
     requires std::is_nothrow_convertible_v<derived_t*,Object*>
-  std::optional<std::shared_ptr<derived_t>>   find( const std::string& name ) noexcept(true)
+  std::optional<std::shared_ptr<derived_t>>   find( const std::string& name ) const noexcept(true)
   {
     map_resources_t::const_iterator  iter = m_mapResources.find( name );
     if ( iter == m_mapResources.end() )
