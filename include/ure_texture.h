@@ -39,6 +39,17 @@ class Texture : public HandledObject
 {
 public:
 
+  enum class lifecycle_t : int32_t {
+    eRender,                        /* Lifecycle for the texture will be related to render(),
+                                     * that means that texture will be created, used and areleased
+                                     * during the render().
+                                     */
+    eObject,                        /* Lifecycle for the texture will be related to instance of
+                                     * the object, so texture will be created and release only
+                                     * when the instance will be destroiyed.
+                                     */
+  };
+
   enum class format_t : int32_t {
     eUndefined,
     eRGB  = URE_RGB,
@@ -50,73 +61,54 @@ public:
     eUnsignedByte = URE_UNSIGNED_BYTE
   };
 
-  /***/
-  constexpr Texture()
-    : m_size( 0, 0 ), m_format( format_t::eUndefined ), m_type( type_t::eUndefined ), 
-      m_length( 0 ), m_pixels( nullptr )
-  {}
+  /* Delete default constructor */
+  constexpr Texture() = delete;
 
-  Texture( sizei_t width, sizei_t height, format_t format, type_t type )
-    : m_size( 0, 0 ), m_format( format_t::eUndefined ), m_type( type_t::eUndefined ), 
-      m_length( 0 ), m_pixels( nullptr )
-  { init( width, height, format, type, nullptr ); }
+  Texture( sizei_t width, sizei_t height, format_t format, type_t type ) noexcept(true);
 
   /***/
-  Texture( Image&& image )
-  {
-    if ( image.get_format() == Image::format_t::eRGBA )
-    {
-      m_size   = image.get_size();
-      m_format = format_t::eRGBA;
-      m_type   = type_t::eUnsignedByte;
-      m_pixels = image.detach(&m_length);
-    }
-  }
-  
+  Texture( Image&& image, lifecycle_t lifecycle = lifecycle_t::eRender,
+           int_t tws = URE_CLAMP_TO_EDGE,
+           int_t twt = URE_CLAMP_TO_EDGE
+         ) noexcept(true);
+
   /***/
-  ~Texture()
-  {
-    if ( m_pixels != nullptr )
-    {
-      free( m_pixels );
-      m_pixels = nullptr;
-    }
-  }
-  
+  ~Texture() noexcept(true);
+
   /***/
-  constexpr format_t      get_format() const noexcept
+  constexpr format_t    get_format() const noexcept(true)
   { return m_format; }
-  
+
   /***/
-  constexpr type_t        get_type() const noexcept
+  constexpr type_t      get_type() const noexcept(true)
   { return m_type; }
-  
+
   /**
    * Return size in pixels.
    */
-  constexpr const Size&   get_size() const noexcept
+  constexpr const Size& get_size() const noexcept(true)
   { return m_size; }
 
   /**
    * @return pixels buffer length in bytes
    */
-  constexpr uint32_t      get_length() const noexcept
+  constexpr uint32_t    get_length() const noexcept(true)
   { return m_length; }
 
   /***/
-  constexpr uint8_t*      get_pixels() const noexcept
+  constexpr uint8_t*    get_pixels() const noexcept(true)
   { return m_pixels; }
-  
-  /***/
-  void                    set_packing( int32_t param );
-  /***/
-  void                    set_unpacking( int32_t param );
 
   /***/
-  inline void             setParameterf( uint32_t target, uint32_t pname, GLfloat param );
+  void_t                set_packing( int32_t param ) noexcept(true);
   /***/
-  inline void             setParameteri( uint32_t target, uint32_t pname, GLint param );
-  
+  void_t                set_unpacking( int32_t param ) noexcept(true);
+
+  /***/
+  inline void_t         setParameterf( uint32_t target, uint32_t pname, GLfloat param ) noexcept(true);
+  /***/
+  inline void_t         setParameteri( uint32_t target, uint32_t pname, GLint param ) noexcept(true);
+
   /**
    * Push image data, vertex coordinates and texture coordinates then draw it.
    * At current time all data will be sent to GPU each time render will be called.
@@ -129,61 +121,30 @@ public:
    * @param level      Specifies the level-of-detail number. Level 0 is the base image 
    *                   level. Level n is the nth mipmap reduction image.
    */
-  void                   render(  const std::vector<glm::vec2>& vertices, 
-				                          const std::vector<glm::vec2>& texCoord,
-				                          bool blend,
-				                          enum_t target, int_t level, int_t uLocation, 
-                                  uint_t aVertices, uint_t aTexCoord,
-				                          int_t  tws, int_t twt 
-                                );
+  void_t               render(  const std::vector<glm::vec2>& vertices, 
+				                        const std::vector<glm::vec2>& texCoord,
+				                        bool blend,
+				                        enum_t target, int_t level, int_t uLocation, 
+                                uint_t aVertices, uint_t aTexCoord,
+				                        int_t  tws, int_t twt 
+                              ) noexcept(true);
 private:
   /***/
-  bool  init( sizei_t width, sizei_t height, format_t format, type_t type, uint8_t* pixels ) noexcept
-  {
-    if ( type != type_t::eUnsignedByte )
-      return false;
-  
-    if ( m_pixels != nullptr )
-    {
-      free( m_pixels );
-      m_pixels = nullptr;
-    }
-
-    m_size.width  = width;
-    m_size.height = height;
-    m_format      = format;
-    m_type        = type;
-
-    // Accepted values
-    int bpp = 4;
-    switch ( format )
-    {
-      case format_t::eRGB : bpp = 3; break;
-      default:              bpp = 4; break;
-    }
-    
-    m_length      = width*height*bpp;
-    
-    if ( pixels == nullptr ){
-      m_pixels      = (uint8_t*)calloc( m_length, sizeof(uint8_t) );
-    }
-    else {
-      m_pixels      = pixels;
-      pixels        = nullptr;
-    }
-
-    if (m_pixels == nullptr)
-      return false;
-  
-    return true;    
-  }
+  bool_t tex_alloc() noexcept(true);
+  /***/
+  void_t tex_free() noexcept(true);
+  /**/
+  bool_t tex_create( enum_t target, int_t level, int_t tws = URE_CLAMP_TO_EDGE, int_t twt = URE_CLAMP_TO_EDGE ) noexcept(true);
+  /***/
+  bool_t tex_destroy() noexcept(true);
 
 private:
-  Size      m_size;
-  format_t  m_format;
-  type_t    m_type;
-  uint32_t  m_length;
-  uint8_t*  m_pixels;
+  Size        m_size;
+  format_t    m_format;
+  type_t      m_type;
+  lifecycle_t m_lifecycle;
+  uint32_t    m_length;
+  uint8_t*    m_pixels;
 };
 
 }

@@ -211,6 +211,7 @@
 #define URE_RGBA              GL_RGBA
 
 #define URE_UNSIGNED_BYTE     GL_UNSIGNED_BYTE
+#define URE_INVALID_HANDLE    GL_INVALID_VALUE
 
 namespace ure {
   using bool_t     = bool;

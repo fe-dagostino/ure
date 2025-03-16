@@ -31,7 +31,7 @@ namespace ure {
 
 /**
  */
-class Image : public HandledObject
+class Image : public Object
 {
 public:
   /**

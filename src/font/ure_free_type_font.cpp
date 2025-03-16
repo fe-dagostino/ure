@@ -123,6 +123,7 @@ Text*       FreeTypeFont::get_text( const std::wstring& sText, const glm::vec4& 
   
   ///////////////////
   // Create new texture in order to store all characters
+  // @todo create an image before and then generate a texture in order to have under control lifecycle of ont and to reduce transfers to the GPU.
   Texture* pTexture = new(std::nothrow) Texture( size.width + m_left + m_right, size.height + m_top  + m_bottom, Texture::format_t::eRGBA, Texture::type_t::eUnsignedByte );
   if (pTexture==nullptr)
     return nullptr;
@@ -149,7 +150,7 @@ Text*       FreeTypeFont::get_text( const std::wstring& sText, const glm::vec4& 
     // Release glyph data
     FT_Done_Glyph( g );
   }
-  
+
   Text* pText = new(std::nothrow) Text( pTexture );
   if ( pText == nullptr )
   {

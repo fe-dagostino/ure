@@ -35,7 +35,7 @@ private:
 
     bkImage.load( ure::Image::loader_t::eStb, "./resources/media/wall.jpg" );
 
-    std::shared_ptr<ure::Texture> texture = std::make_shared<ure::Texture>( std::move(bkImage) );
+    std::shared_ptr<ure::Texture> texture = std::make_shared<ure::Texture>( std::move(bkImage), ure::Texture::lifecycle_t::eRender );
     if ( texture )
     {
       m_rc->attach<ure::Texture,std::shared_ptr<ure::Texture>>("wall", std::move(texture) );
