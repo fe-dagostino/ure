@@ -2,7 +2,7 @@
 FetchContent_Declare(
   ImGui
   GIT_REPOSITORY    https://github.com/ocornut/imgui.git
-  GIT_TAG           master # master
+  GIT_TAG           docking # master
   GIT_SHALLOW       TRUE
   CONFIGURE_COMMAND ""
   BUILD_COMMAND     ""
