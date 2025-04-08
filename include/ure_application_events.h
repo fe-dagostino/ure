@@ -32,24 +32,24 @@ class ApplicationEvents
 {
 public:
   /***/
-  virtual ~ApplicationEvents(){}
+  virtual ~ApplicationEvents() noexcept(true) {}
 
   /***/
-  virtual void_t on_initialize() = 0;
+  virtual void_t on_initialize() noexcept(true) = 0;
   /***/
-  virtual void_t on_initialized() = 0;
+  virtual void_t on_initialized() noexcept(true) = 0;
   /***/
-  virtual void_t on_finalize() = 0;
+  virtual void_t on_finalize() noexcept(true) = 0;
   /***/
-  virtual void_t on_finalized() = 0;
+  virtual void_t on_finalized() noexcept(true) = 0;
   /***/
-  virtual void_t on_run() = 0;
+  virtual void_t on_run() noexcept(true) = 0;
   /***/
-  virtual void_t on_initialize_error(/* @todo */) = 0;
+  virtual void_t on_initialize_error(/* @todo */) noexcept(true) = 0;
   /***/
-  virtual void_t on_error( int32_t error, std::string_view description ) = 0;
+  virtual void_t on_error( int32_t error, std::string_view description ) noexcept(true) = 0;
   /***/
-  virtual void_t on_finalize_error(/* @todo */) = 0;
+  virtual void_t on_finalize_error(/* @todo */) noexcept(true) = 0;
 };
 
 }
