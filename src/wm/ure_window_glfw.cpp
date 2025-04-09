@@ -160,9 +160,8 @@ bool_t Window::create( std::unique_ptr<window_options> options, enum_t flags ) n
   ImGui::CreateContext();
   ImGuiIO& io = ImGui::GetIO();
   io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-  //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-  // @todo add option for docking branch
-  //io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // IF using Docking Branch
+  io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+  io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
 
   // Setup Dear ImGui style
   ImGui::StyleColorsDark();
