@@ -181,6 +181,9 @@ if (ENABLE_GLFW)
 
   if (ENABLE_IMGUI)
     include(imgui)
+    if (ENABLE_WASM)
+      include(embc)
+    endif()    
   endif()
 endif()
 
