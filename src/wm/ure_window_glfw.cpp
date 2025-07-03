@@ -31,13 +31,84 @@
 
 #if defined(_IMGUI_ENABLED)
 # include "imgui.h"
+# include "imgui_internal.h"
 # include "imgui_impl_glfw.h"
 # include "imgui_impl_opengl3.h"
+# if defined(__EMSCRIPTEN__)
+#  include "emscripten_browser_clipboard.h"
+# endif /* # if defined(__EMSCRIPTEN__) */
 #endif
 
 
 namespace ure {
 
+#if defined(_IMGUI_ENABLED)
+# if defined(__EMSCRIPTEN__)
+
+class Clipboard
+{
+public:
+  /**/
+  Clipboard()
+  {
+    /// Default constructor
+    emscripten_browser_clipboard::paste([](std::string &&paste_data, void *callback_data){
+      /// Callback to handle clipboard paste from browser
+      auto &parent{*static_cast<Clipboard*>(callback_data)};
+      parent.content = std::move(paste_data);
+    }, this);
+      
+    emscripten_browser_clipboard::copy([](void *callback_data){
+      const char* value = nullptr;
+
+      if ( callback_data == NULL )
+        return value;
+
+      /// Callback to offer data for clipboard copy to browser
+      auto &parent{*static_cast<Clipboard*>(callback_data)};
+
+      value = parent.content.c_str();
+      return value;
+    });
+  }
+
+  /**/
+  ~Clipboard()
+  {}
+
+  /**/
+  void init_imgui_callbacks()
+  {
+    ImGuiPlatformIO &platform_io{ImGui::GetPlatformIO()};
+    
+    platform_io.Platform_ClipboardUserData = this;
+
+    platform_io.Platform_GetClipboardTextFn = [](ImGuiContext *ctx){
+      /// Callback for imgui, to return clipboard content
+      auto &parent{*static_cast<Clipboard*>(ctx->PlatformIO.Platform_ClipboardUserData)};
+
+      return parent.content.c_str();
+    };
+
+    platform_io.Platform_SetClipboardTextFn = [](ImGuiContext *ctx, char const *text){
+      /// Callback for imgui, to set clipboard content
+      auto &parent{*static_cast<Clipboard*>(ctx->PlatformIO.Platform_ClipboardUserData)};
+  
+      parent.content = std::string(text);
+
+      emscripten_browser_clipboard::copy(parent.content);
+    };  
+
+  }
+
+private:
+  std::string content;
+};
+
+static Clipboard g_clipboard;
+
+# endif /* if defined(__EMSCRIPTEN__) */
+#endif /* if defined(_IMGUI_ENABLED) */
 
 bool_t Window::create( std::unique_ptr<window_options> options, enum_t flags ) noexcept(true)
 {
@@ -169,11 +240,15 @@ bool_t Window::create( std::unique_ptr<window_options> options, enum_t flags ) n
   // Setup Platform/Renderer backends
   ImGui_ImplGlfw_InitForOpenGL(m_hWindow, true);          // Second param install_callback=true will install GLFW callbacks and chain to existing ones.
 
-# ifdef __EMSCRIPTEN__
+# if defined(__EMSCRIPTEN__)
   ImGui_ImplGlfw_InstallEmscriptenCallbacks(m_hWindow, "#canvas");
 # endif
 
   ImGui_ImplOpenGL3_Init( m_glsl_version.c_str() );
+  
+# if defined(__EMSCRIPTEN__)
+  g_clipboard.init_imgui_callbacks();
+# endif
 #endif  
 
   return true;
