@@ -82,6 +82,14 @@ public:
   bool_t             create( std::unique_ptr<window_options> options, enum_t flags = static_cast<enum_t>(processing_flag_t::epfCalling) ) noexcept(true);
   /***/
   void_t             make_context_current() noexcept(true);
+    /**
+   * Return object identifier.
+   */
+  WindowHandler      get_handler() noexcept(true)
+  { return m_hWindow; }
+
+  operator WindowHandler() noexcept(true)
+  { return m_hWindow; }
   /***/
   const Renderer*    get_renderer() const noexcept(true)
   { return m_ptrRenderer.get(); }
