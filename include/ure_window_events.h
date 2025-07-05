@@ -125,12 +125,11 @@ public:
   /***/
   virtual void_t  on_mouse_scroll( [[maybe_unused]] Window* pWindow, [[maybe_unused]] double_t dOffsetX, [[maybe_unused]] double_t dOffsetY ) noexcept(true)
   {}
-  /***/
-  virtual void_t  on_key_released( [[maybe_unused]] Window* pWindow, [[maybe_unused]] key_t key, [[maybe_unused]] int_t iScanCode, [[maybe_unused]] word_t wMods ) noexcept(true)
-  {}
   /**
    * Default implementation will close widows when ESCAPE key went pressed.
    */
+  virtual void_t  on_key_released( [[maybe_unused]] Window* pWindow, [[maybe_unused]] key_t key, [[maybe_unused]] int_t iScanCode, [[maybe_unused]] word_t wMods ) noexcept(true);
+  /***/
   virtual void_t  on_key_pressed ( [[maybe_unused]] Window* pWindow, [[maybe_unused]] key_t key, [[maybe_unused]] int_t iScanCode, [[maybe_unused]] word_t wMods ) noexcept(true);
   /***/
   virtual void_t  on_key_repeated( [[maybe_unused]] Window* pWindow, [[maybe_unused]] key_t key, [[maybe_unused]] int_t iScanCode, [[maybe_unused]] word_t wMods ) noexcept(true) 
