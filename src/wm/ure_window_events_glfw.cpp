@@ -65,9 +65,12 @@ void_t  WindowEvents::on_created( [[maybe_unused]] Window* pWindow ) noexcept
 
 void_t WindowEvents::on_key_pressed( [[maybe_unused]] Window* pWindow, [[maybe_unused]] key_t key, [[maybe_unused]] int_t iScanCode, [[maybe_unused]] word_t wMods ) noexcept
 {
+}
+
+void_t  WindowEvents::on_key_released( [[maybe_unused]] Window* pWindow, [[maybe_unused]] key_t key, [[maybe_unused]] int_t iScanCode, [[maybe_unused]] word_t wMods ) noexcept(true)
+{
   if ( key == key_t::KEY_ESCAPE )
     pWindow->close();
 }
 
 }
- 
