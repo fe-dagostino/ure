@@ -41,10 +41,11 @@ public:
                         const std::type_info&   type,
                         customer_request_t      cr,
                         const http_headers_t&   headers,
-                        const http_body_t&      body 
+                        const http_body_t&      body,
+                        bool                    verify_ssl
                       ) noexcept(true)
     : m_events(events), m_name(name), m_type(type), m_cr(cr), 
-      m_headers(headers), m_body(body)
+      m_headers(headers), m_body(body), m_verify_ssl(verify_ssl)
   {}
   /***/ 
   constexpr ResourcesFetcherEvents& events() const noexcept(true)
@@ -64,6 +65,9 @@ public:
   /***/
   constexpr std::string_view       body() const noexcept(true)
   { return m_body; }
+  /***/
+  constexpr bool                   verify_ssl() const noexcept(true)
+  { return m_verify_ssl; }
 
 private:
   ResourcesFetcherEvents& m_events;
@@ -72,6 +76,7 @@ private:
   customer_request_t      m_cr;
   http_headers_t          m_headers;
   http_body_t             m_body;
+  bool                    m_verify_ssl;
 };
 
 
@@ -121,7 +126,8 @@ bool_t ResourcesFetcher::fetch( ResourcesFetcherEvents& events,
                                 const std::string&      url, 
                                 customer_request_t      cr,
                                 const http_headers_t&   headers,
-                                const http_body_t&      body 
+                                const http_body_t&      body,
+                                bool                    verify_ssl
                               ) noexcept(true)
 {
   if ( name.empty() || url.empty() )
@@ -133,7 +139,7 @@ bool_t ResourcesFetcher::fetch( ResourcesFetcherEvents& events,
   if ( m_fetching.contains( name ) == true )
     return true;
 
-  resource_t* _resource = new(std::nothrow)resource_t( events, name, type, cr, headers, body );
+  resource_t* _resource = new(std::nothrow)resource_t( events, name, type, cr, headers, body, verify_ssl );
   if ( _resource == nullptr )
   {
     return false;
