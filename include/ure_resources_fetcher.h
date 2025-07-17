@@ -56,6 +56,7 @@ public:
     Get,
     Post,
     Put,
+    Patch,
     Delete
   }; 
 
@@ -70,10 +71,13 @@ public:
         return "POST";
       break;
       case customer_request_t::Put:
-        return "Put";
+        return "PUT";
+      break;
+      case customer_request_t::Patch:
+        return "PATCH";
       break;
       case customer_request_t::Delete:
-        return "Delete";
+        return "DELETE";
       break;
     }
     return "";
