@@ -53,10 +53,11 @@ public:
                         const std::string&      url,
                         customer_request_t      cr,
                         const http_headers_t&   headers,
-                        const http_body_t&      body
+                        const http_body_t&      body,
+                        bool                    verify_ssl
                       ) noexcept(true)
     : m_events(events), m_name(name), m_type(type), m_url(url), 
-      m_cr(cr), m_headers(headers), m_body(body)
+      m_cr(cr), m_headers(headers), m_body(body), m_verify_ssl(verify_ssl)
   {}
   /***/ 
   constexpr ResourcesFetcherEvents& events() const noexcept(true)
@@ -79,6 +80,9 @@ public:
   /***/
   constexpr std::string_view        body() const noexcept(true)
   { return m_body; }
+  /***/
+  constexpr bool                    verify_ssl() const noexcept(true)
+  { return m_verify_ssl; }
 
 private:
   ResourcesFetcherEvents& m_events;
@@ -88,6 +92,7 @@ private:
   customer_request_t      m_cr;
   http_headers_t          m_headers;
   http_body_t             m_body;
+  bool                    m_verify_ssl;
 };
 
 
@@ -175,6 +180,13 @@ static void_t async_curl_download( resource_t* resource ) noexcept(true)
   options &= (curl_easy_setopt(_easy_handle, CURLOPT_FOLLOWLOCATION , 1L                       ) == CURLE_OK);
   options &= (curl_easy_setopt(_easy_handle, CURLOPT_HTTPPROXYTUNNEL, 1L                       ) == CURLE_OK);
 
+  /* Explicitly disable ssl verification */
+  if ( _resource->verify_ssl() == false )
+  {
+    options &= (curl_easy_setopt(_easy_handle, CURLOPT_SSL_VERIFYPEER, 0L) == CURLE_OK);
+    options &= (curl_easy_setopt(_easy_handle, CURLOPT_SSL_VERIFYHOST, 0L) == CURLE_OK);
+  }
+  
   /* Set headers */
   struct curl_slist *_headers = nullptr;
   for ( std::size_t ndx = 0; ndx < _resource->headers().size()-1; ndx+=2 )
@@ -261,7 +273,8 @@ bool_t ResourcesFetcher::fetch( ResourcesFetcherEvents& events,
                                 const std::string&      url,
                                 customer_request_t      cr,
                                 const http_headers_t&   headers,
-                                const http_body_t&      body
+                                const http_body_t&      body,
+                                bool                    verify_ssl
                               ) noexcept(true)
 {
   if ( name.empty() || url.empty() )
@@ -273,7 +286,7 @@ bool_t ResourcesFetcher::fetch( ResourcesFetcherEvents& events,
   if ( m_fetching.contains( name ) == true )
     return true;
 
-  resource_t* pResource = new(std::nothrow)resource_t( events, name, type, url, cr, headers, body );
+  resource_t* pResource = new(std::nothrow)resource_t( events, name, type, url, cr, headers, body, verify_ssl );
   if ( pResource == nullptr )
   {
     return false;
