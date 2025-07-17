@@ -90,7 +90,8 @@ public:
                             const std::string&       url,
                             customer_request_t       cr,
                             const http_headers_t&    headers,
-                            const http_body_t&       body
+                            const http_body_t&       body,
+                            bool                     verify_ssl = true
                           ) noexcept(true);
   /***/
   bool_t            cancel( std::string_view name ) noexcept(true)
