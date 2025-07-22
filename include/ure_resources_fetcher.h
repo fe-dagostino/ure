@@ -27,6 +27,7 @@
 #include "ure_common_defs.h"
 #include "ure_resources_fetcher_events.h"
 
+#include <core/utils.h>
 #include <core/singleton.h>
 #include <core/unique_ptr.h>
 
@@ -50,15 +51,6 @@ protected:
 public:
   using http_headers_t     = std::vector<const char*>; 
   using http_body_t        = std::string; 
-
-  enum class customer_request_t : enum_t
-  {
-    Get,
-    Post,
-    Put,
-    Patch,
-    Delete
-  }; 
 
   static std::string_view to_string_view( customer_request_t cr )
   {
@@ -94,14 +86,15 @@ public:
                             bool                     verify_ssl = true
                           ) noexcept(true);
   /***/
-  bool_t            cancel( std::string_view name ) noexcept(true)
+  bool_t            cancel( std::string_view name, customer_request_t cr ) noexcept(true)
   {
+    std::string     _name = core::utils::format( "%s:%s", to_string_view(cr).data(), name.data() );
     std::lock_guard _mtx(m_mtx_fetch);
-    
-    if ( m_fetching.contains(name.data()) == false )
+
+    if ( m_fetching.contains(_name.data()) == false )
       return false;
 
-    m_fetching.erase(name.data());
+    m_fetching.erase(_name.data());
 
     return true;
   }

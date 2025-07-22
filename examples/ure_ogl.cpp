@@ -327,7 +327,13 @@ protected:
 
 /* ure::ResourcesFetcherEvents implementation */
 protected:  
-  virtual ure::void_t on_download_succeeded( [[maybe_unused]] std::string_view name, [[maybe_unused]] const std::type_info& type, [[maybe_unused]] const ure::byte_t* data, [[maybe_unused]] ure::uint_t length ) noexcept(true) override
+  virtual ure::void_t on_download_succeeded(
+                                             [[maybe_unused]] std::string_view name,
+                                             [[maybe_unused]] ure::customer_request_t cr,
+                                             [[maybe_unused]] const std::type_info& type,
+                                             [[maybe_unused]] const ure::byte_t* data,
+                                             [[maybe_unused]] ure::uint_t length
+                                           ) noexcept(true) override
   {
     ure::Image image;
     if ( image.create( ure::Image::loader_t::eStb, data, length ) )
@@ -337,7 +343,9 @@ protected:
 
   }
 
-  virtual ure::void_t on_download_failed   ( [[maybe_unused]] std::string_view name ) noexcept(true) override
+  virtual ure::void_t on_download_failed   ( [[maybe_unused]] std::string_view name,
+                                             [[maybe_unused]] ure::customer_request_t cr
+                                           ) noexcept(true) override
   {
 
   }

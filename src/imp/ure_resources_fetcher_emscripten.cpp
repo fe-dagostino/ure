@@ -29,7 +29,6 @@ namespace ure {
 class resource_t 
 {
 public:
-  using customer_request_t = ResourcesFetcher::customer_request_t;
   using http_headers_t     = std::vector<const char*>; 
   using http_body_t        = std::string; 
 
@@ -79,7 +78,6 @@ private:
   bool                    m_verify_ssl;
 };
 
-
 static void_t emscripten_download_succeeded(emscripten_fetch_t *fetch) noexcept(true)
 {
   printf("Finished downloading %llu bytes from URL %s.\n", fetch->numBytes, fetch->url);
@@ -88,15 +86,15 @@ static void_t emscripten_download_succeeded(emscripten_fetch_t *fetch) noexcept(
   {
     std::unique_ptr<resource_t> _resource =  std::unique_ptr<resource_t>( reinterpret_cast<resource_t*>(fetch->userData) );
 
-    _resource->events().on_download_succeeded( _resource->name(), _resource->type(), (const byte_t*)fetch->data, fetch->numBytes );
+    _resource->events().on_download_succeeded( _resource->name(), _resource->cr(), _resource->type(), (const byte_t*)fetch->data, fetch->numBytes );
 
-    if ( ResourcesFetcher::get_instance()->cancel( _resource->name() ) == false )
+    if ( ResourcesFetcher::get_instance()->cancel( _resource->name(), _resource->cr() ) == false )
     {
       //@todo
-    } 
+    }
 
   }
-   
+
   // The data is now available at fetch->data[0] through fetch->data[fetch->numBytes-1];
   emscripten_fetch_close(fetch); // Free data associated with the fetch.
 }
@@ -109,9 +107,9 @@ static void_t emscripten_download_failed(emscripten_fetch_t *fetch) noexcept(tru
   {
     std::unique_ptr<resource_t> _resource =  std::unique_ptr<resource_t>( (resource_t*)fetch->userData );
 
-    _resource->events().on_download_failed( _resource->name() );
+    _resource->events().on_download_failed( _resource->name(), _resource->cr() );
 
-    if ( ResourcesFetcher::get_instance()->cancel( _resource->name() ) == false )
+    if ( ResourcesFetcher::get_instance()->cancel( _resource->name(), _resource->cr() ) == false )
     {
       //@todo
     } 
@@ -133,10 +131,11 @@ bool_t ResourcesFetcher::fetch( ResourcesFetcherEvents& events,
   if ( name.empty() || url.empty() )
     return false;
 
+  std::string     _name = core::utils::format( "%s:%s", to_string_view(cr).data(), name.c_str() );
   std::lock_guard _mtx(m_mtx_fetch);
 
   /***/
-  if ( m_fetching.contains( name ) == true )
+  if ( m_fetching.contains( _name ) == true )
     return true;
 
   resource_t* _resource = new(std::nothrow)resource_t( events, name, type, cr, headers, body, verify_ssl );
@@ -146,7 +145,7 @@ bool_t ResourcesFetcher::fetch( ResourcesFetcherEvents& events,
   }
 
   /***/
-  m_fetching.insert(name);
+  m_fetching.insert(_name);
 
   emscripten_fetch_attr_t attr;
   emscripten_fetch_attr_init(&attr);

@@ -28,6 +28,15 @@
 
 namespace ure {
 
+enum class customer_request_t : enum_t
+{
+  Get,
+  Post,
+  Put,
+  Patch,
+  Delete
+};
+
 /**
  * 
  */
@@ -41,9 +50,16 @@ public:
   virtual ~ResourcesFetcherEvents() noexcept(true) 
   {}
   /***/
-  virtual void_t    on_download_succeeded( [[maybe_unused]] std::string_view name, [[maybe_unused]] const std::type_info& type, [[maybe_unused]] const byte_t* data, [[maybe_unused]] uint_t length ) noexcept(true) = 0;
+  virtual void_t    on_download_succeeded( [[maybe_unused]] std::string_view name,
+                                           [[maybe_unused]] customer_request_t cr,
+                                           [[maybe_unused]] const std::type_info& type,
+                                           [[maybe_unused]] const byte_t* data,
+                                           [[maybe_unused]] uint_t length
+                                         ) noexcept(true) = 0;
   /***/
-  virtual void_t    on_download_failed   ( [[maybe_unused]] std::string_view name ) noexcept(true) = 0;
+  virtual void_t    on_download_failed   ( [[maybe_unused]] std::string_view name,
+                                           [[maybe_unused]] customer_request_t cr
+                                         ) noexcept(true) = 0;
 };
 
 }

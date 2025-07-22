@@ -40,7 +40,6 @@ namespace ure {
 class resource_t 
 {
 public:
-  using customer_request_t = ResourcesFetcher::customer_request_t;
   using http_headers_t     = std::vector<const char*>; 
   using http_body_t        = std::string; 
 
@@ -155,9 +154,9 @@ static void_t async_curl_download( resource_t* resource ) noexcept(true)
  
   if ( _easy_handle == nullptr )
   {
-    _resource->events().on_download_failed( _resource->name() );
+    _resource->events().on_download_failed( _resource->name(), _resource->cr() );
 
-    if ( ResourcesFetcher::get_instance()->cancel( _resource->name() ) == false )
+    if ( ResourcesFetcher::get_instance()->cancel( _resource->name(), _resource->cr() ) == false )
     {
       //@todo
     } 
@@ -206,9 +205,9 @@ static void_t async_curl_download( resource_t* resource ) noexcept(true)
 
   if ( options == false )
   {
-    _resource->events().on_download_failed( _resource->name() );
+    _resource->events().on_download_failed( _resource->name(), _resource->cr() );
 
-    if ( ResourcesFetcher::get_instance()->cancel( _resource->name() ) == false )
+    if ( ResourcesFetcher::get_instance()->cancel( _resource->name(), _resource->cr() ) == false )
     {
       //@todo
     }
@@ -222,9 +221,9 @@ static void_t async_curl_download( resource_t* resource ) noexcept(true)
     {
       fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
 
-      _resource->events().on_download_failed( _resource->name() );
+      _resource->events().on_download_failed( _resource->name(), _resource->cr() );
 
-      if ( ResourcesFetcher::get_instance()->cancel( _resource->name() ) == false )
+      if ( ResourcesFetcher::get_instance()->cancel( _resource->name(), _resource->cr() ) == false )
       {
         //@todo
       }
@@ -239,9 +238,9 @@ static void_t async_curl_download( resource_t* resource ) noexcept(true)
       */
       printf("%lu bytes retrieved\n", (unsigned long)_chunk.size);
 
-      _resource->events().on_download_succeeded( _resource->name(), _resource->type(), (const byte_t*)_chunk.memory, _chunk.size );
+      _resource->events().on_download_succeeded( _resource->name(), _resource->cr(), _resource->type(), (const byte_t*)_chunk.memory, _chunk.size );
 
-      if ( ResourcesFetcher::get_instance()->cancel( _resource->name() ) == false )
+      if ( ResourcesFetcher::get_instance()->cancel( _resource->name(), _resource->cr() ) == false )
       {
         //@todo
       } 
@@ -280,10 +279,11 @@ bool_t ResourcesFetcher::fetch( ResourcesFetcherEvents& events,
   if ( name.empty() || url.empty() )
     return false;
 
+  std::string     _name = core::utils::format( "%s:%s", to_string_view(cr) .data(), name.c_str() );
   std::lock_guard _mtx(m_mtx_fetch);
 
   /***/
-  if ( m_fetching.contains( name ) == true )
+  if ( m_fetching.contains( _name ) == true )
     return true;
 
   resource_t* pResource = new(std::nothrow)resource_t( events, name, type, url, cr, headers, body, verify_ssl );
@@ -293,7 +293,7 @@ bool_t ResourcesFetcher::fetch( ResourcesFetcherEvents& events,
   }
 
   /***/
-  m_fetching.insert(name);
+  m_fetching.insert(_name);
 
   s_mbx->write( pResource );
 
