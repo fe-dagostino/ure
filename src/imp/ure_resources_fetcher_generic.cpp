@@ -188,9 +188,12 @@ static void_t async_curl_download( resource_t* resource ) noexcept(true)
   
   /* Set headers */
   struct curl_slist *_headers = nullptr;
-  for ( std::size_t ndx = 0; ndx < _resource->headers().size()-1; ndx+=2 )
+  if ( _resource->headers().size() >= 2 )
   {
-    _headers = curl_slist_append(_headers, core::utils::format( "%s: %s", _resource->headers()[ndx], _resource->headers()[ndx+1] ).c_str() );
+    for ( std::size_t ndx = 0; ndx < _resource->headers().size()-1; ndx+=2 )
+    {
+      _headers = curl_slist_append(_headers, core::utils::format( "%s: %s", _resource->headers()[ndx], _resource->headers()[ndx+1] ).c_str() );
+    }
   }
 
   if ( _headers != nullptr )
