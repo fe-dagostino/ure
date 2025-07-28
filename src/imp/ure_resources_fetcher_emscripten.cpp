@@ -63,11 +63,11 @@ public:
 
   /***/
   constexpr resource_t( ResourcesFetcherEvents& events,
-                        const std::string&      name,
+                        const std::string&&     name,
                         const std::type_info&   type,
                         customer_request_t      cr,
-                        const http_headers_t&   headers,
-                        const http_body_t&      body,
+                        const http_headers_t&&  headers,
+                        const http_body_t&&     body,
                         bool                    verify_ssl
                       ) noexcept(true)
     : m_events(events), m_name(name), m_type(type),
