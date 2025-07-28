@@ -88,25 +88,25 @@ public:
   }
 
   /***/
-  constexpr ResourcesFetcherEvents& events() const noexcept(true)
+  constexpr ResourcesFetcherEvents&  events() const noexcept(true)
   { return m_events; }
   /***/
-  constexpr const std::string&     name() const noexcept(true)
+  constexpr const std::string&       name() const noexcept(true)
   { return m_name; }
   /***/
-  constexpr const std::type_info&  type() const noexcept(true)
+  constexpr const std::type_info&    type() const noexcept(true)
   { return m_type; }
   /***/
-  constexpr customer_request_t     cr() const noexcept(true)
+  constexpr customer_request_t       cr() const noexcept(true)
   { return m_cr; }
   /***/
-  constexpr const http_headers_t&  headers() const noexcept(true)
+  constexpr const http_headers_in_t& headers() const noexcept(true)
   { return m_headers_internal; }
   /***/
-  constexpr std::string_view       body() const noexcept(true)
+  constexpr std::string_view         body() const noexcept(true)
   { return m_body_internal; }
   /***/
-  constexpr bool                   verify_ssl() const noexcept(true)
+  constexpr bool                     verify_ssl() const noexcept(true)
   { return m_verify_ssl; }
 
 private:
