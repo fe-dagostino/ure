@@ -110,12 +110,13 @@ public:
   { return m_verify_ssl; }
 
 private:
-  ResourcesFetcherEvents& m_events;
+  ResourcesFetcherEvents&  m_events;
   const std::string        m_name;
   const std::type_info&    m_type;
   const customer_request_t m_cr;
   const http_headers_t     m_headers;          /* std::vector<std::string> provided by the user */
   http_headers_in_t        m_headers_internal; /* std::vector<const char*> initialized in the constructor */
+  const http_body_t        m_body;
   const http_body_t&       m_body_internal;
   bool                     m_verify_ssl;
 };
