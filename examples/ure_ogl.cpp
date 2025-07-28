@@ -163,6 +163,11 @@ private:
 
     addWallLayer();
 
+    ure::ResourcesFetcher::get_instance()->fetch( *this, "map-0-0-0", typeid(ure::Texture), "https://tile.openstreetmap.org/0/0/0.png",
+                                                  ure::customer_request_t::Get,
+                                                  ure::ResourcesFetcher::http_headers_t{ "Application", "json" },
+                                                  ure::ResourcesFetcher::http_body_t{}
+                                                );
   }
 
 public:

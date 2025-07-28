@@ -49,7 +49,7 @@ protected:
   {}
 
 public:
-  using http_headers_t     = std::vector<const char*>; 
+  using http_headers_t     = std::vector<std::string>; 
   using http_body_t        = std::string; 
 
   static std::string_view to_string_view( customer_request_t cr )
@@ -75,7 +75,12 @@ public:
     return "";
   }
 
-  /***/
+  /* \brief fetch a resource from specified url.
+            this call will assume that resources will be available even after the call since
+            parameters such as name, url, headers and body can be used in a separate thread.
+            
+            Note: this call should be used, for example, with headers that do not change in time.
+   */
   bool_t            fetch ( ResourcesFetcherEvents&  events,
                             const std::string&       name,  
                             const std::type_info&    type,
@@ -85,6 +90,20 @@ public:
                             const http_body_t&       body,
                             bool                     verify_ssl = true
                           ) noexcept(true);
+
+  /* \brief fetch a resource from specified url.
+            this call will MOVE all parameters such as name, url, headers and body
+   */
+  bool_t            fetch ( ResourcesFetcherEvents&  events,
+                            std::string&&            name,  
+                            const std::type_info&    type,
+                            std::string&&            url,
+                            customer_request_t       cr,
+                            http_headers_t&&         headers,
+                            http_body_t&&            body,
+                            bool                     verify_ssl = true
+                          ) noexcept(true);
+
   /***/
   bool_t            cancel( std::string_view name, customer_request_t cr ) noexcept(true)
   {

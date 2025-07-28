@@ -29,8 +29,9 @@ namespace ure {
 class resource_t 
 {
 public:
-  using http_headers_t     = std::vector<const char*>; 
-  using http_body_t        = std::string; 
+  using http_headers_t     = ResourcesFetcher::http_headers_t;
+  using http_body_t        = ResourcesFetcher::http_body_t;
+  using http_headers_in_t  = std::vector<const char*>;
 
   /***/
   resource_t() = delete;
@@ -43,13 +44,53 @@ public:
                         const http_body_t&      body,
                         bool                    verify_ssl
                       ) noexcept(true)
-    : m_events(events), m_name(name), m_type(type), m_cr(cr),
-      m_headers(headers), m_body(body), m_verify_ssl(verify_ssl)
-  {}
-  /***/ 
+    : m_events(events), m_name(name), m_type(type),
+      m_cr(cr), m_headers({}),
+      m_body({}), m_body_internal( body ),
+      m_verify_ssl(verify_ssl)
+  {
+    if ( headers.empty() == false )
+    {
+      m_headers_internal.reserve( headers.size()+1 );
+      for ( auto& str : headers )
+      {
+        m_headers_internal.push_back( str.c_str() );
+      }
+      /* Adding nullptr since emscripten_fetch_attr_t requires a null termiated array */
+      m_headers_internal.push_back( nullptr );
+    }
+  }
+
+  /***/
+  constexpr resource_t( ResourcesFetcherEvents& events,
+                        const std::string&      name,
+                        const std::type_info&   type,
+                        customer_request_t      cr,
+                        const http_headers_t&   headers,
+                        const http_body_t&      body,
+                        bool                    verify_ssl
+                      ) noexcept(true)
+    : m_events(events), m_name(name), m_type(type),
+      m_cr(cr), m_headers( headers ),
+      m_body( std::move(body) ), m_body_internal( m_body ),
+      m_verify_ssl(verify_ssl)
+  {
+    if ( m_headers.empty() == false )
+    {
+      m_headers_internal.reserve( m_headers.size()+1 );
+      for ( auto& str : m_headers )
+      {
+        m_headers_internal.push_back( str.c_str() );
+      }
+      /* Adding nullptr since emscripten_fetch_attr_t requires a null termiated array */
+      m_headers_internal.push_back( nullptr );
+    }
+  }
+
+  /***/
   constexpr ResourcesFetcherEvents& events() const noexcept(true)
   { return m_events; }
-  /***/ 
+  /***/
   constexpr const std::string&     name() const noexcept(true)
   { return m_name; }
   /***/
@@ -60,22 +101,23 @@ public:
   { return m_cr; }
   /***/
   constexpr const http_headers_t&  headers() const noexcept(true)
-  { return m_headers; }
+  { return m_headers_internal; }
   /***/
   constexpr std::string_view       body() const noexcept(true)
-  { return m_body; }
+  { return m_body_internal; }
   /***/
   constexpr bool                   verify_ssl() const noexcept(true)
   { return m_verify_ssl; }
 
 private:
   ResourcesFetcherEvents& m_events;
-  const std::string       m_name;
-  const std::type_info&   m_type;
-  customer_request_t      m_cr;
-  http_headers_t          m_headers;
-  http_body_t             m_body;
-  bool                    m_verify_ssl;
+  const std::string        m_name;
+  const std::type_info&    m_type;
+  const customer_request_t m_cr;
+  const http_headers_t     m_headers;          /* std::vector<std::string> provided by the user */
+  http_headers_in_t        m_headers_internal; /* std::vector<const char*> initialized in the constructor */
+  const http_body_t&       m_body_internal;
+  bool                     m_verify_ssl;
 };
 
 static void_t emscripten_download_succeeded(emscripten_fetch_t *fetch) noexcept(true)

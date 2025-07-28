@@ -40,58 +40,92 @@ namespace ure {
 class resource_t 
 {
 public:
-  using http_headers_t     = std::vector<const char*>; 
-  using http_body_t        = std::string; 
+  using http_headers_t     = ResourcesFetcher::http_headers_t;
+  using http_body_t        = ResourcesFetcher::http_body_t;
+  using http_headers_in_t  = std::vector<const char*>;
 
   /***/
   resource_t() = delete;
   /***/
-  constexpr resource_t( ResourcesFetcherEvents& events, 
-                        const std::string&      name, 
-                        const std::type_info&   type, 
+  constexpr resource_t( ResourcesFetcherEvents& events,
+                        const std::string&      name,
+                        const std::type_info&   type,
                         const std::string&      url,
                         customer_request_t      cr,
                         const http_headers_t&   headers,
                         const http_body_t&      body,
                         bool                    verify_ssl
                       ) noexcept(true)
-    : m_events(events), m_name(name), m_type(type), m_url(url), 
-      m_cr(cr), m_headers(headers), m_body(body), m_verify_ssl(verify_ssl)
-  {}
-  /***/ 
-  constexpr ResourcesFetcherEvents& events() const noexcept(true)
+    : m_events(events), m_name(name), m_type(type), m_url(url),
+      m_cr(cr), m_headers({}),
+      m_body({}), m_body_internal( body ),
+      m_verify_ssl(verify_ssl)
+  {
+    m_headers_internal.reserve( headers.size() );
+    for ( auto& str : headers )
+    {
+      m_headers_internal.push_back( str.c_str() );
+    }
+  }
+
+  /***/
+  constexpr resource_t( ResourcesFetcherEvents& events,
+                        std::string&&           name,
+                        const std::type_info&   type,
+                        std::string&&           url,
+                        customer_request_t      cr,
+                        http_headers_t&&        headers,
+                        http_body_t&&           body,
+                        bool                    verify_ssl
+                      ) noexcept(true)
+    : m_events(events), m_name( std::move(name) ), m_type(type), m_url( std::move(url) ),
+      m_cr(cr), m_headers( headers ),
+      m_body( std::move(body) ), m_body_internal( m_body ),
+      m_verify_ssl(verify_ssl)
+  {
+    m_headers_internal.reserve( m_headers.size() );
+    for ( auto& str : m_headers )
+    {
+      m_headers_internal.push_back( str.c_str() );
+    }
+  }
+
+  /***/
+  constexpr ResourcesFetcherEvents&  events() const noexcept(true)
   { return m_events; }
-  /***/ 
-  constexpr std::string_view        name() const noexcept(true)
+  /***/
+  constexpr std::string_view         name() const noexcept(true)
   { return m_name; }
-  /***/ 
-  constexpr const std::type_info&   type() const noexcept(true)
+  /***/
+  constexpr const std::type_info&    type() const noexcept(true)
   { return m_type; }
-  /***/ 
-  constexpr std::string_view        url() const noexcept(true)
+  /***/
+  constexpr std::string_view         url() const noexcept(true)
   { return m_url;  }
   /***/
-  constexpr customer_request_t      cr() const noexcept(true)
+  constexpr customer_request_t       cr() const noexcept(true)
   { return m_cr; }
   /***/
-  constexpr const http_headers_t&   headers() const noexcept(true)
-  { return m_headers; }
+  constexpr const http_headers_in_t& headers() const noexcept(true)
+  { return m_headers_internal; }
   /***/
-  constexpr std::string_view        body() const noexcept(true)
-  { return m_body; }
+  constexpr std::string_view         body() const noexcept(true)
+  { return m_body_internal; }
   /***/
-  constexpr bool                    verify_ssl() const noexcept(true)
+  constexpr bool                     verify_ssl() const noexcept(true)
   { return m_verify_ssl; }
 
 private:
-  ResourcesFetcherEvents& m_events;
-  const std::string       m_name;
-  const std::type_info&   m_type;
-  const std::string       m_url;
-  customer_request_t      m_cr;
-  http_headers_t          m_headers;
-  http_body_t             m_body;
-  bool                    m_verify_ssl;
+  ResourcesFetcherEvents&  m_events;
+  const std::string        m_name;
+  const std::type_info&    m_type;
+  const std::string        m_url;
+  const customer_request_t m_cr;
+  const http_headers_t     m_headers;          /* std::vector<std::string> provided by the user */
+  http_headers_in_t        m_headers_internal; /* std::vector<const char*> initialized in the constructor */
+  const http_body_t        m_body;
+  const http_body_t&       m_body_internal;
+  const bool               m_verify_ssl;
 };
 
 
@@ -268,7 +302,7 @@ static void_t th_requests_scheduler() noexcept(true)
   }
 }
 
-bool_t ResourcesFetcher::fetch( ResourcesFetcherEvents& events, 
+bool_t ResourcesFetcher::fetch( ResourcesFetcherEvents& events,
                                 const std::string&      name,
                                 const std::type_info&   type,
                                 const std::string&      url,
@@ -300,7 +334,41 @@ bool_t ResourcesFetcher::fetch( ResourcesFetcherEvents& events,
   s_mbx->write( pResource );
 
   return true;
-} 
+}
+
+bool_t ResourcesFetcher::fetch( ResourcesFetcherEvents& events,
+                                std::string&&           name,
+                                const std::type_info&   type,
+                                std::string&&           url,
+                                customer_request_t      cr,
+                                http_headers_t&&        headers,
+                                http_body_t&&           body,
+                                bool                    verify_ssl
+                              ) noexcept(true)
+{
+  if ( name.empty() || url.empty() )
+    return false;
+
+  std::string     _name = core::utils::format( "%s:%s", to_string_view(cr) .data(), name.c_str() );
+  std::lock_guard _mtx(m_mtx_fetch);
+
+  /***/
+  if ( m_fetching.contains( _name ) == true )
+    return true;
+
+  resource_t* pResource = new(std::nothrow)resource_t( events, std::move(name), type, std::move(url), cr, std::move(headers), std::move(body), verify_ssl );
+  if ( pResource == nullptr )
+  {
+    return false;
+  }
+
+  /***/
+  m_fetching.insert(_name);
+
+  s_mbx->write( pResource );
+
+  return true;
+}
 
 void_t ResourcesFetcher::on_initialize() noexcept(true)
 {
