@@ -214,6 +214,59 @@ bool_t ResourcesFetcher::fetch( ResourcesFetcherEvents& events,
   return true;
 } 
 
+bool_t ResourcesFetcher::fetch( ResourcesFetcherEvents& events, 
+                                std::string&&           name, 
+                                const std::type_info&   type, 
+                                std::string&&           url, 
+                                customer_request_t      cr,
+                                http_headers_t&&        headers,
+                                http_body_t&&           body,
+                                bool                    verify_ssl
+                              ) noexcept(true)
+{
+  if ( name.empty() || url.empty() )
+    return false;
+
+  std::string     _name = core::utils::format( "%s:%s", to_string_view(cr).data(), name.c_str() );
+  std::lock_guard _mtx(m_mtx_fetch);
+
+  /***/
+  if ( m_fetching.contains( _name ) == true )
+    return true;
+
+  resource_t* _resource = new(std::nothrow)resource_t( events, std::move(name), type, cr, std::move(headers), std::move(body), verify_ssl );
+  if ( _resource == nullptr )
+  {
+    return false;
+  }
+
+  /***/
+  m_fetching.insert(_name);
+
+  emscripten_fetch_attr_t attr;
+  emscripten_fetch_attr_init(&attr);
+  strcpy(attr.requestMethod, ResourcesFetcher::to_string_view(cr).data() );
+
+  if ( _resource->headers().empty() == false )
+  {
+    attr.requestHeaders = _resource->headers().data();
+  }
+
+  if ( _resource->body().empty( ) == false )
+  {
+    attr.requestData     = _resource->body().data();
+    attr.requestDataSize = _resource->body().length();
+  }
+
+  attr.userData   = _resource;
+  attr.attributes = EMSCRIPTEN_FETCH_LOAD_TO_MEMORY;
+  attr.onsuccess  = emscripten_download_succeeded;
+  attr.onerror    = emscripten_download_failed;
+  emscripten_fetch(&attr, url.c_str() );
+
+  return true;
+} 
+
 void_t ResourcesFetcher::on_initialize() noexcept(true)
 {
 }
