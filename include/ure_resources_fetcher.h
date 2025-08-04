@@ -107,15 +107,15 @@ public:
                           ) noexcept(true);
 
   /***/
-  bool_t            cancel( std::string_view name, customer_request_t cr ) noexcept(true)
+  bool_t            cancel( const std::string_view app_id, const std::string_view name, customer_request_t cr ) noexcept(true)
   {
     std::string     _name = core::utils::format( "%s:%s:%s", to_string_view(cr).data(), name.data(), app_id.data() );
     std::lock_guard _mtx(m_mtx_fetch);
 
-    if ( m_fetching.contains(_name.data()) == false )
+    if ( m_fetching.contains(_name.c_str()) == false )
       return false;
 
-    m_fetching.erase(_name.data());
+    m_fetching.erase(_name.c_str());
 
     return true;
   }
