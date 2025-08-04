@@ -48,6 +48,7 @@ public:
   resource_t() = delete;
   /***/
   constexpr resource_t( ResourcesFetcherEvents& events,
+                        const std::string&      app_id,
                         const std::string&      name,
                         const std::type_info&   type,
                         const std::string&      url,
@@ -56,7 +57,8 @@ public:
                         const http_body_t&      body,
                         bool                    verify_ssl
                       ) noexcept(true)
-    : m_events(events), m_name(name), m_type(type), m_url(url),
+    : m_events(events), m_app_id(app_id), m_name(name),
+      m_type(type), m_url(url),
       m_cr(cr), m_headers({}),
       m_body({}), m_body_internal( body ),
       m_verify_ssl(verify_ssl)
@@ -70,6 +72,7 @@ public:
 
   /***/
   constexpr resource_t( ResourcesFetcherEvents& events,
+                        std::string&&           app_id,
                         std::string&&           name,
                         const std::type_info&   type,
                         std::string&&           url,
@@ -78,7 +81,8 @@ public:
                         http_body_t&&           body,
                         bool                    verify_ssl
                       ) noexcept(true)
-    : m_events(events), m_name( std::move(name) ), m_type(type), m_url( std::move(url) ),
+    : m_events(events), m_app_id( std::move(app_id) ), m_name( std::move(name) ),
+      m_type(type), m_url( std::move(url) ),
       m_cr(cr), m_headers( headers ),
       m_body( std::move(body) ), m_body_internal( m_body ),
       m_verify_ssl(verify_ssl)
@@ -93,6 +97,9 @@ public:
   /***/
   constexpr ResourcesFetcherEvents&  events() const noexcept(true)
   { return m_events; }
+  /***/
+  constexpr std::string_view         app_id() const noexcept(true)
+  { return m_app_id; }
   /***/
   constexpr std::string_view         name() const noexcept(true)
   { return m_name; }
@@ -117,6 +124,7 @@ public:
 
 private:
   ResourcesFetcherEvents&  m_events;
+  const std::string        m_app_id;
   const std::string        m_name;
   const std::type_info&    m_type;
   const std::string        m_url;
@@ -188,9 +196,9 @@ static void_t async_curl_download( resource_t* resource ) noexcept(true)
  
   if ( _easy_handle == nullptr )
   {
-    _resource->events().on_download_failed( _resource->name(), _resource->cr() );
+    _resource->events().on_download_failed( _resource->app_id(), _resource->name(), _resource->cr() );
 
-    if ( ResourcesFetcher::get_instance()->cancel( _resource->name(), _resource->cr() ) == false )
+    if ( ResourcesFetcher::get_instance()->cancel( _resource->app_id(), _resource->name(), _resource->cr() ) == false )
     {
       //@todo
     } 
@@ -241,9 +249,9 @@ static void_t async_curl_download( resource_t* resource ) noexcept(true)
 
   if ( options == false )
   {
-    _resource->events().on_download_failed( _resource->name(), _resource->cr() );
+    _resource->events().on_download_failed( _resource->app_id(), _resource->name(), _resource->cr() );
 
-    if ( ResourcesFetcher::get_instance()->cancel( _resource->name(), _resource->cr() ) == false )
+    if ( ResourcesFetcher::get_instance()->cancel( _resource->app_id(), _resource->name(), _resource->cr() ) == false )
     {
       //@todo
     }
@@ -257,9 +265,9 @@ static void_t async_curl_download( resource_t* resource ) noexcept(true)
     {
       fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
 
-      _resource->events().on_download_failed( _resource->name(), _resource->cr() );
+      _resource->events().on_download_failed( _resource->app_id(), _resource->name(), _resource->cr() );
 
-      if ( ResourcesFetcher::get_instance()->cancel( _resource->name(), _resource->cr() ) == false )
+      if ( ResourcesFetcher::get_instance()->cancel( _resource->app_id(), _resource->name(), _resource->cr() ) == false )
       {
         //@todo
       }
@@ -274,9 +282,9 @@ static void_t async_curl_download( resource_t* resource ) noexcept(true)
       */
       printf("%lu bytes retrieved\n", (unsigned long)_chunk.size);
 
-      _resource->events().on_download_succeeded( _resource->name(), _resource->cr(), _resource->type(), (const byte_t*)_chunk.memory, _chunk.size );
+      _resource->events().on_download_succeeded( _resource->app_id(), _resource->name(), _resource->cr(), _resource->type(), (const byte_t*)_chunk.memory, _chunk.size );
 
-      if ( ResourcesFetcher::get_instance()->cancel( _resource->name(), _resource->cr() ) == false )
+      if ( ResourcesFetcher::get_instance()->cancel( _resource->app_id(), _resource->name(), _resource->cr() ) == false )
       {
         //@todo
       } 
@@ -303,6 +311,7 @@ static void_t th_requests_scheduler() noexcept(true)
 }
 
 bool_t ResourcesFetcher::fetch( ResourcesFetcherEvents& events,
+                                const std::string&      app_id,
                                 const std::string&      name,
                                 const std::type_info&   type,
                                 const std::string&      url,
@@ -315,14 +324,14 @@ bool_t ResourcesFetcher::fetch( ResourcesFetcherEvents& events,
   if ( name.empty() || url.empty() )
     return false;
 
-  std::string     _name = core::utils::format( "%s:%s", to_string_view(cr) .data(), name.c_str() );
+  std::string     _name = core::utils::format( "%s:%s:%s", to_string_view(cr).data(), name.c_str(), app_id.c_str() );
   std::lock_guard _mtx(m_mtx_fetch);
 
   /***/
   if ( m_fetching.contains( _name ) == true )
     return true;
 
-  resource_t* pResource = new(std::nothrow)resource_t( events, name, type, url, cr, headers, body, verify_ssl );
+  resource_t* pResource = new(std::nothrow)resource_t( events, app_id, name, type, url, cr, headers, body, verify_ssl );
   if ( pResource == nullptr )
   {
     return false;
@@ -337,6 +346,7 @@ bool_t ResourcesFetcher::fetch( ResourcesFetcherEvents& events,
 }
 
 bool_t ResourcesFetcher::fetch( ResourcesFetcherEvents& events,
+                                std::string&&           app_id,
                                 std::string&&           name,
                                 const std::type_info&   type,
                                 std::string&&           url,
@@ -349,14 +359,14 @@ bool_t ResourcesFetcher::fetch( ResourcesFetcherEvents& events,
   if ( name.empty() || url.empty() )
     return false;
 
-  std::string     _name = core::utils::format( "%s:%s", to_string_view(cr) .data(), name.c_str() );
+  std::string     _name = core::utils::format( "%s:%s:%s", to_string_view(cr).data(), name.c_str(), app_id.c_str() );
   std::lock_guard _mtx(m_mtx_fetch);
 
   /***/
   if ( m_fetching.contains( _name ) == true )
     return true;
 
-  resource_t* pResource = new(std::nothrow)resource_t( events, std::move(name), type, std::move(url), cr, std::move(headers), std::move(body), verify_ssl );
+  resource_t* pResource = new(std::nothrow)resource_t( events, std::move(app_id), std::move(name), type, std::move(url), cr, std::move(headers), std::move(body), verify_ssl );
   if ( pResource == nullptr )
   {
     return false;
