@@ -82,6 +82,7 @@ public:
             Note: this call should be used, for example, with headers that do not change in time.
    */
   bool_t            fetch ( ResourcesFetcherEvents&  events,
+                            const std::string&       app_id,
                             const std::string&       name,  
                             const std::type_info&    type,
                             const std::string&       url,
@@ -95,6 +96,7 @@ public:
             this call will MOVE all parameters such as name, url, headers and body
    */
   bool_t            fetch ( ResourcesFetcherEvents&  events,
+                            std::string&&            app_id,
                             std::string&&            name,  
                             const std::type_info&    type,
                             std::string&&            url,
@@ -107,7 +109,7 @@ public:
   /***/
   bool_t            cancel( std::string_view name, customer_request_t cr ) noexcept(true)
   {
-    std::string     _name = core::utils::format( "%s:%s", to_string_view(cr).data(), name.data() );
+    std::string     _name = core::utils::format( "%s:%s:%s", to_string_view(cr).data(), name.data(), app_id.data() );
     std::lock_guard _mtx(m_mtx_fetch);
 
     if ( m_fetching.contains(_name.data()) == false )
