@@ -163,7 +163,7 @@ private:
 
     addWallLayer();
 
-    ure::ResourcesFetcher::get_instance()->fetch( *this, "map-0-0-0", typeid(ure::Texture), "https://tile.openstreetmap.org/0/0/0.png",
+    ure::ResourcesFetcher::get_instance()->fetch( *this, "", "map-0-0-0", typeid(ure::Texture), "https://tile.openstreetmap.org/0/0/0.png",
                                                   ure::customer_request_t::Get,
                                                   ure::ResourcesFetcher::http_headers_t{ "Application", "json" },
                                                   ure::ResourcesFetcher::http_body_t{}
@@ -333,6 +333,7 @@ protected:
 /* ure::ResourcesFetcherEvents implementation */
 protected:  
   virtual ure::void_t on_download_succeeded(
+                                             [[maybe_unused]] std::string_view app_id,
                                              [[maybe_unused]] std::string_view name,
                                              [[maybe_unused]] ure::customer_request_t cr,
                                              [[maybe_unused]] const std::type_info& type,
@@ -348,7 +349,9 @@ protected:
 
   }
 
-  virtual ure::void_t on_download_failed   ( [[maybe_unused]] std::string_view name,
+  virtual ure::void_t on_download_failed   ( 
+                                             [[maybe_unused]] std::string_view app_id,
+                                             [[maybe_unused]] std::string_view name,
                                              [[maybe_unused]] ure::customer_request_t cr
                                            ) noexcept(true) override
   {
