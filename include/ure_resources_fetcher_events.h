@@ -50,14 +50,16 @@ public:
   virtual ~ResourcesFetcherEvents() noexcept(true) 
   {}
   /***/
-  virtual void_t    on_download_succeeded( [[maybe_unused]] std::string_view name,
+  virtual void_t    on_download_succeeded( [[maybe_unused]] const std::string_view app_id,
+                                           [[maybe_unused]] std::string_view name,
                                            [[maybe_unused]] customer_request_t cr,
                                            [[maybe_unused]] const std::type_info& type,
                                            [[maybe_unused]] const byte_t* data,
                                            [[maybe_unused]] uint_t length
                                          ) noexcept(true) = 0;
   /***/
-  virtual void_t    on_download_failed   ( [[maybe_unused]] std::string_view name,
+  virtual void_t    on_download_failed   ( [[maybe_unused]] const std::string_view app_id,
+                                           [[maybe_unused]] std::string_view name,
                                            [[maybe_unused]] customer_request_t cr
                                          ) noexcept(true) = 0;
 };
