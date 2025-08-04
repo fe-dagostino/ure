@@ -181,7 +181,7 @@ bool_t ResourcesFetcher::fetch( ResourcesFetcherEvents& events,
   if ( name.empty() || url.empty() )
     return false;
 
-  std::string     _name = core::utils::format( "%s:%s:%s", to_string_view(cr).data(), name.data(), app_id.data() );
+  std::string     _name = core::utils::format( "%s:%s:%s", to_string_view(cr).data(), name.c_str(), app_id.c_str() );
   std::lock_guard _mtx(m_mtx_fetch);
 
   /***/
