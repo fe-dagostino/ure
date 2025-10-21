@@ -131,13 +131,15 @@ endif()
 ####
 ## OTHER OPTIONS
 #### 
-option(URE_USE_STB        "Using STB image loader"         ON)
-option(URE_USE_FREEIMAGE  "Build FreeImage loader"        OFF)
-option(URE_USE_DEVIL      "Build DevIL loader"            OFF)
-option(URE_USE_WEBSOCKETS "Enable websockets support"     OFF)
+option(URE_USE_STB              "Using STB image loader"                          ON)
+option(URE_USE_FREEIMAGE        "Build FreeImage loader"                         OFF)
+option(URE_USE_DEVIL            "Build DevIL loader"                             OFF)
+option(URE_USE_WEBSOCKETS       "Enable websockets support"                      OFF)
 
-option(URE_BUILD_EXAMPLES "Enable/Disable examples build"  ON)
-option(URE_BUILD_TESTS    "Enable/Disable tests build"    OFF)
+option(URE_BUILD_EXAMPLES       "Enable/Disable examples build"                   ON)
+option(URE_BUILD_TESTS          "Enable/Disable tests build"                     OFF)
+
+option(URE_ENABLE_FETCH_CONTENT "Enable/Disable fetch content for dependencies."  ON)
 
 if (NOT ENABLE_WASM)
   find_package(Freetype      REQUIRED)
@@ -153,44 +155,45 @@ if (NOT ENABLE_WASM)
   message(STATUS "    version: ${CURL_VERSION_STRING}"            )
   message(STATUS "    include: ${CURL_INCLUDE_DIRS} "             )
   message(STATUS "    libs   : ${CURL_LIBRARIES}"                 )
+else()
+  set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
 endif()
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 message(STATUS "${PROJECT_SOURCE_DIR}")
 
-include(FetchContent)
+if (URE_ENABLE_FETCH_CONTENT)
+  include(FetchContent)
 
-include(libsigc++)
-include(lock-free)
-include(glm)
+  include(libsigc++)
+  include(lock-free)
+  include(glm)
 
-if (NOT ENABLE_WASM)
-  if (URE_USE_WEBSOCKETS)
-    include(libwebsocket)
-  endif()
-else()
-  
-endif()
-
-if (URE_USE_STB)
-  include(stb)
-endif()
-
-if (ENABLE_GLFW)
   if (NOT ENABLE_WASM)
-    include(glfw3)
+    if (URE_USE_WEBSOCKETS)
+      include(libwebsocket)
+    endif()
   else()
-    set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
+    # Using websocket do not requires external libraries
   endif()
 
-  if (ENABLE_IMGUI)
-    include(imgui)
-    if (ENABLE_WASM)
-      include(emsbc)
-    endif()    
+  if (URE_USE_STB)
+    include(stb)
   endif()
-endif()
 
+  if (ENABLE_GLFW)
+    if (NOT ENABLE_WASM)
+      include(glfw3)
+    endif()
+
+    if (ENABLE_IMGUI)
+      include(imgui)
+      if (ENABLE_WASM)
+        include(emsbc)
+      endif()    
+    endif()
+  endif()
+endif (URE_ENABLE_FETCH_CONTENT)
 
 if (NOT ENABLE_WASM)
   include_directories( ${FREETYPE_INCLUDE_DIRS}                                 )
