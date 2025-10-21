@@ -314,7 +314,7 @@ if (ENABLE_GLFW)
 endif()
 
 if (ENABLE_IMGUI)
-  list(APPEND EXT_LIBRARIES ImGui )
+  list(APPEND EXT_LIBRARIES ImGui X11 )
 endif()
 
 if (NOT ENABLE_WASM)
