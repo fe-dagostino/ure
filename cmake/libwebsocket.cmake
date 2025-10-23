@@ -2,7 +2,7 @@
 FetchContent_Declare(
   libwebsockets
   GIT_REPOSITORY https://github.com/warmcat/libwebsockets.git
-  GIT_TAG        main
+  GIT_TAG        v4.4.1
   GIT_SHALLOW    TRUE
 )
 
