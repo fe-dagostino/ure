@@ -8,7 +8,12 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(libwebsockets)
 
-set( LWS_STATIC_PIC   ON )
+set(LWS_STATIC_PIC                    ON)
+set(LWS_WITHOUT_TESTAPPS              ON)
+set(LWS_WITHOUT_TEST_CLIENT           ON)
+set(LWS_WITHOUT_TEST_PING             ON)
+set(LWS_WITHOUT_TEST_SERVER           ON)
+set(LWS_WITHOUT_TEST_SERVER_EXTPOLL   ON)
 set_property(TARGET ${LWS_LIBRARIES} PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 include_directories( ${libwebsockets_BINARY_DIR}/include )
