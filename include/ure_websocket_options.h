@@ -39,12 +39,13 @@ public:
 
   /***/
   constexpr websocket_options( websocket_options&& opts ) noexcept(true)
-    : m_url(std::move(opts.m_url)), m_mode(opts.m_mode), m_blocking(opts.m_blocking)
+    : m_url(std::move(opts.m_url)), m_mode(opts.m_mode), 
+      m_blocking(opts.m_blocking), m_raw(opts.m_raw)
   {}
 
   /***/
-  constexpr websocket_options( const std::string& url, ws_mode_t mode, bool blocking = true ) noexcept(true)
-   : m_url(url), m_mode(mode), m_blocking(blocking)
+  constexpr websocket_options( const std::string& url, ws_mode_t mode, bool blocking = true, bool raw = false ) noexcept(true)
+   : m_url(url), m_mode(mode), m_blocking(blocking), m_raw(raw)
   {}
 
   /***/
@@ -63,10 +64,15 @@ public:
   constexpr bool                        blocking() const noexcept(true)
   { return m_blocking; }
 
+  /***/
+  constexpr bool                        raw() const noexcept(true)
+  { return m_raw; }
+
 private:
   const std::string    m_url;
   const ws_mode_t      m_mode;
   const bool           m_blocking;
+  const bool           m_raw;
 };
 
 }
