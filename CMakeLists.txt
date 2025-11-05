@@ -172,7 +172,7 @@ if (URE_ENABLE_FETCH_CONTENT)
       include(libwebsocket)
     endif()
   else()
-    include(emsbc)
+    # Using websocket do not requires external libraries
   endif()
 
   if (URE_USE_STB)
