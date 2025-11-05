@@ -72,6 +72,11 @@ jobs:
         -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
         -DURE_USE_WEBSOCKETS=ON
+        -DLWS_WITHOUT_TESTAPPS=ON
+        -DLWS_WITHOUT_TEST_CLIENT=ON
+        -DLWS_WITHOUT_TEST_PING=ON
+        -DLWS_WITHOUT_TEST_SERVER=ON
+        -DLWS_WITHOUT_TEST_SERVER_EXTPOLL=ON
         -S ${{ github.workspace }}
 
     - name: Build
