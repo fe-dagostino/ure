@@ -305,7 +305,7 @@ if (URE_USE_WEBSOCKETS)
   endif()
 
   if (NOT ENABLE_WASM)
-    list(APPEND EXT_LIBRARIES websockets )
+    list(APPEND EXT_LIBRARIES websockets_shared )
   endif()
 endif (URE_USE_WEBSOCKETS)
 
