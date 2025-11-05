@@ -6,10 +6,9 @@ FetchContent_Declare(
   GIT_SHALLOW    TRUE
 )
 
-set( LWS_STATIC_PIC   ON )
-
 FetchContent_MakeAvailable(libwebsockets)
 
+set( LWS_STATIC_PIC   ON )
 set_property(TARGET ${LWS_LIBRARIES} PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 include_directories( ${libwebsockets_BINARY_DIR}/include )
