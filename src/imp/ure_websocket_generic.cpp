@@ -67,7 +67,7 @@ struct resource_t
 };
 
 /* Callback function for the WebSocket protocol "text" */
-static int callback_text(struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in, size_t len)
+static int callback_text( [[maybe_unused]] struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in, size_t len)
 {
   switch (reason)
   {
@@ -115,7 +115,7 @@ static int callback_text(struct lws *wsi, enum lws_callback_reasons reason, void
 }
 
 /* Callback function for the WebSocket protocol "binary" */
-static int callback_binary(struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in, size_t len)
+static int callback_binary( [[maybe_unused]] struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in, size_t len)
 {
   switch (reason)
   {
@@ -155,7 +155,7 @@ static int callback_binary(struct lws *wsi, enum lws_callback_reasons reason, vo
 }
 
 /* Callback function for the WebSocket protocol "raw" */
-static int callback_raw(struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in, size_t len)
+static int callback_raw( [[maybe_unused]] struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in, size_t len)
 {
   switch (reason)
   {
@@ -257,7 +257,7 @@ bool_t WebSocket::send( const uint8_t* data, uint32_t length ) noexcept(true)
   if ( static_cast<resource_t*>(m_data)->ws == nullptr )
     return false;
 
-  std::vector<uint8_t> buf(LWS_PRE+length);
+  std::vector<uint8_t> buf(std::size_t(LWS_PRE)+std::size_t(length));
   std::memcpy(&buf[LWS_PRE], data, length);
 
   return ( lws_write( static_cast<resource_t*>(m_data)->ws,
