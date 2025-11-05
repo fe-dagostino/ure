@@ -40,10 +40,12 @@ extern struct lws_context*     g_context;
 
 static int callback_text  (struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in, size_t len);
 static int callback_binary(struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in, size_t len);
+static int callback_raw   (struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in, size_t len);
 
 struct lws_protocols    g_protocols[] = {
   { "text"  , callback_text  , 0, 0, 0, nullptr, 0 },
   { "binary", callback_binary, 0, 0, 0, nullptr, 0 },
+  { "raw"   , callback_raw   , 0, 0, 0, nullptr, 0 },
   LWS_PROTOCOL_LIST_TERM
 };
 
@@ -75,6 +77,7 @@ static int callback_text(struct lws *wsi, enum lws_callback_reasons reason, void
 
     case LWS_CALLBACK_CLIENT_ESTABLISHED:
     {
+	  static_cast<resource_t*>(user)->instance->on_open();
     }; break;
 
     case LWS_CALLBACK_ESTABLISHED_CLIENT_HTTP:
@@ -83,7 +86,11 @@ static int callback_text(struct lws *wsi, enum lws_callback_reasons reason, void
 
     case LWS_CALLBACK_CLIENT_RECEIVE:
     {
-    };break;
+	  static_cast<resource_t*>(user)->instance->on_message( 
+                                                            static_cast<resource_t*>(user)->instance->options().mode(), 
+                                                            static_cast<const uint8_t*>(in), len 
+                                                          );
+    }; break;
     
     case LWS_CALLBACK_CLIENT_WRITEABLE:
     {
@@ -91,10 +98,12 @@ static int callback_text(struct lws *wsi, enum lws_callback_reasons reason, void
 
     case LWS_CALLBACK_CLIENT_CLOSED:
     {
+	  static_cast<resource_t*>(user)->instance->on_close( 0 );
     }; break;
 
     case LWS_CALLBACK_CLIENT_CONNECTION_ERROR:
     {
+	  static_cast<resource_t*>(user)->instance->on_error();
     }; break;
 
     default:
@@ -112,18 +121,29 @@ static int callback_binary(struct lws *wsi, enum lws_callback_reasons reason, vo
   {
     case LWS_CALLBACK_CLIENT_ESTABLISHED:
     {
+ 	  static_cast<resource_t*>(user)->instance->on_open();
     }; break;
 
+    case LWS_CALLBACK_CLIENT_RECEIVE:
+    {
+	  static_cast<resource_t*>(user)->instance->on_message( 
+                                                            static_cast<resource_t*>(user)->instance->options().mode(), 
+                                                            static_cast<const uint8_t*>(in), len 
+                                                          );
+    }; break;
+	  
     case LWS_CALLBACK_CLIENT_WRITEABLE:
     {
     }; break;
 
     case LWS_CALLBACK_CLIENT_CLOSED:
     {
+	  static_cast<resource_t*>(user)->instance->on_close( 0 );
     }; break;
 
     case LWS_CALLBACK_CLIENT_CONNECTION_ERROR:
     {
+	  static_cast<resource_t*>(user)->instance->on_error();
     }; break;
 
     default:
@@ -134,6 +154,45 @@ static int callback_binary(struct lws *wsi, enum lws_callback_reasons reason, vo
   return 0;
 }
 
+/* Callback function for the WebSocket protocol "raw" */
+static int callback_raw(struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in, size_t len)
+{
+  switch (reason)
+  {
+    case LWS_CALLBACK_CLIENT_ESTABLISHED:
+    {
+ 	  static_cast<resource_t*>(user)->instance->on_open();
+    }; break;
+
+    case LWS_CALLBACK_CLIENT_RECEIVE:
+    {
+	  static_cast<resource_t*>(user)->instance->on_message( 
+                                                            static_cast<resource_t*>(user)->instance->options().mode(), 
+                                                            static_cast<const uint8_t*>(in), len 
+                                                          );
+    }; break;
+	  
+    case LWS_CALLBACK_CLIENT_WRITEABLE:
+    {
+    }; break;
+
+    case LWS_CALLBACK_CLIENT_CLOSED:
+    {
+	  static_cast<resource_t*>(user)->instance->on_close( 0 );
+    }; break;
+
+    case LWS_CALLBACK_CLIENT_CONNECTION_ERROR:
+    {
+	  static_cast<resource_t*>(user)->instance->on_error();
+    }; break;
+
+    default:
+    {
+    }; break;
+  }
+
+  return 0;
+}
 
 bool_t WebSocket::open() noexcept(true)
 {
@@ -147,7 +206,6 @@ bool_t WebSocket::open() noexcept(true)
   std::string  uri = options().url().data();
   int          use_ssl = 0;
   int          ietf_version = -1;
-  int          test_post = 0;
   const char*  pprot;
   const char*  ppath;
   std::string  path;
@@ -170,7 +228,6 @@ bool_t WebSocket::open() noexcept(true)
     path = ppath;
   }
 
-
   static_cast<resource_t*>(m_data)->init( use_ssl );
 
   ccinfo.context        = g_context;
@@ -179,38 +236,18 @@ bool_t WebSocket::open() noexcept(true)
   ccinfo.origin         = ccinfo.address;
   ccinfo.ietf_version_or_minus_one = ietf_version;
   /* assign path to client info */
-  ccinfo.path = path.c_str();
+  ccinfo.path           = path.c_str();
 
-	if (!strcmp(pprot, "http") || !strcmp(pprot, "https"))
+  if ( options().raw() == true )
   {
-		lwsl_notice("using %s mode (non-ws)\n", pprot);
-		if (test_post)
-    {
-			ccinfo.method = "POST";
-			lwsl_notice("POST mode\n");
-		}
-		else
-    { ccinfo.method = "GET"; }
-		//do_ws = 0;
-	}
-  else
-  {
-		if (!strcmp(pprot, "raw"))
-    {
-			ccinfo.method = "RAW";
-			ccinfo.protocol = "lws-test-raw-client";
-			lwsl_notice("using RAW mode connection\n");
-			//do_ws = 0;
-		} 
-    else
-		{	lwsl_notice("using %s mode (ws)\n", pprot); }
+  	ccinfo.method   = "RAW";
+    ccinfo.protocol = "raw";
+    lwsl_notice("using RAW mode connection\n");
   }
 
   static_cast<resource_t*>(m_data)->ws = lws_client_connect_via_info(&ccinfo);
   if ( static_cast<resource_t*>(m_data)->ws == nullptr )
-  { 
     return false;
-  }
 
   return true;
 }
@@ -220,8 +257,11 @@ bool_t WebSocket::send( const uint8_t* data, uint32_t length ) noexcept(true)
   if ( static_cast<resource_t*>(m_data)->ws == nullptr )
     return false;
 
+  std::vector<uint8_t> buf(LWS_PRE+length);
+  std::memcpy(&buf[LWS_PRE], data, length);
+
   return ( lws_write( static_cast<resource_t*>(m_data)->ws,
-           const_cast<typename std::remove_const<uint8_t>::type *>(data), 
+           &buf[LWS_PRE], 
            length, static_cast<lws_write_protocol>(options().mode()) ) != -1 );
 }
 
