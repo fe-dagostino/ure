@@ -211,7 +211,7 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/3rd-party/glad/include         
 # You can later set fine-grained standards for each target using `target_compile_features`
 # Note: linking together projects compiled with different C++ standards may work, but
 # it is not recommended because of possible issues with ABI
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 
 # strongly encouraged to enable this globally to avoid conflicts between
 # -Wpedantic being enabled and -std=c++20 and -std=gnu++20 for example
