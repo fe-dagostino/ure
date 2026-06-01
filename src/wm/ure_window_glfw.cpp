@@ -386,15 +386,14 @@ bool_t Window::set_size( const Size& size, enum_t flags ) noexcept(true)
     else
       bResult = post_message( pMessage );
   }
-  
-  return bResult;  
+
+  return bResult;
 }
 
 #ifndef __EMSCRIPTEN__
 void_t Window::get_framebuffer_size( Size& size ) noexcept(true)
 {
   assert( m_hWindow != nullptr );
-
   glfwGetFramebufferSize( m_hWindow, &size.width, &size.height );
 }
 #endif
@@ -637,9 +636,9 @@ void_t Window::size_callback( WindowHandler window, int_t width, int_t height )
   for ( WindowEvents* e : pWindow->get_connections() )
   {
     e->on_size_changed( pWindow, width, height );
-  } 
+  }
 }
- 
+
 void_t Window::close_callback( WindowHandler window )
 {
   Window* pWindow = static_cast<Window*>(glfwGetWindowUserPointer( window ));
@@ -720,7 +719,7 @@ void_t Window::fbsize_callback( WindowHandler window, int_t width, int_t height 
   Window* pWindow = static_cast<Window*>(glfwGetWindowUserPointer( window ));
 
   if ( pWindow == nullptr )
-    return;  
+    return;
 
   for ( WindowEvents* e : pWindow->get_connections() )
   {
