@@ -26,6 +26,10 @@
 
 #include "ure_config.h"
 
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#include <emscripten/html5.h>
+#endif
 
 namespace ure {
 
@@ -51,15 +55,35 @@ void_t  WindowEvents::on_creating( [[maybe_unused]] Window* pWindow ) noexcept
 }
 
 #ifdef __EMSCRIPTEN__
-EM_JS(void, resize_canvas, (), {
-  js_resizeCanvas();
-});
+EM_BOOL on_browser_resize( [[maybe_unused]] int eventType, [[maybe_unused]] const EmscriptenUiEvent *uiEvent, void *userData)
+{
+  Window* pWindow = static_cast<Window*>(userData);
+
+  // Get the new browser window dimensions
+  Size win_size( uiEvent->windowInnerWidth, uiEvent->windowInnerHeight );
+
+  // Tell GLFW the window size changed
+  pWindow->set_size( win_size);
+
+  return EM_TRUE;
+}
 #endif
 
 void_t  WindowEvents::on_created( [[maybe_unused]] Window* pWindow ) noexcept
 {
 #ifdef __EMSCRIPTEN__
-  resize_canvas();
+  GLFWwindow* nativeWin = static_cast<GLFWwindow*>(pWindow->get_handler());
+
+  if (nativeWin != nullptr)
+  {
+    // Force the first initial size calculation
+    Size win_size( EM_ASM_INT({ return window.innerWidth; }), EM_ASM_INT({ return window.innerHeight; }) );
+    pWindow->set_size( win_size );
+
+    // Register the canvas resize listener natively inside the C++ engine layer.
+    // This tracks browser window scaling natively without editing your HTML code.
+    emscripten_set_resize_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, pWindow, EM_FALSE, on_browser_resize);
+  }
 #endif
 }
 
