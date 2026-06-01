@@ -93,7 +93,6 @@ void_t  Layer::on_iconified( [[maybe_unused]] Window* pWindow ) noexcept(true)
 {
   if ( is_enabled() == false )
     return;
-  
 }
 
 void_t  Layer::on_restored( [[maybe_unused]] Window* pWindow ) noexcept(true)
