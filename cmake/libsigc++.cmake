@@ -9,6 +9,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(sigc)
 
 include_directories( ${sigc_SOURCE_DIR} ${sigc_BINARY_DIR} )
+link_directories( ${sigc_BINARY_DIR}/sigc++ )
 
 if(hasParent)
   message( INFO " EXPORT SIGC++ SRC DIR: [${sigc_SOURCE_DIR}]" )
