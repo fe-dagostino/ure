@@ -305,6 +305,7 @@ if (URE_USE_DEVIL)
 endif (URE_USE_DEVIL)
 
 if (URE_USE_WEBSOCKETS)
+  message(INFO "URE_USE_WEBSOCKETS enabled")
   add_compile_definitions( _USE_WEBSOCKETS )
   if(hasParent)
     set( PARENT_DEFINITIONS "${PARENT_DEFINITIONS} -D_USE_WEBSOCKETS" )
